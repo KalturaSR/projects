@@ -1,0 +1,4726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agents — Event Management Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #006EFA;
+      --primary-hover: #0059CC;
+      --primary-light: #E8F2FF;
+      --tone-1: #333333;
+      --tone-2: #707070;
+      --tone-3: #888888;
+      --tone-4: #CCCCCC;
+      --tone-5: #DDDDDD;
+      --tone-6: #EBEBEB;
+      --tone-7: #F5F5F5;
+      --tone-8: #FFFFFF;
+      --danger: #DB2C36;
+      --danger-hover: #B91C26;
+      --success: #22A64F;
+      --success-light: #E6F9ED;
+      --purple: #7B61FF;
+      --radius: 4px;
+      --radius-lg: 8px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+      --agent-gradient: linear-gradient(135deg, #FF6B9D 0%, #C44FE2 30%, #7B61FF 60%, #4F8FE2 100%);
+      --agent-gradient-alt: linear-gradient(135deg, #FF8A6B 0%, #E24F7B 30%, #C44FE2 60%, #7B61FF 100%);
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      color: var(--tone-1);
+      background: var(--tone-8);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* === LAYOUT === */
+    .layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      grid-template-rows: 52px 1fr;
+      height: 100vh;
+      width: 100%;
+    }
+
+    /* === HEADER === */
+    .header {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--tone-4);
+      background: var(--tone-8);
+      z-index: 100;
+      height: 52px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px 4px;
+      border-radius: var(--radius);
+      cursor: pointer;
+    }
+
+    .header-left:hover {
+      background: var(--tone-7);
+    }
+
+    .header-left svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .header-left span {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-1);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .header-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px;
+      border-radius: var(--radius);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      color: var(--tone-1);
+    }
+
+    .header-btn:hover {
+      background: var(--tone-7);
+    }
+
+    .header-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .header-btn .chevron {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* === USER MENU === */
+    .user-menu-wrapper {
+      position: relative;
+    }
+
+    .user-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      background: var(--tone-8);
+      border: 1px solid var(--tone-5);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      min-width: 200px;
+      padding: 8px 0;
+      z-index: 200;
+      display: none;
+    }
+
+    .user-menu.open {
+      display: block;
+    }
+
+    .user-menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      font-size: 14px;
+      color: var(--tone-1);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .user-menu-item:hover {
+      background: var(--tone-7);
+    }
+
+    .user-menu-divider {
+      height: 1px;
+      background: var(--tone-6);
+      margin: 4px 0;
+    }
+
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--tone-7);
+      border-radius: 20px;
+      padding: 2px;
+    }
+
+    .theme-toggle-option {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      color: var(--tone-3);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .theme-toggle-option.active {
+      background: var(--tone-8);
+      color: var(--tone-1);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .theme-toggle-option svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* === DARK MODE === */
+    :root.dark {
+      --primary: #4D9AFF;
+      --primary-hover: #6BABFF;
+      --primary-light: #1A2A44;
+      --tone-1: #F0F0F0;
+      --tone-2: #B0B0B0;
+      --tone-3: #909090;
+      --tone-4: #444444;
+      --tone-5: #3A3A3A;
+      --tone-6: #2E2E2E;
+      --tone-7: #252525;
+      --tone-8: #1A1A1A;
+      --danger: #FF5A5A;
+      --danger-hover: #FF7A7A;
+      --success: #3DD46A;
+      --success-light: #1A3326;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    /* === SIDEBAR (Kaltura DS) === */
+    .sidebar {
+      background: var(--tone-8);
+      border-right: 1px solid var(--tone-4);
+      padding: 24px 0;
+      padding-right: 4px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sidebar-event-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 20px;
+      padding: 0 24px;
+      width: 232px;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      height: 40px;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+      width: 100%;
+    }
+
+    .nav-item-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex: 1;
+      height: 40px;
+      padding: 0 24px;
+      min-width: 0;
+    }
+
+    .nav-item-wrapper-expandable {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      height: 40px;
+      padding: 0 8px 0 24px;
+      min-width: 0;
+    }
+
+    .nav-item-content {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding-right: 16px;
+      width: 232px;
+    }
+
+    .nav-item:hover {
+      background: var(--tone-7);
+    }
+
+    .nav-item.active .nav-item-wrapper {
+      border-left: 2px solid var(--primary);
+    }
+
+    .nav-item.active .nav-item-wrapper-expandable {
+      border-left: 2px solid var(--primary);
+    }
+
+    .nav-item.active .nav-item-label {
+      color: var(--primary);
+    }
+
+    .nav-item-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-item-icon svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+      color: var(--tone-1);
+    }
+
+    .nav-item.active .nav-item-icon svg {
+      color: var(--primary);
+    }
+
+    #nav-event-agent .nav-item-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .nav-item-label {
+      flex: 1;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: normal;
+      min-width: 0;
+      white-space: nowrap;
+    }
+
+    .nav-item-chevron {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-item-chevron svg {
+      width: 8px;
+      height: 8px;
+      display: block;
+    }
+
+    /* === MAIN CONTENT === */
+    .main {
+      background: var(--tone-8);
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .main-content {
+      padding: 32px 32px 120px;
+    }
+
+    #state-overview-inactive,
+    #state-overview-active {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* === PAGE HEADER === */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--tone-1);
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: var(--tone-3);
+      margin-top: 4px;
+    }
+
+    /* === BUTTONS === */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary-light);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-hover);
+    }
+
+    .btn-white {
+      background: white;
+      color: var(--tone-1);
+      border: 1px solid var(--tone-5);
+    }
+
+    .btn-white:hover {
+      background: var(--tone-7);
+    }
+
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 12px;
+    }
+
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border: 1px solid var(--tone-5);
+      cursor: pointer;
+      color: var(--tone-2);
+    }
+
+    .btn-icon:hover {
+      background: var(--tone-7);
+    }
+
+    /* === BADGE === */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-active {
+      background: var(--success-light);
+      color: var(--success);
+    }
+
+    .badge-inactive {
+      background: var(--tone-7);
+      color: var(--tone-3);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* === OVERVIEW PAGE === */
+    .overview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .overview-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 1.2;
+    }
+
+    .countdown {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .countdown-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .countdown-unit .num {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 21px;
+    }
+
+    .countdown-unit .label {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--tone-1);
+      line-height: 18px;
+    }
+
+    .countdown-sep {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 21px;
+    }
+
+    /* Event Banner */
+    .event-banner {
+      position: relative;
+      width: 100%;
+      height: 313px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #1a1a3e 0%, #2d4a7a 50%, #4a7ab5 100%);
+    }
+
+    .event-banner-bg {
+      position: absolute;
+      inset: 0;
+      background: url('https://www.figma.com/api/mcp/asset/22161fcc-01fd-4914-b73c-279c52bbf506') center/cover no-repeat;
+    }
+
+    .event-banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+    }
+
+    .event-banner-content {
+      position: absolute;
+      bottom: 32px;
+      left: 32px;
+      right: 32px;
+      color: white;
+    }
+
+    .event-banner-content h2 {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 34px;
+      margin-bottom: 8px;
+    }
+
+    .event-banner-dates {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .event-banner-dates span {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 21px;
+      color: white;
+    }
+
+    .event-banner-dates svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .event-banner-tz {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px;
+      color: white;
+      margin-bottom: 25px;
+    }
+
+    .event-banner-desc {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px;
+      color: white;
+      max-width: 489px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    /* Overview content grid */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 384px;
+      gap: 24px;
+    }
+
+    /* AI Promo Card */
+    .ai-promo-card {
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) 100%), linear-gradient(-81deg, #FF9DFF 39%, #8085FD 27%, #006EFA 98%);
+    }
+
+    .ai-promo-avatar {
+      width: 100px;
+      height: 66px;
+      border-radius: var(--radius);
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .ai-promo-avatar img,
+    .ai-promo-avatar video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ai-promo-body {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .ai-promo-body p {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 21px;
+      color: var(--tone-1);
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Kaltura DS Pill Button */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+    }
+
+    .pill-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .pill-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .pill-default {
+      background: var(--tone-6);
+      color: var(--tone-1);
+    }
+
+    .pill-default:hover {
+      background: var(--tone-5);
+    }
+
+    .pill-md {
+      height: 36px;
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+
+    .pill-lg {
+      height: 40px;
+      padding: 16px;
+      font-size: 16px;
+    }
+
+    .pill svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Widget Cards */
+    .widget-card {
+      border: 1px solid var(--tone-4);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .widget-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 21px;
+    }
+
+    .widget-header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .widget-body {
+      margin-top: 24px;
+      font-size: 14px;
+      color: var(--tone-1);
+      line-height: 18px;
+    }
+
+    .agenda-list-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 8px;
+      background: white;
+      border-radius: var(--radius);
+    }
+
+    .agenda-list-item-thumb {
+      width: 222px;
+      height: 125px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .agenda-list-item-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .agenda-list-item-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .agenda-list-item-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 32px;
+    }
+
+    .agenda-list-item-title-row h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 21px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    .agenda-list-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .agenda-list-item-actions button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      padding: 4px;
+      border: none;
+      background: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      color: var(--tone-1);
+    }
+
+    .agenda-list-item-actions button:hover {
+      background: var(--tone-6);
+    }
+
+    .agenda-list-item-actions button svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .agenda-list-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .agenda-list-item-meta span {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-2);
+      line-height: normal;
+    }
+
+    .agenda-list-item-privacy {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px 6px;
+      border-radius: var(--radius);
+    }
+
+    .agenda-list-item-privacy svg {
+      width: 16px;
+      height: 16px;
+      color: var(--tone-2);
+    }
+
+    .agenda-list-item-privacy span {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-2);
+    }
+
+    .agenda-list-item-datetime {
+      display: flex;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-2);
+      line-height: 18px;
+    }
+
+
+
+
+    /* === SUBMENU === */
+    .nav-submenu {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-submenu-item {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      height: 40px;
+      padding: 0 24px;
+      overflow: hidden;
+      cursor: pointer;
+      width: 280px;
+    }
+
+    .nav-submenu-item:hover {
+      background: var(--tone-7);
+    }
+
+    .nav-submenu-item .spacer {
+      width: 24px;
+      height: 40px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .nav-submenu-item .spacer::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1px;
+      height: 40px;
+      background: #D9D9D9;
+    }
+
+    .nav-submenu-item.active .spacer::before {
+      width: 2px;
+      background: var(--primary);
+    }
+
+    .nav-submenu-item .submenu-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: normal;
+    }
+
+    .nav-submenu-item.active .submenu-label {
+      color: var(--primary);
+    }
+
+    /* === AGENT PAGE === */
+    .agent-page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 1.2;
+    }
+
+    .agent-page-desc {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 21px;
+      color: var(--tone-1);
+    }
+
+    .agent-photo-section {
+      position: relative;
+      width: 680px;
+      height: 382px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 24px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) 100%), linear-gradient(-88deg, #FF9DFF 39%, #8085FD 76%, #006EFA 98%);
+    }
+
+    .agent-photo-avatar {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .agent-photo-avatar img,
+    .agent-photo-avatar video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .agent-photo-status {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 6px;
+      border-radius: var(--radius);
+      background: rgba(135, 135, 135, 0.2);
+      z-index: 2;
+    }
+
+    .agent-photo-status .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--tone-1);
+    }
+
+    .agent-photo-status span {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 16px;
+    }
+
+    .agent-photo-actions {
+      position: absolute;
+      top: 23px;
+      left: 100%;
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .agent-photo-action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s;
+    }
+
+    .agent-photo-action-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .agent-photo-action-btn svg {
+      width: 16px;
+      height: 16px;
+      color: white;
+    }
+
+    .agent-photo-cta-overlay {
+      position: absolute;
+      bottom: 24px;
+      left: 0;
+      right: 0;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .agent-photo-cta-overlay .pill-activate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 40px;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      border: none;
+      background: var(--primary);
+      color: white;
+      transition: background 0.15s;
+    }
+
+    .agent-photo-cta-overlay .pill-activate:hover {
+      background: var(--primary-hover);
+    }
+
+    .agent-photo-cta-overlay .pill-tryme {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 40px;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      border: none;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      transition: background 0.15s;
+    }
+
+    .agent-photo-cta-overlay .pill-tryme:hover {
+      background: rgba(0, 0, 0, 0.75);
+    }
+
+    .agent-photo-cta-overlay .pill-tryme svg,
+    .agent-photo-cta-overlay .pill-activate svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .agent-photo-cta-overlay .pill-activate .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .agent-photo-cta-overlay .pill-activate .spinner-danger {
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+    }
+
+    .agent-photo-cta-overlay .pill-processing {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 40px;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      border: none;
+      background: var(--primary);
+      color: white;
+    }
+
+    .agent-photo-loading-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: linear-gradient(119deg, rgba(250, 0, 175, 0) 12%, rgba(0, 110, 250, 0.73) 52%, rgba(91, 198, 134, 0.29) 89%);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 32px;
+      z-index: 3;
+      cursor: pointer;
+    }
+
+    .agent-photo-loading-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      text-align: center;
+    }
+
+    .ellipsis-dot {
+      display: inline-block;
+      animation: ellipsisFade 1.4s infinite;
+      opacity: 0;
+    }
+
+    .ellipsis-dot:nth-child(1) { animation-delay: 0s; }
+    .ellipsis-dot:nth-child(2) { animation-delay: 0.2s; }
+    .ellipsis-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes ellipsisFade {
+      0%, 20% { opacity: 0; }
+      40%, 100% { opacity: 1; }
+    }
+
+    .agent-photo-cta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      margin-top: 24px;
+    }
+
+    .agent-photo-cta .pill-activate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 40px;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      border: none;
+      background: var(--primary);
+      color: white;
+      transition: background 0.15s;
+    }
+
+    .agent-photo-cta .pill-activate:hover {
+      background: var(--primary-hover);
+    }
+
+    .agent-photo-cta .pill-activate svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .agent-photo-cta .pill-tryme {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 40px;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      border: none;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      transition: background 0.15s;
+    }
+
+    .agent-photo-cta .pill-tryme:hover {
+      background: rgba(0, 0, 0, 0.75);
+    }
+
+    .agent-details-text {
+      margin-top: 24px;
+      text-align: center;
+      width: 680px;
+    }
+
+    .agent-details-text h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 1.2;
+    }
+
+    .agent-details-text p {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px;
+      color: var(--tone-2);
+      margin-top: 8px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* === AGENT PAGE ACTIVE STATE === */
+    .agent-photo-status.active {
+      background: rgba(34, 166, 79, 0.15);
+    }
+
+    .agent-photo-status.active .dot {
+      background: var(--success);
+      animation: blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    .agent-photo-status.active span {
+      color: var(--tone-1);
+    }
+
+    .agent-photo-status.preview {
+      background: rgba(0, 110, 250, 0.2);
+    }
+
+    .agent-photo-status.preview .dot {
+      background: #006EFA;
+    }
+
+
+    .pill-deactivate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 40px;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      border: none;
+      background: var(--tone-6);
+      color: var(--tone-1);
+      transition: background 0.15s;
+    }
+
+    .pill-deactivate:hover {
+      background: var(--tone-5);
+    }
+
+    .pill-deactivate svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .pill-preview-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 40px;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: pointer;
+      border: none;
+      background: var(--primary);
+      color: white;
+      transition: background 0.15s;
+    }
+
+    .pill-preview-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .pill-preview-primary svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* === AGENT LIST ITEMS === */
+    .agent-list-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 680px;
+      margin-top: 24px;
+    }
+
+    .agent-list-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--tone-4);
+      border-radius: var(--radius-lg);
+      background: white;
+    }
+
+    .agent-list-item-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .agent-list-item-content h4 {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 21px;
+      color: var(--tone-1);
+    }
+
+    .agent-list-item-content p {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 18px;
+      color: var(--tone-2);
+    }
+
+    .agent-list-item-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--tone-6);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      color: var(--tone-1);
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .agent-list-item-action:hover {
+      background: var(--tone-5);
+    }
+
+    .agent-list-item-action svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .agent-list-item.disabled {
+      border-color: var(--tone-4);
+    }
+
+    .agent-list-item-action.disabled {
+      background: none;
+      border: 1px solid var(--tone-4);
+      color: var(--tone-4);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .agent-list-item-action-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      width: 146px;
+      height: 32px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--tone-6);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      color: var(--tone-1);
+      text-align: center;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .agent-list-item-action-outline:hover {
+      background: var(--tone-5);
+    }
+
+    .agent-list-item-action-outline.disabled {
+      background: none;
+      border: 1px solid var(--tone-4);
+      color: var(--tone-4);
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .pill-processing {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 40px;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: default;
+      border: none;
+      background: var(--primary);
+      color: white;
+      opacity: 1;
+    }
+
+    .pill-processing .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .pill-processing-deactivate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 40px;
+      padding: 16px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      cursor: default;
+      border: none;
+      background: var(--tone-6);
+      color: var(--tone-1);
+      opacity: 1;
+    }
+
+    .pill-processing-deactivate .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(0, 0, 0, 0.15);
+      border-top-color: var(--tone-1);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* === AURORA GLOW EFFECT === */
+    .agent-photo-section.aurora-glow {
+      position: relative;
+    }
+
+    .agent-photo-section.aurora-glow::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 130, 200, 0.3) 20%,
+        rgba(100, 180, 255, 0.3) 40%,
+        rgba(255, 255, 255, 0.35) 60%,
+        rgba(200, 100, 220, 0.25) 80%,
+        rgba(0, 110, 250, 0.3) 100%
+      );
+      background-size: 300% 300%;
+      animation: auroraOverlay 3s ease infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .agent-photo-section.aurora-glow::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: radial-gradient(
+        ellipse at 20% 50%,
+        rgba(255, 255, 255, 0.35) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse at 60% 30%,
+        rgba(255, 130, 200, 0.3) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse at 80% 70%,
+        rgba(100, 180, 255, 0.3) 0%,
+        transparent 45%
+      );
+      background-size: 200% 200%;
+      animation: auroraShimmer 4s ease-in-out infinite;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes auroraOverlay {
+      0% { background-position: 0% 0%; opacity: 0.6; }
+      50% { background-position: 100% 100%; opacity: 0.9; }
+      100% { background-position: 0% 0%; opacity: 0.6; }
+    }
+
+    @keyframes auroraShimmer {
+      0% { background-position: 0% 0%; }
+      33% { background-position: 100% 50%; }
+      66% { background-position: 50% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+
+    /* === EDIT AGENT (fullscreen) === */
+    .edit-agent-page {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 500;
+    }
+
+    .edit-agent-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 24px;
+      height: 52px;
+      border-bottom: 1px solid var(--tone-4);
+      flex-shrink: 0;
+    }
+
+    .edit-agent-header-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      color: var(--tone-1);
+    }
+
+    .edit-agent-header-close svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .edit-agent-header-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-1);
+    }
+
+    .edit-agent-tabs {
+      display: flex;
+      gap: 24px;
+      padding: 0 24px;
+      border-bottom: 1px solid #ccc;
+      flex-shrink: 0;
+      height: 51px;
+      align-items: stretch;
+      justify-content: center;
+      position: relative;
+    }
+
+    .edit-agent-tab {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-1);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: border-color 0.15s;
+    }
+
+    .edit-agent-tab:hover {
+      color: var(--tone-1);
+    }
+
+    .edit-agent-tab.active {
+      color: var(--tone-1);
+      border-bottom-color: var(--primary);
+    }
+
+    .edit-agent-header-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .edit-agent-publish-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      border: none;
+      background: var(--primary);
+      color: white;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .edit-agent-publish-btn:hover {
+      background: #005cd4;
+    }
+
+    .edit-agent-publish-btn.danger {
+      background: var(--danger);
+    }
+
+    .edit-agent-publish-btn.danger:hover {
+      background: var(--danger-hover);
+    }
+
+    .edit-agent-publish-btn.processing {
+      pointer-events: none;
+    }
+
+    .edit-agent-publish-btn .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    .edit-agent-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .edit-agent-content {
+      width: 100%;
+      max-width: 936px;
+      padding: 0 32px 32px;
+    }
+
+    .edit-agent-content h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .edit-agent-content p {
+      font-size: 14px;
+      color: var(--tone-2);
+      line-height: 1.5;
+    }
+
+    .edit-agent-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 0;
+      color: var(--tone-3);
+      font-size: 16px;
+    }
+
+    /* === AGENT STUDIO OVERVIEW === */
+    .agent-studio-overview {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      padding: 32px 0;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .agent-studio-overview-left {
+      width: 516px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .agent-studio-overview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .agent-studio-overview-title {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 1.2;
+    }
+
+    .edit-icon-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: var(--radius);
+      color: var(--tone-1);
+    }
+
+    .edit-icon-btn:hover {
+      background: var(--tone-7);
+    }
+
+    .agent-studio-overview-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .agent-studio-overview-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .agent-studio-overview-section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .agent-studio-overview-section-header .agent-studio-overview-label {
+      flex: 1;
+    }
+
+    .agent-studio-overview-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 21px;
+    }
+
+    .agent-studio-overview-value {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--tone-1);
+      line-height: 21px;
+    }
+
+    .agent-studio-warning-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--tone-7);
+      border-radius: var(--radius);
+      padding: 4px 8px;
+    }
+
+    .agent-studio-warning-badge span {
+      font-size: 14px;
+      color: var(--tone-1);
+      line-height: 18px;
+    }
+
+    .agent-studio-link {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-1);
+      text-decoration: underline;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .agent-studio-overview-activity {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .agent-studio-overview-activity h3 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .agent-studio-stats-row {
+      display: flex;
+      gap: 16px;
+    }
+
+    .agent-studio-stat-card {
+      flex: 1;
+      border: 1px solid var(--tone-4);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .agent-studio-stat-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 1.2;
+    }
+
+    .agent-studio-stat-label {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--tone-1);
+      line-height: 18px;
+    }
+
+    .agent-studio-overview-right {
+      width: 549px;
+      flex-shrink: 0;
+    }
+
+    .agent-studio-chat-preview {
+      border: 1px solid var(--tone-5);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .agent-studio-chat-welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      gap: 16px;
+      min-height: 680px;
+    }
+
+    .agent-studio-chat-title {
+      display: flex;
+      align-items: flex-end;
+      gap: 0;
+      height: 64px;
+      justify-content: center;
+    }
+
+    .agent-studio-chat-title svg {
+      margin-right: -8px;
+    }
+
+    .agent-studio-chat-title span {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 1.2;
+    }
+
+    .agent-studio-chat-avatar {
+      width: 100%;
+      max-width: 600px;
+      aspect-ratio: 160/90;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .agent-studio-chat-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .agent-studio-chat-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.18));
+    }
+
+    .agent-studio-chat-or {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--tone-2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .agent-studio-chat-input-area {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .agent-studio-chat-input-box {
+      width: 100%;
+      border: 1px solid var(--tone-4);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .agent-studio-chat-input-text {
+      padding: 0 12px;
+    }
+
+    .agent-studio-chat-placeholder {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--tone-3);
+    }
+
+    .agent-studio-chat-input-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .agent-studio-chat-presets {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .agent-studio-chat-submit {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--tone-4);
+      background: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--tone-1);
+    }
+
+    .agent-studio-chat-submit:hover {
+      background: var(--tone-7);
+    }
+
+    .agent-studio-chat-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .agent-studio-chat-footer {
+      border-top: 1px solid var(--tone-5);
+      padding: 24px;
+      text-align: center;
+    }
+
+    .agent-studio-chat-footer span {
+      font-size: 12px;
+      color: var(--tone-2);
+      line-height: 16px;
+    }
+
+    /* === KNOWLEDGE DROPDOWN MENU === */
+    .knowledge-btn-wrapper {
+      position: relative;
+    }
+
+    .knowledge-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      width: 168px;
+      background: white;
+      border-radius: 4px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.2), 0 4px 30px -8px rgba(0,0,0,0.2);
+      padding: 8px 0;
+      z-index: 100;
+      flex-direction: column;
+    }
+
+    .knowledge-btn-wrapper.open .knowledge-dropdown {
+      display: flex;
+    }
+
+    .knowledge-dropdown-item {
+      padding: 8px 16px;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 18px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      text-align: left;
+      border-radius: 0;
+      position: relative;
+    }
+
+    .knowledge-dropdown-item:hover {
+      background: var(--tone-6);
+    }
+
+    /* === AGENT STUDIO PLAYBOOK === */
+    .agent-studio-playbook {
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      padding: 32px 0;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .playbook-refine-card {
+      width: 400px;
+      flex-shrink: 0;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      align-items: center;
+      background: linear-gradient(164deg, rgba(91, 198, 134, 0.4) 3.58%, rgba(0, 110, 250, 0.4) 123.38%);
+    }
+
+    .playbook-refine-card-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .playbook-refine-card-header h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .playbook-refine-card-header p {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--tone-1);
+      line-height: 18px;
+      margin: 0;
+    }
+
+    .playbook-refine-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .playbook-refine-textarea {
+      background: var(--tone-8);
+      border: 1px solid var(--tone-3);
+      border-radius: var(--radius);
+      min-height: 88px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .playbook-refine-textarea textarea {
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      color: var(--tone-1);
+      line-height: 16px;
+      flex: 1;
+      min-height: 60px;
+      background: none;
+    }
+
+    .playbook-refine-textarea textarea::placeholder {
+      color: var(--tone-3);
+    }
+
+    .playbook-refine-textarea-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .playbook-refine-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 40px;
+      width: 100%;
+      border-radius: var(--radius);
+      background: var(--primary);
+      border: none;
+      cursor: pointer;
+      color: white;
+      font-family: 'Lato', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .playbook-refine-btn:hover {
+      opacity: 0.9;
+    }
+
+    .playbook-right {
+      flex: 1;
+      max-width: 750px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .playbook-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .playbook-section-header {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .playbook-section-header-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .playbook-section-header-text h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #000;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .playbook-section-header-text p {
+      font-size: 14px;
+      font-weight: 400;
+      color: #656565;
+      line-height: 18px;
+      margin: 0;
+    }
+
+    .playbook-reset-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      height: 32px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-1);
+      border-radius: var(--radius);
+      white-space: nowrap;
+    }
+
+    .playbook-reset-btn:hover {
+      background: var(--tone-7);
+    }
+
+    .playbook-form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .playbook-form-label-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .playbook-form-label-row label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 16px;
+    }
+
+    .playbook-form-label-row .help-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+    }
+
+    .playbook-form-label-row .char-count {
+      margin-left: auto;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--tone-2);
+      line-height: 16px;
+    }
+
+    .playbook-form-label-row .expand-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: var(--radius);
+      color: var(--tone-1);
+    }
+
+    .playbook-form-label-row .expand-btn:hover {
+      background: var(--tone-7);
+    }
+
+    .playbook-form-textarea {
+      width: 100%;
+      min-height: 150px;
+      border: 1px solid var(--tone-3);
+      border-radius: var(--radius);
+      padding: 8px;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      color: var(--tone-1);
+      line-height: 16px;
+      resize: vertical;
+      background: var(--tone-8);
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .playbook-form-textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .playbook-form-input {
+      width: 100%;
+      height: 32px;
+      border: 1px solid var(--tone-3);
+      border-radius: var(--radius);
+      padding: 8px;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      color: var(--tone-1);
+      line-height: 16px;
+      background: var(--tone-8);
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .playbook-form-input:focus {
+      border-color: var(--primary);
+    }
+
+    .playbook-form-input-tall {
+      height: auto;
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    .playbook-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .playbook-tag {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      background: var(--tone-6);
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-1);
+      white-space: nowrap;
+    }
+
+    .playbook-tag-add {
+      background: none;
+      border: 1px dashed var(--tone-4);
+      cursor: pointer;
+    }
+
+    .playbook-tag-add:hover {
+      border-color: var(--tone-3);
+      background: var(--tone-7);
+    }
+
+    .playbook-tag .remove-icon {
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    .playbook-tag .remove-icon:hover {
+      opacity: 1;
+    }
+
+    /* === AGENT STUDIO EXPERIENCE === */
+    .experience-content {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 750px;
+      margin: 0 auto;
+      padding: 32px 0;
+    }
+
+    .experience-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .experience-section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .experience-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .experience-field-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .experience-field-label-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .experience-field-label-row label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-1);
+      line-height: 16px;
+    }
+
+    .experience-field-label-row .char-count {
+      margin-left: auto;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--tone-2);
+      line-height: 16px;
+    }
+
+    .experience-field-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--tone-2);
+      line-height: 18px;
+      margin: 0;
+    }
+
+    .experience-input {
+      width: 100%;
+      height: 32px;
+      border: 1px solid var(--tone-3);
+      border-radius: var(--radius);
+      padding: 8px;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      color: var(--tone-1);
+      line-height: 16px;
+      background: var(--tone-8);
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .experience-input:focus {
+      border-color: var(--primary);
+    }
+
+    .experience-model-options {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .experience-model-option {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+
+    .experience-model-thumb {
+      width: 177px;
+      height: 106px;
+      border: 1px solid var(--tone-5);
+      border-radius: var(--radius);
+      background: var(--tone-8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      overflow: hidden;
+    }
+
+    .experience-model-option.selected .experience-model-thumb {
+      border-color: var(--primary);
+      border-width: 2px;
+    }
+
+    .experience-model-thumb-bar {
+      width: 77px;
+      height: 7px;
+      background: var(--tone-5);
+      border-radius: var(--radius);
+    }
+
+    .experience-model-thumb-avatar {
+      width: 77px;
+      height: 44px;
+      background: linear-gradient(135deg, #1a1a2e, #e94560, #f5a623);
+      border-radius: 4px;
+    }
+
+    .experience-model-thumb-chat {
+      width: 77px;
+      height: 20px;
+      background: var(--tone-4);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 2px;
+    }
+
+    .experience-model-thumb-chat svg {
+      width: 16px;
+      height: 16px;
+      color: var(--tone-8);
+    }
+
+    .experience-model-thumb-suggestions {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+      justify-content: center;
+      width: 77px;
+    }
+
+    .experience-model-thumb-suggestions span {
+      width: 23px;
+      height: 7px;
+      background: var(--tone-5);
+      border-radius: var(--radius);
+    }
+
+    .experience-model-radio {
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .experience-model-radio input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--primary);
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .experience-model-radio span {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--tone-1);
+      line-height: 18px;
+    }
+
+    .experience-voice-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .experience-select {
+      flex: 1;
+      height: 32px;
+      border: 1px solid var(--tone-3);
+      border-radius: var(--radius);
+      padding: 4px 8px;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      color: var(--tone-1);
+      background: var(--tone-8);
+      outline: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23333' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 28px;
+      cursor: pointer;
+    }
+
+    .experience-select:focus {
+      border-color: var(--primary);
+    }
+
+    .experience-play-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: var(--radius);
+      padding: 4px;
+      color: var(--tone-1);
+    }
+
+    .experience-play-btn:hover {
+      background: var(--tone-7);
+    }
+
+    .experience-avatar-selected {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .experience-avatar-selected img {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      object-fit: cover;
+    }
+
+    .experience-avatar-selected span {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--tone-2);
+      line-height: 18px;
+    }
+
+    .experience-avatar-grid {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .experience-avatar-item {
+      flex: 1;
+      aspect-ratio: 1;
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .experience-avatar-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .experience-avatar-item.selected {
+      border: 2px solid var(--primary);
+    }
+
+    .experience-avatar-item.selected::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 110, 250, 0.2);
+    }
+
+    .experience-avatar-item .check-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      z-index: 2;
+    }
+
+    .experience-avatar-item .avatar-name {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: var(--radius);
+      padding: 4px 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      white-space: nowrap;
+      z-index: 2;
+    }
+
+    .experience-avatar-add {
+      flex: 1;
+      aspect-ratio: 1;
+      border: 1px dashed var(--tone-4);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .experience-avatar-add:hover {
+      border-color: var(--tone-3);
+      background: var(--tone-7);
+    }
+
+    .experience-avatar-add span {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--tone-1);
+    }
+
+    .experience-see-more {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px 8px;
+      font-family: 'Lato', sans-serif;
+      border-radius: var(--radius);
+    }
+
+    .experience-see-more:hover {
+      background: var(--tone-7);
+    }
+
+    /* === ACKNOWLEDGEMENT (Kaltura DS Toast) === */
+    .acknowledgement {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(100vw);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      height: 48px;
+      background: #23803A;
+      border-radius: var(--radius);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.2), 0 4px 30px -8px rgba(0,0,0,0.2);
+      z-index: 9999;
+      opacity: 0;
+      transition: transform 0.8s ease, opacity 0.6s ease;
+      white-space: nowrap;
+    }
+
+    .acknowledgement.show {
+      transform: translateX(-50%);
+      opacity: 1;
+    }
+
+    .acknowledgement-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .acknowledgement-text {
+      font-size: 14px;
+      font-weight: 400;
+      color: white;
+      line-height: 18px;
+    }
+
+    .acknowledgement-close {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      background: none;
+      padding: 0;
+    }
+
+    .acknowledgement-close svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* === PERMISSION GATE POPUP === */
+    .permission-gate-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(34, 34, 34, 0.6);
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .permission-gate-overlay.show {
+      display: flex;
+    }
+
+    .permission-gate-modal {
+      background: white;
+      border-radius: 8px;
+      width: 788px;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.2), 0 8px 30px rgba(0,0,0,0.2);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .permission-gate-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: var(--radius);
+    }
+
+    .permission-gate-close:hover {
+      background: var(--tone-6);
+    }
+
+    .permission-gate-close svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .permission-gate-content {
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .permission-gate-content h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--tone-1);
+      text-align: center;
+      margin: 0;
+    }
+
+    .permission-gate-notice {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--tone-1);
+      line-height: 21px;
+      margin: 0;
+      width: 100%;
+    }
+
+    .permission-gate-body {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .permission-gate-body-text {
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .permission-gate-body-text p {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--tone-1);
+      line-height: 21px;
+      margin: 0;
+    }
+
+    .permission-gate-body-video {
+      flex: 1;
+      aspect-ratio: 431/242;
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, #B6D7FF 100%), linear-gradient(270deg, #006EFA 0%, #FF9DFF 49.5%, #5BC684 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .permission-gate-body-video .play-btn {
+      width: 53px;
+      height: 53px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .permission-gate-body-video .play-btn svg {
+      width: 24px;
+      height: 24px;
+      color: white;
+    }
+
+    .permission-gate-footer {
+      height: 64px;
+      border-top: 1px solid var(--tone-4);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 32px;
+    }
+
+    .permission-gate-footer button {
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      color: var(--tone-1);
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: var(--radius);
+    }
+
+    .permission-gate-footer button:hover {
+      background: var(--tone-6);
+    }
+
+    /* === DISSOLVE ANIMATION === */
+    .main-content,
+    #state-edit-agent {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* === UTILITY === */
+    .hidden { display: none !important; }
+
+    .text-center { text-align: center; }
+
+    /* === STATE SWITCHER (Demo) === */
+    .state-switcher {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--tone-1);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      z-index: 9999;
+    }
+
+    .state-switcher button {
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .state-switcher button:hover {
+      background: rgba(255,255,255,0.1);
+      color: white;
+    }
+
+    .state-switcher button.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .state-switcher-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-right: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- HEADER -->
+  <header class="header" id="mainHeader">
+    <div class="header-left" onclick="goBack()">
+      <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.318.268L5.232.36.232 6.36l-.046.06-.061.096-.038.077-.035.089-.022.076-.014.065-.012.09L0 7l.006.109.01.069.025.105.046.125.038.077.067.104.04.051 5 6 .086.092c.363.339.93.363 1.322.036.392-.326.471-.889.202-1.307l-.074-.101L3.136 8l9.862.024c.552 0 1-.447 1-1 0-.513-.386-.935-.883-.993l-.117-.007L3.136 6l3.632-4.36c.354-.424.296-1.055-.128-1.408-.392-.327-.959-.303-1.322.036z" fill="currentColor"/></svg>
+      <span>All</span>
+    </div>
+    <div class="header-right">
+      <button class="header-btn">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 8.667V12a1.333 1.333 0 0 1-1.333 1.333H4A1.333 1.333 0 0 1 2.667 12V5.333A1.333 1.333 0 0 1 4 4h3.333M10 2h4v4M6.667 9.333 14 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Event site
+      </button>
+      <div class="user-menu-wrapper">
+        <button class="header-btn" id="userMenuBtn" onclick="toggleUserMenu(event)">
+          <svg viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 8c2.209 0 4-1.791 4-4S9.209 0 7 0 3 1.791 3 4s1.791 4 4 4z" fill="currentColor"/><path d="M0 13.5C0 11.567 1.567 10 3.5 10h7c1.933 0 3.5 1.567 3.5 3.5V15H0v-1.5z" fill="currentColor"/></svg>
+          Patrick Lorimer
+          <svg class="chevron" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M.293.293a1 1 0 0 1 1.414 0L4 2.586 6.293.293a1 1 0 1 1 1.414 1.414l-3 3a1 1 0 0 1-1.414 0l-3-3a1 1 0 0 1 0-1.414z" fill="currentColor"/></svg>
+        </button>
+        <div class="user-menu" id="userMenu">
+          <div class="user-menu-item" style="font-weight:700;cursor:default;">Patrick Lorimer</div>
+          <div class="user-menu-divider"></div>
+          <div class="user-menu-item" style="flex-direction:column;align-items:flex-start;gap:8px;">
+            <span>Theme</span>
+            <div class="theme-toggle">
+              <button class="theme-toggle-option active" id="lightModeBtn" onclick="setTheme('light')">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.414 1.414M11.536 11.536l1.414 1.414M3.05 12.95l1.414-1.414M11.536 4.464l1.414-1.414" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Light
+              </button>
+              <button class="theme-toggle-option" id="darkModeBtn" onclick="setTheme('dark')">
+                <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 9.63A7 7 0 0 1 6.37 2 7 7 0 1 0 14 9.63z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Dark
+              </button>
+            </div>
+          </div>
+          <div class="user-menu-divider"></div>
+          <div class="user-menu-item">Account settings</div>
+          <div class="user-menu-item">Log out</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR (Kaltura DS) -->
+  <aside class="sidebar" id="mainSidebar">
+    <div class="sidebar-event-name">Virtually Live!</div>
+    <nav class="nav-list">
+      <a class="nav-item active" onclick="switchState(agentActivated ? 'overview-active' : 'overview-inactive')">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 2C0 .895.895 0 2 0h12c1.105 0 2 .895 2 2v12c0 1.105-.895 2-2 2H2c-1.105 0-2-.895-2-2V2zm9 0h5v12H9V9h5V7H9V2zM7 2H2v5h5V2zM2 9v5h5V9H2z" fill="currentColor"/></svg></span>
+          <span class="nav-item-label">Overview</span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M9 18c4.97 0 9-4.03 9-9s-4.03-9-9-9-9 4.03-9 9 4.03 9 9 9zM8 5c0-.552.448-1 1-1s1 .448 1 1-.448 1-1 1-1-.448-1-1zm0 4c0-.552.448-1 1-1s1 .448 1 1v4c0 .552-.448 1-1 1s-1-.448-1-1V9z" fill="currentColor"/></svg></span>
+          <span class="nav-item-label">Event details</span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg viewBox="0 0 22 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.747 8.29c-.178.391-.733.391-.91 0l-1.108-2.436-2.436-1.107c-.391-.178-.391-.733 0-.91l2.436-1.108L16.837.293c.177-.391.733-.391.91 0l1.108 2.436 2.436 1.108c.39.177.39.733 0 .91l-2.436 1.107-1.108 2.436z" fill="currentColor"/><path d="M7.747 17.29c-.178.391-.733.391-.91 0L4.791 12.792.293 10.747c-.391-.178-.391-.733 0-.91l4.498-2.046 2.046-4.498c.177-.391.733-.391.91 0l2.045 4.498 4.498 2.046c.391.178.391.733 0 .91l-4.498 2.046-2.045 4.498z" fill="currentColor"/><path d="M15.286 17.198a.25.25 0 0 1 .099.099l.724 1.594c.071.156.293.156.365 0l.724-1.594a.25.25 0 0 1 .1-.1l1.593-.724c.156-.071.156-.293 0-.364l-1.594-.724a.25.25 0 0 1-.099-.1l-.724-1.593c-.072-.156-.294-.156-.365 0l-.724 1.594a.25.25 0 0 1-.1.099l-1.593.724c-.156.071-.156.293 0 .364l1.594.724z" fill="currentColor"/></svg></span>
+          <span class="nav-item-label">Branding</span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 10c0 5.523 4.477 10 10 10s10-4.477 10-10S15.523 0 10 0 0 4.477 0 10zm18 0c0 4.418-3.582 8-8 8-1.509 0-2.92-.418-4.124-1.144l.024-.04-.356-4.944a1.25 1.25 0 0 0-.334-.733L4.08 10.005l-.73-.766a1.25 1.25 0 0 1-.293-.99l.337-1.996 3.426-2.421a1.25 1.25 0 0 0 .382-.46l.473-1.025A8.04 8.04 0 0 1 10 2c.732 0 1.442.098 2.116.283l-.847 1.118-1.187 1.055-1.225 1.143s-.549 1.2-.377 1.3c.236.137 1.867-.336 1.867-.336l1.557-.204 1.699-.287.187 1.429-1.215.567-1.957-.631a1.25 1.25 0 0 0-.255-.032l-1.327.18a.75.75 0 0 0-.314.147l-1.486 1.37a.75.75 0 0 0-.163.178l.564 1.783a.75.75 0 0 0 .409.392l1.78.462a.75.75 0 0 0 .388.014l.747-1.665a.75.75 0 0 0 .05-.135l.212 1.445a.75.75 0 0 0 .127.294l.333.443c.015.018.03.034.047.049l-.386 2.022a.75.75 0 0 0-.097.318l-.034.791a.75.75 0 0 0 .004.125l.213 1.445a.75.75 0 0 0 .24.42l.83.051a.75.75 0 0 0 .493-.182l1.387-2.337a.75.75 0 0 0 .079-.204l-.037-.791a.75.75 0 0 0 .001-.098l.25-2.023a.75.75 0 0 0-.094-.438l-.516-.643a.5.5 0 0 1 .086-.71.5.5 0 0 1 .69.16l.3.296a.75.75 0 0 0 1.061-.012.75.75 0 0 0 .012-1.072l-.637-.715 2.423.084.154-.148A7.96 7.96 0 0 1 18 10z" fill="currentColor"/></svg></span>
+          <span class="nav-item-label">Event site editor</span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg viewBox="0 0 14 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.96.348c.637.53.723 1.476.192 2.112l-7.5 9-2.213-2.4L.44 6.44c-.586-.586-.586-1.536 0-2.122.585-.585 1.536-.585 2.121 0L4.4 6.157l6.448-7.738c.53-.637 1.476-.723 2.112-.192z" fill="currentColor"/></svg></span>
+          <span class="nav-item-label">Registration</span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 0c-.552 0-1 .448-1 1v1H2C.895 2 0 2.895 0 4v10c0 1.105.895 2 2 2h12c1.105 0 2-.895 2-2V4c0-1.105-.895-2-2-2h-1V1c0-.552-.448-1-1-1s-1 .448-1 1v1H5V1c0-.552-.448-1-1-1zM2 14V6h12v8H2zM4 7c-.552 0-1 .448-1 1v1c0 .552.448 1 1 1h1c.552 0 1-.448 1-1V8c0-.552-.448-1-1-1H4z" fill="currentColor"/></svg></span>
+          <span class="nav-item-label">Agenda</span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 0C.895 0 0 .895 0 2v2h20c0-1.105-.895-2-2-2H9.51a2 2 0 0 1-1.329-.505L7.068.505A2 2 0 0 0 5.74 0H2zm18 6H0v8c0 1.105.895 2 2 2h16c1.105 0 2-.895 2-2V6z" fill="currentColor"/></svg></span>
+          <span class="nav-item-label">Media</span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper-expandable">
+          <div class="nav-item-content">
+            <span class="nav-item-icon"><svg viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 8c2.209 0 4-1.791 4-4S9.209 0 7 0 3 1.791 3 4s1.791 4 4 4z" fill="currentColor"/><path d="M0 13.5C0 11.567 1.567 10 3.5 10h7c1.933 0 3.5 1.567 3.5 3.5V15H0v-1.5z" fill="currentColor"/></svg></span>
+            <span class="nav-item-label">People</span>
+          </div>
+          <span class="nav-item-chevron"><svg viewBox="0 0 5 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M.293 7.707a1 1 0 0 1 0-1.414L2.586 4 .293 1.707A1 1 0 0 1 1.707.293l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z" fill="currentColor"/></svg></span>
+        </div>
+      </a>
+      <a class="nav-item" id="nav-event-agent" onclick="switchState('agent-page')">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.5 3a1.5 1.5 0 0 1 1.5-1.5h0a1.5 1.5 0 0 1 1.5 1.5v1H10.5V3z" fill="currentColor"/><rect x="5" y="6" width="14" height="12" rx="3" fill="currentColor"/><circle cx="2.5" cy="13" r="2" fill="currentColor"/><circle cx="21.5" cy="13" r="2" fill="currentColor"/><circle cx="9.5" cy="11" r="1.5" fill="white"/><circle cx="14.5" cy="11" r="1.5" fill="white"/><rect x="9" y="15" width="6" height="1.5" rx="0.75" fill="white"/></svg></span>
+          <span class="nav-item-label">Event agent</span>
+        </div>
+      </a>
+      <a class="nav-item" id="nav-interactions">
+        <div class="nav-item-wrapper-expandable">
+          <div class="nav-item-content">
+            <span class="nav-item-icon"><svg viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 6c0-3.314 2.686-6 6-6h6c3.314 0 6 2.686 6 6v4c0 3.314-2.686 6-6 6H2c-1.105 0-2-.895-2-2V6zm4 0c0-.552.448-1 1-1h7c.552 0 1 .448 1 1s-.448 1-1 1H5c-.552 0-1-.448-1-1zm1 3c-.552 0-1 .448-1 1s.448 1 1 1h3c.552 0 1-.448 1-1s-.448-1-1-1H5z" fill="currentColor"/></svg></span>
+            <span class="nav-item-label">Interactions</span>
+          </div>
+          <span class="nav-item-chevron"><svg viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M.293.293a1 1 0 0 1 1.414 0L4 2.586 6.293.293a1 1 0 1 1 1.414 1.414l-3 3a1 1 0 0 1-1.414 0l-3-3a1 1 0 0 1 0-1.414z" fill="currentColor"/></svg></span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper-expandable">
+          <div class="nav-item-content">
+            <span class="nav-item-icon"><svg viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 1.5C10 .672 10.672 0 11.5 0S13 .672 13 1.5v14c0 .828-.672 1.5-1.5 1.5s-1.5-.672-1.5-1.5v-14z" fill="currentColor"/><path d="M1.5 6C.672 6 0 6.672 0 7.5v8c0 .828.672 1.5 1.5 1.5S3 16.328 3 15.5v-8C3 6.672 2.328 6 1.5 6z" fill="currentColor"/><path d="M6.5 9C5.672 9 5 9.672 5 10.5v5c0 .828.672 1.5 1.5 1.5S8 16.328 8 15.5v-5C8 9.672 7.328 9 6.5 9z" fill="currentColor"/><path d="M16.5 4c-.828 0-1.5.672-1.5 1.5v10c0 .828.672 1.5 1.5 1.5s1.5-.672 1.5-1.5v-10c0-.828-.672-1.5-1.5-1.5z" fill="currentColor"/></svg></span>
+            <span class="nav-item-label">Analytics</span>
+          </div>
+          <span class="nav-item-chevron"><svg viewBox="0 0 5 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M.293 7.707a1 1 0 0 1 0-1.414L2.586 4 .293 1.707A1 1 0 0 1 1.707.293l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z" fill="currentColor"/></svg></span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.5 7C5.433 7 7 5.433 7 3.5S5.433 0 3.5 0 0 1.567 0 3.5 1.567 7 3.5 7zm10.934-6.24c-.192-.336-.676-.336-.868 0L10.428 6.252c-.19.333.05.748.434.748h6.276c.384 0 .626-.415.434-.748L14.434.76zM0 12c0-.552.448-1 1-1h5c.552 0 1 .448 1 1v5c0 .552-.448 1-1 1H1c-.552 0-1-.448-1-1v-5zm14.354-1.396a.5.5 0 0 0-.708 0l-3.543 3.543a.5.5 0 0 0 0 .707l3.543 3.543a.5.5 0 0 0 .708 0l3.542-3.543a.5.5 0 0 0 0-.707l-3.542-3.543z" fill="currentColor"/></svg></span>
+          <span class="nav-item-label">Integrations</span>
+        </div>
+      </a>
+      <a class="nav-item">
+        <div class="nav-item-wrapper">
+          <span class="nav-item-icon"><svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M19.936 11.158c-.07.615-.59 1.08-1.209 1.084h-.166c-.555.002-1.052.347-1.249.866-.198.52-.055 1.107.358 1.478.475.438.533 1.168.133 1.676-.478.594-1.023 1.131-1.625 1.599a1.13 1.13 0 0 1-.75.26 1.13 1.13 0 0 1-.908-.397 1.36 1.36 0 0 0-1.042-.434 1.38 1.38 0 0 0-.467.088c-.52.218-.852.736-.833 1.3.02.641-.504 1.19-1.141 1.262a9.96 9.96 0 0 1-2.25-.006c-.644-.075-1.117-.641-1.075-1.289.028-.57-.303-1.096-.827-1.32a1.37 1.37 0 0 0-.475-.09c-.392-.004-.768.152-1.042.433-.438.482-1.175.54-1.683.133a9.04 9.04 0 0 1-1.575-1.603c-.4-.501-.342-1.228.133-1.659.414-.384.551-.983.342-1.508-.2-.494-.675-.822-1.208-.833h-.05c-.644.009-1.198-.53-1.308-1.165A9.08 9.08 0 0 1 .069 8.836c.066-.634.613-1.108 1.25-1.083.576.022 1.11-.295 1.358-.816.218-.528.081-1.136-.335-1.52-.475-.437-.533-1.167-.133-1.675A9.04 9.04 0 0 1 3.819 2.136 1.13 1.13 0 0 1 4.577 1.876c.345 0 .674.145.909.4.273.28.65.435 1.042.431a1.38 1.38 0 0 0 .467-.084c.52-.22.852-.738.833-1.302C7.807.68 8.282.132 8.919.06a9.96 9.96 0 0 1 2.25.007c.644.075 1.116.641 1.075 1.288-.032.571.298 1.1.827 1.323.15.06.312.09.475.09.392.003.768-.152 1.042-.432.435-.48 1.169-.54 1.675-.135.588.471 1.119 1.008 1.584 1.6.4.504.341 1.234-.133 1.667-.415.376-.553.976-.347 1.497.206.52.713.858 1.273.849.64-.006 1.19.452 1.3 1.082.087.754.087 1.515 0 2.269zM10.017 14c-1.62.007-3.083-.964-3.707-2.458-.624-1.494-.286-3.217.857-4.364 1.142-1.147 2.864-1.492 4.361-.874 1.496.618 2.473 2.078 2.473 3.697 0 2.204-1.783 3.994-3.984 4z" fill="currentColor"/></svg></span>
+          <span class="nav-item-label">Settings</span>
+        </div>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="mainContent">
+
+    <!-- STATE 1: Overview - Inactive -->
+    <div class="main-content" id="state-overview-inactive">
+      <!-- Overview Header with Countdown -->
+      <div class="overview-header">
+        <h1 class="overview-title">Overview</h1>
+        <div class="countdown">
+          <div class="countdown-unit"><span class="num">21</span><span class="label">days</span></div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-unit"><span class="num">04</span><span class="label">hrs</span></div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-unit"><span class="num">16</span><span class="label">min</span></div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-unit"><span class="num">54</span><span class="label">sec</span></div>
+        </div>
+      </div>
+
+      <!-- Event Banner -->
+      <div class="event-banner">
+        <div class="event-banner-bg"></div>
+        <div class="event-banner-overlay"></div>
+        <div class="event-banner-content">
+          <h2>Virtually live!</h2>
+          <div class="event-banner-dates">
+            <span>2/2/22 10:00 AM</span>
+            <svg viewBox="0 0 5 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M.293 7.707a1 1 0 0 1 0-1.414L2.586 4 .293 1.707A1 1 0 0 1 1.707.293l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z" fill="white"/></svg>
+            <span>2/2/22 4:30 PM</span>
+          </div>
+          <p class="event-banner-tz">EST (GMT-5)</p>
+          <p class="event-banner-desc">It's no surprise that virtual events have prevailed over all other forms of business get-togethers since Covid-19 entered our lives. At Kaltura, we spent the past year videofying events, transforming the conventional into the extrao...</p>
+        </div>
+      </div>
+
+      <!-- Content Grid: AI Promo + Speakers -->
+      <div class="overview-grid">
+        <div>
+          <!-- AI Agents Promo Card -->
+          <div class="ai-promo-card">
+            <div class="ai-promo-avatar">
+              <video src="images/overview banner.mp4" autoplay loop muted playsinline></video>
+            </div>
+            <div class="ai-promo-body">
+              <p>Empower your event with the event agent to answer questions, surface relevant content and much more</p>
+              <a class="pill pill-primary pill-md" onclick="switchState('agent-page')">
+                <svg viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17.747 8.29c-.178.391-.733.391-.91 0l-1.108-2.436-2.436-1.107c-.391-.178-.391-.733 0-.91l2.436-1.108L16.837.293c.177-.391.733-.391.91 0l1.108 2.436 2.436 1.108c.39.177.39.733 0 .91l-2.436 1.107-1.108 2.436z" fill="currentColor"/><path d="M7.747 17.29c-.178.391-.733.391-.91 0L4.791 12.792.293 10.747c-.391-.178-.391-.733 0-.91l4.498-2.046 2.046-4.498c.177-.391.733-.391.91 0l2.045 4.498 4.498 2.046c.391.178.391.733 0 .91l-4.498 2.046-2.045 4.498z" fill="currentColor"/></svg>
+                Create event agent
+              </a>
+            </div>
+          </div>
+
+          <!-- Agenda at a Glance -->
+          <div class="widget-card" style="margin-top: 24px;">
+            <div class="widget-header">
+              <h3>Agenda at a glance</h3>
+              <div class="widget-header-actions">
+                <button class="pill pill-default">Add session</button>
+                <button class="pill pill-default">Full agenda</button>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div class="agenda-list-item">
+                <div class="agenda-list-item-thumb">
+                  <img src="images/session-thumb.jpg" alt="Opening Keynote" onerror="this.style.display='none'">
+                </div>
+                <div class="agenda-list-item-details">
+                  <div class="agenda-list-item-title-row">
+                    <h4>Opening Keynote</h4>
+                    <div class="agenda-list-item-actions">
+                      <button title="Open">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                      <button title="Analytics">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="13" width="4" height="7" rx="1" fill="currentColor"/><rect x="9" y="9" width="4" height="11" rx="1" fill="currentColor"/><rect x="15" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>
+                      </button>
+                      <button title="Edit">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M16.474 3.37a2.882 2.882 0 1 1 4.076 4.076L9.13 18.868l-5.588 1.513 1.513-5.587L16.474 3.37z" fill="currentColor"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="agenda-list-item-meta">
+                    <span>Live webcast</span>
+                    <div class="agenda-list-item-privacy">
+                      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2"/></svg>
+                      <span>Published</span>
+                    </div>
+                  </div>
+                  <div class="agenda-list-item-datetime">
+                    <span>10:00 AM - 10:30 AM</span>
+                    <span>Tue, February 02</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speakers Widget -->
+        <div>
+          <div class="widget-card">
+            <div class="widget-header">
+              <h3>Speakers</h3>
+              <div class="widget-header-actions">
+                <button class="pill pill-default">Invite</button>
+                <button class="pill pill-default">See all</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE: Overview Active (agent is live) -->
+    <div class="main-content hidden" id="state-overview-active">
+      <div class="overview-header">
+        <h1 class="overview-title">Overview</h1>
+        <div class="countdown">
+          <div class="countdown-unit"><span class="num">21</span><span class="label">days</span></div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-unit"><span class="num">04</span><span class="label">hrs</span></div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-unit"><span class="num">16</span><span class="label">min</span></div>
+          <span class="countdown-sep">:</span>
+          <div class="countdown-unit"><span class="num">54</span><span class="label">sec</span></div>
+        </div>
+      </div>
+
+      <!-- Event Banner -->
+      <div class="event-banner">
+        <div class="event-banner-bg"></div>
+        <div class="event-banner-overlay"></div>
+        <div class="event-banner-content">
+          <h2>Virtually live!</h2>
+          <div class="event-banner-dates">
+            <span>2/2/22 10:00 AM</span>
+            <svg viewBox="0 0 5 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M.293 7.707a1 1 0 0 1 0-1.414L2.586 4 .293 1.707A1 1 0 0 1 1.707.293l3 3a1 1 0 0 1 0 1.414l-3 3a1 1 0 0 1-1.414 0z" fill="white"/></svg>
+            <span>2/2/22 4:30 PM</span>
+          </div>
+          <p class="event-banner-tz">EST (GMT-5)</p>
+          <p class="event-banner-desc">It's no surprise that virtual events have prevailed over all other forms of business get-togethers since Covid-19 entered our lives. At Kaltura, we spent the past year videofying events, transforming the conventional into the extrao...</p>
+        </div>
+      </div>
+
+      <!-- Content Grid: Agent Card + Speakers -->
+      <div class="overview-grid">
+        <div>
+          <!-- Event Agent Card (Active) -->
+          <div class="widget-card" style="border: 1px solid var(--tone-5); border-radius: 8px; padding: 24px;">
+            <div class="widget-header" style="margin-bottom: 16px;">
+              <h3>Event agent</h3>
+              <div class="widget-header-actions" style="gap: 8px; display: flex; align-items: center;">
+                <button style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:none;background:none;cursor:pointer;padding:4px;border-radius:var(--radius);" title="Open">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" stroke="var(--tone-1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:none;background:none;cursor:pointer;padding:4px;border-radius:var(--radius);" title="Analytics">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="13" width="4" height="7" rx="1" fill="var(--tone-1)"/><rect x="9" y="9" width="4" height="11" rx="1" fill="var(--tone-1)"/><rect x="15" y="4" width="4" height="16" rx="1" fill="var(--tone-1)"/></svg>
+                </button>
+                <button class="pill pill-default" onclick="openEditAgent('experience')">Customise agent</button>
+              </div>
+            </div>
+            <div style="display: flex; gap: 24px; align-items: flex-start;">
+              <div style="width: 228px; height: 128px; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.8) 100%), linear-gradient(-88deg, #FF9DFF 39%, #8085FD 76%, #006EFA 98%); display: flex; align-items: flex-end; justify-content: center; flex-shrink: 0; overflow: hidden;">
+                <img src="images/agent-avatar.png" style="height: 120px; object-fit: contain;" onerror="this.parentElement.innerHTML='<video src=images/overview\ banner.mp4 autoplay loop muted playsinline style=height:127px;object-fit:contain></video>'">
+              </div>
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+                <h4 style="font-size: 16px; font-weight: 700; color: var(--tone-1); margin: 0;">Hello i'm Christy your event agent</h4>
+                <p style="font-size: 14px; font-weight: 700; color: var(--tone-2); line-height: 18px; margin: 0;">I help attendees discover sessions, content, and event information through natural conversations.</p>
+                <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                  <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--success);"></span>
+                  <span style="font-size: 14px; font-weight: 700; color: var(--tone-1);">Active on site</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agenda at a Glance -->
+          <div class="widget-card" style="margin-top: 24px;">
+            <div class="widget-header">
+              <h3>Agenda at a glance</h3>
+              <div class="widget-header-actions">
+                <button class="pill pill-default">Add session</button>
+                <button class="pill pill-default">Full agenda</button>
+              </div>
+            </div>
+            <div class="widget-body">
+              <div class="agenda-list-item">
+                <div class="agenda-list-item-thumb">
+                  <img src="images/session-thumb.jpg" alt="Opening Keynote" onerror="this.style.display='none'">
+                </div>
+                <div class="agenda-list-item-details">
+                  <div class="agenda-list-item-title-row">
+                    <h4>Opening Keynote</h4>
+                    <div class="agenda-list-item-actions">
+                      <button title="Open">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                      <button title="Analytics">
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="13" width="4" height="7" rx="1" fill="currentColor"/><rect x="9" y="9" width="4" height="11" rx="1" fill="currentColor"/><rect x="15" y="4" width="4" height="16" rx="1" fill="currentColor"/></svg>
+                      </button>
+                      <button title="Edit">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M16.474 3.37a2.882 2.882 0 1 1 4.076 4.076L9.13 18.868l-5.588 1.513 1.513-5.587L16.474 3.37z" fill="currentColor"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="agenda-list-item-meta">
+                    <span>Live webcast</span>
+                    <div class="agenda-list-item-privacy">
+                      <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2"/></svg>
+                      <span>Published</span>
+                    </div>
+                  </div>
+                  <div class="agenda-list-item-datetime">
+                    <span>10:00 AM - 10:30 AM</span>
+                    <span>Tue, February 02</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speakers Widget -->
+        <div>
+          <div class="widget-card">
+            <div class="widget-header">
+              <h3>Speakers</h3>
+              <div class="widget-header-actions">
+                <button class="pill pill-default">Invite</button>
+                <button class="pill pill-default">See all</button>
+              </div>
+            </div>
+            <div class="widget-body" style="display: flex; flex-direction: column; gap: 16px; padding-top: 16px;">
+              <div style="display: flex; gap: 16px; align-items: flex-start; padding: 8px;">
+                <div style="width: 68px; height: 68px; border-radius: 4px; background: var(--tone-6); flex-shrink: 0; overflow: hidden;">
+                  <img src="images/speaker1.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.style.background='var(--tone-5)'">
+                </div>
+                <div style="flex:1; display: flex; flex-direction: column; gap: 4px;">
+                  <span style="font-size: 16px; font-weight: 700; color: var(--tone-1);">Julian Lang</span>
+                  <span style="font-size: 14px; font-weight: 700; color: var(--tone-2);">Director of Marketing Strategy, Kaltura</span>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:#E8590C;"></span><span style="font-size:14px;font-weight:700;color:var(--tone-1);">Registered</span></div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 16px; align-items: flex-start; padding: 8px;">
+                <div style="width: 68px; height: 68px; border-radius: 4px; background: var(--tone-6); flex-shrink: 0; overflow: hidden;">
+                  <img src="images/speaker2.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.style.background='var(--tone-5)'">
+                </div>
+                <div style="flex:1; display: flex; flex-direction: column; gap: 4px;">
+                  <span style="font-size: 16px; font-weight: 700; color: var(--tone-1);">Celine Garnier</span>
+                  <span style="font-size: 14px; font-weight: 700; color: var(--tone-2);">Content marketing specialist personalizat...</span>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:#E8590C;"></span><span style="font-size:14px;font-weight:700;color:var(--tone-1);">Registered</span></div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 16px; align-items: flex-start; padding: 8px;">
+                <div style="width: 68px; height: 68px; border-radius: 4px; background: var(--tone-6); flex-shrink: 0; overflow: hidden;">
+                  <img src="images/speaker3.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.style.background='var(--tone-5)'">
+                </div>
+                <div style="flex:1; display: flex; flex-direction: column; gap: 4px;">
+                  <span style="font-size: 16px; font-weight: 700; color: var(--tone-1);">Laura Steven</span>
+                  <span style="font-size: 14px; font-weight: 700; color: var(--tone-2);">Head of Global Campaigns, Kaltura</span>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:#E8590C;"></span><span style="font-size:14px;font-weight:700;color:var(--tone-1);">Registered</span></div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 16px; align-items: flex-start; padding: 8px;">
+                <div style="width: 68px; height: 68px; border-radius: 4px; background: var(--tone-6); flex-shrink: 0; overflow: hidden;">
+                  <img src="images/speaker4.jpg" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.style.background='var(--tone-5)'">
+                </div>
+                <div style="flex:1; display: flex; flex-direction: column; gap: 4px;">
+                  <span style="font-size: 16px; font-weight: 700; color: var(--tone-1);">Brian Dennis</span>
+                  <span style="font-size: 14px; font-weight: 700; color: var(--tone-2);">Director of Marketing, Kaltura</span>
+                  <div style="display:flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:#E8590C;"></span><span style="font-size:14px;font-weight:700;color:var(--tone-1);">Registered</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE: Agent Page (Interactions > Event agent) -->
+    <div class="main-content hidden" id="state-agent-page" style="padding: 24px 32px 120px; display: flex; flex-direction: column; align-items: center;">
+      <div style="width: 680px;">
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <h1 class="agent-page-title">Event agent</h1>
+          <p class="agent-page-desc">Create a post-event AI experience that helps attendees ask questions about sessions, recordings, and event content.</p>
+        </div>
+      </div>
+      <div class="agent-photo-section" style="margin-top: 32px; position: relative;">
+        <div class="agent-photo-avatar">
+          <video src="images/avatar video.mp4" autoplay loop muted playsinline></video>
+        </div>
+        <div class="agent-photo-status">
+          <span class="dot"></span>
+          <span>Inactive</span>
+        </div>
+        <div class="agent-photo-cta-overlay" id="agent-page-cta">
+          <button class="pill-activate" onclick="activateAgent()">
+            Create event agent
+          </button>
+        </div>
+      </div>
+      <div class="agent-list-items">
+        <div class="agent-list-item disabled">
+          <div class="agent-list-item-content">
+            <h4>Meet your agent</h4>
+            <p>Your AI agent is ready to engage visitors, provide answers, and help users discover the information they need.</p>
+          </div>
+          <button class="agent-list-item-action-outline disabled" disabled>
+            View overview
+          </button>
+        </div>
+        <div class="agent-list-item disabled">
+          <div class="agent-list-item-content">
+            <h4>Conversation Strategy</h4>
+            <p>Define how your agent communicates, qualifies users, and adapts conversations to achieve your goals.</p>
+          </div>
+          <button class="agent-list-item-action-outline disabled" disabled>
+            Edit playbook
+          </button>
+        </div>
+        <div class="agent-list-item disabled">
+          <div class="agent-list-item-content">
+            <h4>Knowledge Sources</h4>
+            <p>Manage the content and information your agent uses to answer questions.</p>
+          </div>
+          <button class="agent-list-item-action-outline disabled" disabled>
+            Manage knowledge
+          </button>
+        </div>
+        <div class="agent-list-item disabled">
+          <div class="agent-list-item-content">
+            <h4>Design the agent experience</h4>
+            <p>Customize how users interact with your agent, including its appearance, voice, and interaction style.</p>
+          </div>
+          <button class="agent-list-item-action-outline disabled" disabled>
+            Edit experience
+          </button>
+        </div>
+        <div class="agent-list-item disabled">
+          <div class="agent-list-item-content">
+            <h4>Track engagement and insights</h4>
+            <p>Monitor attendee interactions, engagement, and agent performance.</p>
+          </div>
+          <button class="agent-list-item-action-outline disabled" disabled>
+            View analytics
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE: Agent Page Active (Preview mode) -->
+    <div class="main-content hidden" id="state-agent-page-active" style="padding: 24px 32px 120px; display: flex; flex-direction: column; align-items: center;">
+      <div style="width: 680px;">
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <h1 class="agent-page-title">Event agent</h1>
+          <p class="agent-page-desc">Enable post-event AI experiences that help attendees ask questions about sessions, recordings, and event content.</p>
+        </div>
+      </div>
+      <div class="agent-photo-section" style="margin-top: 32px; position: relative;">
+        <div class="agent-photo-avatar">
+          <video src="images/avatar video.mp4" autoplay loop muted playsinline></video>
+        </div>
+        <div class="agent-photo-status preview">
+          <span class="dot"></span>
+          <span>Preview mode</span>
+        </div>
+        <div class="agent-photo-cta-overlay" id="agent-page-active-cta">
+          <button class="pill-activate" onclick="activateOnSite()">
+            Activate on my event site
+          </button>
+        </div>
+      </div>
+      <div class="agent-list-items">
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Meet your agent</h4>
+            <p>Your AI agent is ready to engage visitors, provide answers, and help users discover the information they need.</p>
+          </div>
+          <button class="agent-list-item-action-outline" onclick="openEditAgent('overview')">
+            View overview
+          </button>
+        </div>
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Conversation Strategy</h4>
+            <p>Define how your agent communicates, qualifies users, and adapts conversations to achieve your goals.</p>
+          </div>
+          <button class="agent-list-item-action-outline" onclick="openEditAgent('playbook')">
+            Edit playbook
+          </button>
+        </div>
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Knowledge Sources</h4>
+            <p>Manage the content and information your agent uses to answer questions.</p>
+          </div>
+          <div class="knowledge-btn-wrapper">
+            <button class="agent-list-item-action-outline" onclick="toggleKnowledgeMenu(event)">
+              Manage knowledge
+            </button>
+            <div class="knowledge-dropdown">
+              <button class="knowledge-dropdown-item" onclick="openEditAgent('knowledge')">Upload media</button>
+              <button class="knowledge-dropdown-item" onclick="openEditAgent('knowledge')">Add agenda</button>
+              <button class="knowledge-dropdown-item" onclick="openEditAgent('knowledge')">Import from website</button>
+            </div>
+          </div>
+        </div>
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Design the agent experience</h4>
+            <p>Customize how users interact with your agent, including its appearance, voice, and interaction style.</p>
+          </div>
+          <button class="agent-list-item-action-outline" onclick="openEditAgent('experience')">
+            Edit experience
+          </button>
+        </div>
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Track engagement and insights</h4>
+            <p>Monitor attendee interactions, engagement, and agent performance.</p>
+          </div>
+          <button class="agent-list-item-action-outline" onclick="openEditAgent('analytics')">
+            View analytics
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATE: Agent Page Live (Active on site) -->
+    <div class="main-content hidden" id="state-agent-page-live" style="padding: 24px 32px 120px; display: flex; flex-direction: column; align-items: center;">
+      <div style="width: 680px;">
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <h1 class="agent-page-title">Event agent</h1>
+          <p class="agent-page-desc">Enable post-event AI experiences that help attendees ask questions about sessions, recordings, and event content.</p>
+        </div>
+      </div>
+      <div class="agent-photo-section" style="margin-top: 32px; position: relative;">
+        <div class="agent-photo-avatar">
+          <video src="images/avatar video.mp4" autoplay loop muted playsinline></video>
+        </div>
+        <div class="agent-photo-status active">
+          <span class="dot"></span>
+          <span>Active on site</span>
+        </div>
+        <div class="agent-photo-cta-overlay" id="agent-page-live-cta">
+          <button class="pill-activate" style="background: var(--danger); color: white;" onclick="deactivateFromLive()">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/></svg>
+            Deactivate on site
+          </button>
+        </div>
+      </div>
+      <div class="agent-list-items">
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Meet your agent</h4>
+            <p>Your AI agent is ready to engage visitors, provide answers, and help users discover the information they need.</p>
+          </div>
+          <button class="agent-list-item-action-outline" onclick="openEditAgent('overview')">
+            View overview
+          </button>
+        </div>
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Conversation Strategy</h4>
+            <p>Define how your agent communicates, qualifies users, and adapts conversations to achieve your goals.</p>
+          </div>
+          <button class="agent-list-item-action-outline" onclick="openEditAgent('playbook')">
+            Edit playbook
+          </button>
+        </div>
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Knowledge Sources</h4>
+            <p>Manage the content and information your agent uses to answer questions.</p>
+          </div>
+          <div class="knowledge-btn-wrapper">
+            <button class="agent-list-item-action-outline" onclick="toggleKnowledgeMenu(event)">
+              Manage knowledge
+            </button>
+            <div class="knowledge-dropdown">
+              <button class="knowledge-dropdown-item" onclick="openEditAgent('knowledge')">Upload media</button>
+              <button class="knowledge-dropdown-item" onclick="openEditAgent('knowledge')">Add agenda</button>
+              <button class="knowledge-dropdown-item" onclick="openEditAgent('knowledge')">Import from website</button>
+            </div>
+          </div>
+        </div>
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Design the agent experience</h4>
+            <p>Customize how users interact with your agent, including its appearance, voice, and interaction style.</p>
+          </div>
+          <button class="agent-list-item-action-outline" onclick="openEditAgent('experience')">
+            Edit experience
+          </button>
+        </div>
+        <div class="agent-list-item">
+          <div class="agent-list-item-content">
+            <h4>Track engagement and insights</h4>
+            <p>Monitor attendee interactions, engagement, and agent performance.</p>
+          </div>
+          <button class="agent-list-item-action-outline" onclick="openEditAgent('analytics')">
+            View analytics
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- STATE SWITCHER (Demo Navigation) -->
+<div class="state-switcher">
+  <span class="state-switcher-label">Flow:</span>
+  <button class="active" onclick="switchState('overview-inactive')">Overview (Empty)</button>
+  <button onclick="switchState('overview-active')">Overview (Active)</button>
+  <button onclick="switchState('agent-page')">Agent Page</button>
+  <button onclick="switchState('agent-page-active')">Agent (Active)</button>
+  <button onclick="switchState('agent-page-live')">Agent (Live)</button>
+  <button onclick="openEditAgent('overview')">Agent Studio</button>
+</div>
+
+<!-- STATE: Edit Agent (fullscreen) -->
+<div class="hidden" id="state-edit-agent">
+  <div class="edit-agent-page">
+    <div class="edit-agent-header">
+      <div class="edit-agent-header-close" onclick="goBack()">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5 3.5l-9 9M3.5 3.5l9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </div>
+      <span class="edit-agent-header-title">Back</span>
+      <span class="pill pill-default" style="height:24px;padding:8px;font-size:14px;margin-left:8px;">v7 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-left:2px;"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <div class="edit-agent-header-actions">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:104px;height:8px;background:var(--tone-6);border-radius:4px;overflow:hidden;"><div style="width:25%;height:100%;background:var(--primary);border-radius:4px;"></div></div>
+          <span style="font-size:16px;color:var(--tone-1);white-space:nowrap;">3/20 Interactions</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="var(--tone-3)" stroke-width="1.5"/><path d="M8 5.5v3M8 10.5h.01" stroke="var(--tone-3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="edit-agent-tabs" id="edit-agent-tabs">
+      <div class="edit-agent-tab" onclick="switchEditAgentTab('overview')">Overview</div>
+      <div class="edit-agent-tab" onclick="switchEditAgentTab('playbook')">Playbook</div>
+      <div class="edit-agent-tab" onclick="switchEditAgentTab('experience')">Experience</div>
+      <div class="edit-agent-tab" onclick="switchEditAgentTab('analytics')">Analytics</div>
+      <div class="edit-agent-tab" onclick="switchEditAgentTab('advanced')">Advanced</div>
+      <div style="position:absolute;right:24px;top:0;bottom:0;display:flex;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#DB2C36"/><path d="M8 5v3M8 10h.01" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div style="display:flex;align-items:center;height:32px;background:var(--primary);border-radius:var(--radius);overflow:hidden;">
+          <button class="edit-agent-publish-btn" id="publish-btn" onclick="publishAgent()" style="border-radius:0;height:100%;">Publish</button>
+          <div style="width:1px;height:100%;background:rgba(255,255,255,0.3);"></div>
+          <button style="display:flex;align-items:center;justify-content:center;width:32px;height:100%;border:none;background:transparent;cursor:pointer;padding:0;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <button style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:none;background:transparent;cursor:pointer;border-radius:var(--radius);padding:4px;" title="More options">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="12" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="18" cy="12" r="1.5" fill="var(--tone-1)"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="edit-agent-body">
+      <div class="edit-agent-content" id="edit-agent-content">
+        <!-- Overview Tab Content (default) -->
+        <div class="agent-studio-overview" id="edit-agent-tab-overview">
+          <div class="agent-studio-overview-left">
+            <div class="agent-studio-overview-header">
+              <h1 class="agent-studio-overview-title">Kaltura sales agent</h1>
+              <button class="edit-icon-btn" title="Edit name">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16.474 3.37a2.882 2.882 0 1 1 4.076 4.076L9.13 18.868l-5.588 1.513 1.513-5.587L16.474 3.37z" fill="currentColor"/></svg>
+              </button>
+            </div>
+            <div class="agent-studio-overview-actions">
+              <button class="pill pill-primary pill-lg">Share agent</button>
+              <button class="pill pill-default pill-lg">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Open agent site
+              </button>
+            </div>
+
+            <div class="agent-studio-overview-section">
+              <div class="agent-studio-overview-section-header">
+                <span class="agent-studio-overview-label">Role</span>
+                <button class="edit-icon-btn" title="Edit role">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16.474 3.37a2.882 2.882 0 1 1 4.076 4.076L9.13 18.868l-5.588 1.513 1.513-5.587L16.474 3.37z" fill="currentColor"/></svg>
+                </button>
+              </div>
+              <p class="agent-studio-overview-value">Help users understand how our solutions fit their needs by identifying goals, answering questions, and guiding them toward the right next step.</p>
+            </div>
+
+            <div class="agent-studio-overview-section">
+              <span class="agent-studio-overview-label">Targeting</span>
+              <div class="agent-studio-warning-badge">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3L2 21h20L12 3z" fill="#E86925"/><path d="M12 14v-4M12 17h.01" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>No target audience selected yet</span>
+                <a class="agent-studio-link">Add target audience</a>
+              </div>
+            </div>
+
+            <div class="agent-studio-overview-section">
+              <span class="agent-studio-overview-label">Collecting</span>
+              <p class="agent-studio-overview-value">Emails, phone numbers</p>
+            </div>
+
+            <div class="agent-studio-overview-activity">
+              <h3>Your agent's activity in the last week</h3>
+              <div class="agent-studio-stats-row">
+                <div class="agent-studio-stat-card">
+                  <span class="agent-studio-stat-number">0</span>
+                  <span class="agent-studio-stat-label">Conversations made</span>
+                </div>
+                <div class="agent-studio-stat-card">
+                  <span class="agent-studio-stat-number">100%</span>
+                  <span class="agent-studio-stat-label">Success rate</span>
+                </div>
+              </div>
+              <button class="pill pill-default" style="height: 24px; padding: 8px; font-size: 14px;">See more insights</button>
+            </div>
+          </div>
+
+          <div class="agent-studio-overview-right">
+            <div class="agent-studio-chat-preview">
+              <div class="agent-studio-chat-welcome">
+                <div class="agent-studio-chat-title">
+                  <svg width="32" height="32" viewBox="0 0 22 18" fill="none"><path d="M17.747 8.29c-.178.391-.733.391-.91 0l-1.108-2.436-2.436-1.107c-.391-.178-.391-.733 0-.91l2.436-1.108L16.837.293c.177-.391.733-.391.91 0l1.108 2.436 2.436 1.108c.39.177.39.733 0 .91l-2.436 1.107-1.108 2.436z" fill="var(--primary)"/><path d="M7.747 17.29c-.178.391-.733.391-.91 0L4.791 12.792.293 10.747c-.391-.178-.391-.733 0-.91l4.498-2.046 2.046-4.498c.177-.391.733-.391.91 0l2.045 4.498 4.498 2.046c.391.178.391.733 0 .91l-4.498 2.046-2.045 4.498z" fill="var(--primary)"/></svg>
+                  <span>Ask me anything</span>
+                </div>
+                <div class="agent-studio-chat-avatar">
+                  <img src="images/agent-avatar-chat.jpg" alt="Agent avatar" onerror="this.parentElement.style.background='linear-gradient(135deg, #667eea 0%, #764ba2 100%)'">
+                  <button class="pill pill-primary" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 18v-6a9 9 0 0 1 18 0v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3v5zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3v5z" fill="currentColor"/></svg>
+                    Start conversation
+                  </button>
+                </div>
+                <span class="agent-studio-chat-or">OR</span>
+                <div class="agent-studio-chat-input-area">
+                  <div class="agent-studio-chat-input-box">
+                    <div class="agent-studio-chat-input-text">
+                      <span class="agent-studio-chat-placeholder">Ask me anything</span>
+                    </div>
+                    <div class="agent-studio-chat-input-toolbar">
+                      <div class="agent-studio-chat-presets">
+                        <button class="header-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M7 8h10M7 12h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Flashcards</button>
+                        <button class="header-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Text</button>
+                        <button class="header-btn">Fast answer <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                      </div>
+                      <button class="agent-studio-chat-submit">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="agent-studio-chat-suggestions">
+                    <button class="pill pill-default">How does Genie personalize learning for different users?</button>
+                    <button class="pill pill-default">How many countries does Nomura currently operate in?</button>
+                    <button class="pill pill-default">How does the assignment submission folder work in Panopto?</button>
+                  </div>
+                </div>
+              </div>
+              <div class="agent-studio-chat-footer">
+                <span>AI-generated content may contain errors or omissions.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Placeholder for other tabs -->
+        <div class="hidden" id="edit-agent-tab-playbook">
+          <div class="agent-studio-playbook">
+            <!-- Left: AI Refine Card -->
+            <div class="playbook-refine-card">
+              <div class="playbook-refine-card-header">
+                <h3>Refine your agent</h3>
+                <p>Tell us what your agent should do, AI will handle the rest</p>
+              </div>
+              <div class="playbook-refine-card-body">
+                <div class="playbook-refine-textarea">
+                  <textarea placeholder="Help customers who visit the website understand our products, compare options, find pricing information, and feel confident in their decision"></textarea>
+                  <div class="playbook-refine-textarea-footer">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3z" stroke="var(--tone-2)" stroke-width="1.5"/><path d="M19 10v1a7 7 0 01-14 0v-1M12 18v4M8 22h8" stroke="var(--tone-2)" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  </div>
+                </div>
+                <button class="playbook-refine-btn">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" fill="white"/><path d="M18 14l.75 2.25L21 17l-2.25.75L18 20l-.75-2.25L15 17l2.25-.75L18 14z" fill="white"/></svg>
+                  Update playbook
+                </button>
+              </div>
+            </div>
+
+            <!-- Right: Form Content -->
+            <div class="playbook-right">
+              <!-- Section 1: Set objectives -->
+              <div class="playbook-section">
+                <div class="playbook-section-header">
+                  <div class="playbook-section-header-text">
+                    <h3>Set the agent's objectives</h3>
+                    <p>Here you can update the agent's goals for its conversation with your users.</p>
+                  </div>
+                  <button class="playbook-reset-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 018-8c2.5 0 4.7 1.1 6.2 2.8" stroke="var(--tone-1)" stroke-width="1.5" stroke-linecap="round"/><path d="M20 12a8 8 0 01-8 8c-2.5 0-4.7-1.1-6.2-2.8" stroke="var(--tone-1)" stroke-width="1.5" stroke-linecap="round"/><path d="M16 4l2.5 2.5L16 9" stroke="var(--tone-1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 20l-2.5-2.5L8 15" stroke="var(--tone-1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Reset
+                  </button>
+                </div>
+
+                <div class="playbook-form-field">
+                  <div class="playbook-form-label-row">
+                    <label>Agent role</label>
+                    <span class="help-icon">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="var(--primary)" stroke-width="1.2"/><path d="M8 7v4M8 5.5h.01" stroke="var(--primary)" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    </span>
+                    <span class="char-count">57/2000</span>
+                    <button class="expand-btn">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3h3v3M6 13H3v-3" stroke="var(--tone-1)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                  </div>
+                  <textarea class="playbook-form-textarea">Help users understand how our solutions fit their needs by identifying goals, answering questions, and guiding them toward the right next step.</textarea>
+                </div>
+              </div>
+
+              <!-- Section 2: Conversation flow -->
+              <div class="playbook-section">
+                <div class="playbook-section-header">
+                  <div class="playbook-section-header-text">
+                    <h3>Fine tune your conversation flow</h3>
+                    <p>Design how your agent will adapt audience and situations. In other words, you will truly design its playbook</p>
+                  </div>
+                </div>
+
+                <div class="playbook-form-field">
+                  <div class="playbook-form-label-row">
+                    <label>Target audience</label>
+                    <span class="help-icon">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="var(--primary)" stroke-width="1.2"/><path d="M8 7v4M8 5.5h.01" stroke="var(--primary)" stroke-width="1.2" stroke-linecap="round"/></svg>
+                    </span>
+                    <span class="char-count">57/200</span>
+                  </div>
+                  <input type="text" class="playbook-form-input" value="">
+                </div>
+
+                <div class="playbook-form-field">
+                  <div class="playbook-form-label-row">
+                    <label>Opening phrase</label>
+                    <span class="char-count">23/200</span>
+                  </div>
+                  <textarea class="playbook-form-textarea" style="min-height:72px;">Hi, how can I help you?</textarea>
+                </div>
+
+                <div class="playbook-form-field">
+                  <div class="playbook-form-label-row">
+                    <label>Restricted topics</label>
+                  </div>
+                  <div class="playbook-tags">
+                    <div class="playbook-tag playbook-tag-add">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="var(--tone-1)" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      Add
+                    </div>
+                    <div class="playbook-tag">
+                      <span class="remove-icon">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M9 3L3 9M3 3l6 6" stroke="var(--tone-1)" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      </span>
+                      Legal contracts
+                    </div>
+                    <div class="playbook-tag">
+                      <span class="remove-icon">
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M9 3L3 9M3 3l6 6" stroke="var(--tone-1)" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      </span>
+                      Pricing commitments
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hidden" id="edit-agent-tab-knowledge"></div>
+        <div class="hidden" id="edit-agent-tab-experience">
+          <div class="experience-content">
+            <!-- Interaction model -->
+            <div class="experience-section">
+              <h3 class="experience-section-title">Interaction model</h3>
+
+              <div class="experience-field">
+                <div class="experience-field-header">
+                  <div class="experience-field-label-row">
+                    <label>Title</label>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:4px;">
+                    <p class="experience-field-desc" style="flex:1;">What should be written on the agent page</p>
+                    <span style="font-size:14px;color:var(--tone-2);white-space:nowrap;">15/30</span>
+                  </div>
+                </div>
+                <input type="text" class="experience-input" value="Ask me anything">
+              </div>
+
+              <div class="experience-field">
+                <div class="experience-field-header">
+                  <div class="experience-field-label-row">
+                    <label>Model</label>
+                  </div>
+                  <p class="experience-field-desc">What kind of interaction will be available?</p>
+                </div>
+                <div class="experience-model-options">
+                  <label class="experience-model-option selected">
+                    <div class="experience-model-thumb">
+                      <div class="experience-model-thumb-bar"></div>
+                      <div class="experience-model-thumb-avatar"></div>
+                      <div class="experience-model-thumb-chat">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M3 4l5 4.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </div>
+                      <div class="experience-model-thumb-suggestions">
+                        <span></span><span></span><span></span>
+                      </div>
+                    </div>
+                    <div class="experience-model-radio">
+                      <input type="radio" name="interaction-model" value="avatar-chat" checked>
+                      <span>Avatar and chat</span>
+                    </div>
+                  </label>
+                  <label class="experience-model-option">
+                    <div class="experience-model-thumb">
+                      <div class="experience-model-thumb-chat">
+                        <svg viewBox="0 0 16 16" fill="none"><path d="M3 4l5 4.5L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </div>
+                      <div class="experience-model-thumb-suggestions">
+                        <span></span><span></span><span></span>
+                      </div>
+                    </div>
+                    <div class="experience-model-radio">
+                      <input type="radio" name="interaction-model" value="chat-only">
+                      <span>Chat only</span>
+                    </div>
+                  </label>
+                  <label class="experience-model-option">
+                    <div class="experience-model-thumb">
+                      <div class="experience-model-thumb-avatar"></div>
+                    </div>
+                    <div class="experience-model-radio">
+                      <input type="radio" name="interaction-model" value="avatar-only">
+                      <span>Avatar only</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Avatar appearance -->
+            <div class="experience-section">
+              <h3 class="experience-section-title">Avatar appearance</h3>
+
+              <div class="experience-field">
+                <div class="experience-field-header">
+                  <div class="experience-field-label-row">
+                    <label>Voice</label>
+                  </div>
+                  <p class="experience-field-desc">Choose from existing or create your own voice of your agent</p>
+                </div>
+                <div class="experience-voice-row">
+                  <select class="experience-select">
+                    <option selected>Professional (Formal, polished, business appropriate)</option>
+                    <option>Friendly (Warm, casual, approachable)</option>
+                    <option>Concise (Short, direct, efficient)</option>
+                  </select>
+                  <button class="experience-play-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5z" fill="var(--tone-1)"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="experience-field">
+                <div class="experience-field-header">
+                  <div class="experience-field-label-row">
+                    <label>Avatar design</label>
+                  </div>
+                  <p class="experience-field-desc">Choose from existing or create your own appearance of your agent</p>
+                </div>
+                <div class="experience-avatar-selected">
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face" alt="Rachel">
+                  <span>Rachel is selected</span>
+                </div>
+                <div class="experience-avatar-grid">
+                  <div class="experience-avatar-add">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="var(--tone-3)" stroke-width="1.5"/><circle cx="8.5" cy="10.5" r="1.5" stroke="var(--tone-3)" stroke-width="1.5"/><path d="M21 15l-5-5-8 8" stroke="var(--tone-3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Add your own</span>
+                  </div>
+                  <div class="experience-avatar-item">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=110&h=110&fit=crop&crop=face" alt="Avatar 1">
+                  </div>
+                  <div class="experience-avatar-item selected">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=110&h=110&fit=crop&crop=face" alt="Rachel">
+                    <div class="check-badge">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="var(--primary)"/><path d="M8 12l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                  </div>
+                  <div class="experience-avatar-item">
+                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=110&h=110&fit=crop&crop=face" alt="Avatar 3">
+                  </div>
+                  <div class="experience-avatar-item">
+                    <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=110&h=110&fit=crop&crop=face" alt="Hannah">
+                    <span class="avatar-name">Hannah</span>
+                  </div>
+                </div>
+                <button class="experience-see-more">See more</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hidden" id="edit-agent-tab-analytics"></div>
+        <div class="hidden" id="edit-agent-tab-advanced">
+          <div class="edit-agent-placeholder"><p>Advanced content</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Acknowledgement (Kaltura DS) -->
+<div class="acknowledgement" id="acknowledgement-created">
+  <div class="acknowledgement-icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM16.6402 8.23178C16.2159 7.87821 15.5853 7.93554 15.2318 8.35982L10.932 13.517L9.70711 12.2929L9.6129 12.2097C9.22061 11.9047 8.65338 11.9324 8.29289 12.2929C7.90237 12.6834 7.90237 13.3166 8.29289 13.7071L10.2929 15.7071L10.3859 15.7894C10.8047 16.1163 11.4187 16.0597 11.7682 15.6402L16.7682 9.64018L16.8425 9.53883C17.1108 9.12054 17.0318 8.55815 16.6402 8.23178Z" fill="white"/>
+    </svg>
+  </div>
+  <span class="acknowledgement-text">Event agent created successfully. Ready for customization, preview, or publishing.</span>
+  <button class="acknowledgement-close" onclick="hideToast('acknowledgement-created')">
+    <svg viewBox="0 0 12 12" fill="none"><path d="M9.5 2.5l-7 7M2.5 2.5l7 7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+</div>
+
+<div class="acknowledgement" id="acknowledgement-activated">
+  <div class="acknowledgement-icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM16.6402 8.23178C16.2159 7.87821 15.5853 7.93554 15.2318 8.35982L10.932 13.517L9.70711 12.2929L9.6129 12.2097C9.22061 11.9047 8.65338 11.9324 8.29289 12.2929C7.90237 12.6834 7.90237 13.3166 8.29289 13.7071L10.2929 15.7071L10.3859 15.7894C10.8047 16.1163 11.4187 16.0597 11.7682 15.6402L16.7682 9.64018L16.8425 9.53883C17.1108 9.12054 17.0318 8.55815 16.6402 8.23178Z" fill="white"/>
+    </svg>
+  </div>
+  <span class="acknowledgement-text">Event agent activated. Attendees can now interact with it.</span>
+  <button class="acknowledgement-close" onclick="hideToast('acknowledgement-activated')">
+    <svg viewBox="0 0 12 12" fill="none"><path d="M9.5 2.5l-7 7M2.5 2.5l7 7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+</div>
+
+<div class="acknowledgement" id="acknowledgement-deactivated">
+  <div class="acknowledgement-icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM16.6402 8.23178C16.2159 7.87821 15.5853 7.93554 15.2318 8.35982L10.932 13.517L9.70711 12.2929L9.6129 12.2097C9.22061 11.9047 8.65338 11.9324 8.29289 12.2929C7.90237 12.6834 7.90237 13.3166 8.29289 13.7071L10.2929 15.7071L10.3859 15.7894C10.8047 16.1163 11.4187 16.0597 11.7682 15.6402L16.7682 9.64018L16.8425 9.53883C17.1108 9.12054 17.0318 8.55815 16.6402 8.23178Z" fill="white"/>
+    </svg>
+  </div>
+  <span class="acknowledgement-text">Event agent deactivated. It is no longer visible to attendees.</span>
+  <button class="acknowledgement-close" onclick="hideToast('acknowledgement-deactivated')">
+    <svg viewBox="0 0 12 12" fill="none"><path d="M9.5 2.5l-7 7M2.5 2.5l7 7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+</div>
+
+<div class="acknowledgement" id="acknowledgement-saved">
+  <div class="acknowledgement-icon">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM16.6402 8.23178C16.2159 7.87821 15.5853 7.93554 15.2318 8.35982L10.932 13.517L9.70711 12.2929L9.6129 12.2097C9.22061 11.9047 8.65338 11.9324 8.29289 12.2929C7.90237 12.6834 7.90237 13.3166 8.29289 13.7071L10.2929 15.7071L10.3859 15.7894C10.8047 16.1163 11.4187 16.0597 11.7682 15.6402L16.7682 9.64018L16.8425 9.53883C17.1108 9.12054 17.0318 8.55815 16.6402 8.23178Z" fill="white"/>
+    </svg>
+  </div>
+  <span class="acknowledgement-text">Changes saved successfully.</span>
+  <button class="acknowledgement-close" onclick="hideToast('acknowledgement-saved')">
+    <svg viewBox="0 0 12 12" fill="none"><path d="M9.5 2.5l-7 7M2.5 2.5l7 7" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </button>
+</div>
+
+<!-- Permission Gate Popup -->
+<div class="permission-gate-overlay" id="permission-gate-popup" onclick="if(event.target===this)closePermissionGate()">
+  <div class="permission-gate-modal">
+    <button class="permission-gate-close" onclick="closePermissionGate()">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#333" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <div class="permission-gate-content">
+      <h2>Create AI event experiences</h2>
+      <p class="permission-gate-notice">This feature is not enabled for your account. Access is managed by your organization. Contact your administrator to request access.</p>
+      <div class="permission-gate-body">
+        <div class="permission-gate-body-text">
+          <p>Create post-event AI agents that help attendees ask questions, explore sessions, and discover event content through conversational experiences. Learn how event agents work in the Kaltura Knowledge Center.</p>
+          <a class="pill pill-default" style="display: inline-flex; width: fit-content; gap: 4px; align-items: center; text-decoration: none;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Learn about AI Event Agents
+          </a>
+        </div>
+        <div class="permission-gate-body-video">
+          <div class="play-btn">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5z" fill="white"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="permission-gate-footer">
+      <button onclick="closePermissionGate()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let agentActivated = false;
+
+  const states = [
+    'overview-inactive',
+    'overview-active',
+    'agent-page',
+    'agent-page-active',
+    'agent-page-live',
+    'edit-agent'
+  ];
+
+  const navHistory = ['overview-inactive'];
+
+  function goBack() {
+    if (navHistory.length > 1) {
+      navHistory.pop();
+      const previousState = navHistory[navHistory.length - 1];
+      switchState(previousState, true);
+    }
+  }
+
+  function switchState(targetState, isBack) {
+    if (!isBack) {
+      navHistory.push(targetState);
+    }
+    // Hide all states
+    states.forEach(state => {
+      const el = document.getElementById('state-' + state);
+      if (el) el.classList.add('hidden');
+    });
+
+    // Show target state
+    const target = document.getElementById('state-' + targetState);
+    if (target) target.classList.remove('hidden');
+
+    // Handle sidebar/header visibility
+    const sidebar = document.getElementById('mainSidebar');
+    const mainContent = document.getElementById('mainContent');
+    const mainHeader = document.getElementById('mainHeader');
+    if (targetState === 'edit-agent') {
+      sidebar.style.display = 'none';
+      mainContent.style.gridColumn = '1 / -1';
+      mainHeader.style.display = 'none';
+      mainContent.style.gridRow = '1 / -1';
+    } else {
+      sidebar.style.display = '';
+      mainContent.style.gridColumn = '';
+      mainHeader.style.display = '';
+      mainContent.style.gridRow = '';
+    }
+
+    // Handle sidebar state for agent-page (highlight Event agent nav item)
+    const navItems = document.querySelectorAll('#mainSidebar .nav-item');
+    // Reset all nav items active state
+    navItems.forEach(item => item.classList.remove('active'));
+
+    if (targetState === 'agent-page' || targetState === 'agent-page-active' || targetState === 'agent-page-live') {
+      // Highlight Event agent nav item
+      const eventAgentNav = document.getElementById('nav-event-agent');
+      if (eventAgentNav) eventAgentNav.classList.add('active');
+    } else if (targetState === 'overview-inactive' || targetState === 'overview-active') {
+      navItems[0]?.classList.add('active');
+    }
+
+    // Update switcher buttons
+    document.querySelectorAll('.state-switcher button').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.textContent.toLowerCase().includes(targetState.replace('-', ' ').split(' ')[0]) ||
+          btn.getAttribute('onclick')?.includes(targetState)) {
+        btn.classList.add('active');
+      }
+    });
+
+    // Highlight correct switcher button
+    document.querySelectorAll('.state-switcher button').forEach(btn => {
+      const onclick = btn.getAttribute('onclick');
+      if (onclick && onclick.includes(`'${targetState}'`)) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+  }
+
+  function deactivateAgent() {
+    const ctaContainer = document.getElementById('agent-page-active-cta');
+    const video = document.querySelector('#state-agent-page-active video');
+    if (video) video.pause();
+    ctaContainer.innerHTML = `
+      <button class="pill-activate" style="background: var(--tone-5); color: var(--tone-2); pointer-events: none;">
+        <span class="spinner"></span>
+        Deactivating...
+      </button>
+      <button class="pill-activate" style="opacity:0.5; pointer-events:none;">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Preview experience
+      </button>
+    `;
+    setTimeout(() => {
+      const inactiveCta = document.getElementById('agent-page-cta');
+      if (inactiveCta) {
+        inactiveCta.innerHTML = `
+          <button class="pill-activate" onclick="activateAgent()">
+            Create event agent
+          </button>
+          <button class="pill-tryme" onclick="switchState('agent-page')">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Preview experience
+          </button>
+        `;
+      }
+      const video = document.querySelector('#state-agent-page video');
+      if (video) video.play();
+      switchState('agent-page');
+    }, 5000);
+  }
+
+  function activateAgent() {
+    const ctaContainer = document.getElementById('agent-page-cta');
+    const video = document.querySelector('#state-agent-page video');
+    const photoSection = document.querySelector('#state-agent-page .agent-photo-section');
+    if (photoSection) photoSection.classList.add('aurora-glow');
+
+    // Hide CTAs and status
+    ctaContainer.style.display = 'none';
+    const statusBadge = photoSection.querySelector('.agent-photo-status');
+    if (statusBadge) statusBadge.style.display = 'none';
+
+    // Add loading overlay on video
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.className = 'agent-photo-loading-overlay';
+    loadingOverlay.id = 'agent-loading-overlay';
+    loadingOverlay.innerHTML = `<span class="agent-photo-loading-text">Bringing your event agent to life<span class="ellipsis-dot">.</span><span class="ellipsis-dot">.</span><span class="ellipsis-dot">.</span></span>`;
+    loadingOverlay.onclick = function() { switchState('agent-page-active'); };
+    photoSection.appendChild(loadingOverlay);
+
+    // After 10 seconds, transition to agent-page-active and show toast
+    setTimeout(() => {
+      if (photoSection) photoSection.classList.remove('aurora-glow');
+      const overlay = document.getElementById('agent-loading-overlay');
+      if (overlay) overlay.remove();
+      ctaContainer.style.display = '';
+      if (statusBadge) statusBadge.style.display = '';
+      agentActivated = true;
+      switchState('agent-page-active');
+      showToast('acknowledgement-created');
+    }, 4000);
+  }
+
+  function activateOnSite() {
+    const btn = document.querySelector('#agent-page-active-cta .pill-activate');
+    const previewBtn = document.querySelector('#agent-page-active-cta .pill-tryme');
+    const photoSection = document.querySelector('#state-agent-page-active .agent-photo-section');
+    const statusBadge = document.querySelector('#state-agent-page-active .agent-photo-status');
+    const ctaContainer = document.getElementById('agent-page-active-cta');
+    const originalText = btn.innerHTML;
+    btn.style.pointerEvents = 'none';
+    if (previewBtn) previewBtn.style.display = 'none';
+    if (statusBadge) statusBadge.style.display = 'none';
+    if (ctaContainer) ctaContainer.style.display = 'none';
+    if (photoSection) photoSection.classList.add('aurora-glow');
+
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.className = 'agent-photo-loading-overlay';
+    loadingOverlay.id = 'agent-activate-overlay';
+    loadingOverlay.innerHTML = `<span class="agent-photo-loading-text">Activating the event agent on site<span class="ellipsis-dot">.</span><span class="ellipsis-dot">.</span><span class="ellipsis-dot">.</span></span>`;
+    photoSection.appendChild(loadingOverlay);
+
+    setTimeout(() => {
+      if (photoSection) photoSection.classList.remove('aurora-glow');
+      const overlay = document.getElementById('agent-activate-overlay');
+      if (overlay) overlay.remove();
+      if (ctaContainer) ctaContainer.style.display = '';
+      btn.innerHTML = originalText;
+      btn.style.pointerEvents = '';
+      if (previewBtn) previewBtn.style.display = '';
+      if (statusBadge) statusBadge.style.display = '';
+      switchState('agent-page-live');
+      showToast('acknowledgement-activated');
+    }, 5000);
+  }
+
+  function deactivateFromLive() {
+    const btn = document.querySelector('#agent-page-live-cta .pill-activate');
+    const previewBtn = document.querySelector('#agent-page-live-cta .pill-tryme');
+    const statusBadge = document.querySelector('#state-agent-page-live .agent-photo-status');
+    const originalHTML = btn.innerHTML;
+    const originalStyle = btn.getAttribute('style');
+    btn.innerHTML = '<span class="spinner"></span>';
+    btn.style.pointerEvents = 'none';
+    btn.style.background = 'var(--danger)';
+    btn.style.color = 'white';
+    if (previewBtn) previewBtn.style.display = 'none';
+    if (statusBadge) statusBadge.style.display = 'none';
+    setTimeout(() => {
+      btn.innerHTML = originalHTML;
+      btn.setAttribute('style', originalStyle);
+      if (previewBtn) previewBtn.style.display = '';
+      if (statusBadge) statusBadge.style.display = '';
+      goBack();
+      showToast('acknowledgement-deactivated');
+    }, 5000);
+  }
+
+  function showToast(id) {
+    const el = document.getElementById(id);
+    el.classList.add('show');
+    setTimeout(() => hideToast(id), 5000);
+  }
+
+  function hideToast(id) {
+    const el = document.getElementById(id);
+    el.classList.remove('show');
+  }
+
+  function openPermissionGate() {
+    document.getElementById('permission-gate-popup').classList.add('show');
+  }
+
+  function closePermissionGate() {
+    document.getElementById('permission-gate-popup').classList.remove('show');
+  }
+
+  function publishAgent() {
+    const btn = document.getElementById('publish-btn');
+    btn.classList.add('processing');
+    btn.innerHTML = '<span class="spinner"></span> Updating...';
+    setTimeout(() => {
+      btn.classList.remove('processing');
+      btn.innerHTML = editAgentFromLive ? 'Update changes on site' : 'Save';
+      goBack();
+      showToast('acknowledgement-saved');
+    }, 5000);
+  }
+
+
+  var editAgentFromLive = false;
+
+  function toggleKnowledgeMenu(e) {
+    e.stopPropagation();
+    const wrapper = e.currentTarget.closest('.knowledge-btn-wrapper');
+    const isOpen = wrapper.classList.contains('open');
+    document.querySelectorAll('.knowledge-btn-wrapper.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) wrapper.classList.add('open');
+  }
+
+  document.addEventListener('click', function() {
+    document.querySelectorAll('.knowledge-btn-wrapper.open').forEach(el => el.classList.remove('open'));
+  });
+
+  function openEditAgent(tab) {
+    var prev = navHistory[navHistory.length - 1];
+    editAgentFromLive = (prev === 'agent-page-live');
+    const publishBtn = document.getElementById('publish-btn');
+    if (editAgentFromLive) {
+      publishBtn.textContent = 'Update changes on site';
+      publishBtn.classList.add('danger');
+    } else {
+      publishBtn.textContent = 'Save';
+      publishBtn.classList.remove('danger');
+    }
+    switchState('edit-agent');
+    switchEditAgentTab(tab);
+  }
+
+  function switchEditAgentTab(tab) {
+    const tabs = document.querySelectorAll('#edit-agent-tabs .edit-agent-tab');
+    tabs.forEach(t => t.classList.remove('active'));
+    tabs.forEach(t => {
+      if (t.textContent.toLowerCase().trim() === tab.toLowerCase()) t.classList.add('active');
+    });
+
+    // Hide all tab panels
+    const panels = document.querySelectorAll('[id^="edit-agent-tab-"]');
+    panels.forEach(p => p.classList.add('hidden'));
+
+    // Show selected panel
+    const panel = document.getElementById('edit-agent-tab-' + tab);
+    if (panel) panel.classList.remove('hidden');
+
+    // Update edit-agent-content max-width for overview/playbook (needs full width)
+    const contentEl = document.getElementById('edit-agent-content');
+    if (tab === 'overview' || tab === 'playbook') {
+      contentEl.style.maxWidth = 'none';
+      contentEl.style.padding = '0';
+    } else {
+      contentEl.style.maxWidth = '936px';
+      contentEl.style.padding = '0 32px 32px';
+    }
+
+    // Inject dynamic content for knowledge/analytics tabs
+    if (tab === 'knowledge' || tab === 'analytics') {
+      const targetPanel = document.getElementById('edit-agent-tab-' + tab);
+      if (targetPanel && !targetPanel.dataset.loaded) {
+        const tabContent = {
+          placeholder: ``,
+      knowledge: `
+        <div style="display:flex;flex-direction:column;gap:16px;max-width:936px;margin:0 auto;padding-top:32px;">
+          <!-- Header row -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <p style="flex:1;font-size:14px;color:var(--tone-2);line-height:18px;margin:0;">Upload videos, documents, and URLs that your agent will use to answer questions.</p>
+            <span style="font-size:16px;color:var(--tone-1);white-space:nowrap;">3/10 GB used</span>
+            <span style="display:inline-flex;align-items:center;padding:0 6px;height:18px;border:1px solid var(--primary);border-radius:4px;font-size:14px;font-weight:700;color:var(--primary);white-space:nowrap;">Upgrade</span>
+          </div>
+          <!-- Info banner -->
+          <div style="display:flex;align-items:center;gap:8px;padding:4px 8px;background:var(--tone-7);border-radius:var(--radius);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="var(--tone-3)" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="var(--tone-3)" stroke-width="2" stroke-linecap="round"/></svg>
+            <span style="flex:1;font-size:14px;color:var(--tone-1);line-height:18px;">Adding files to your agent's brain may take a few moments to complete</span>
+          </div>
+          <!-- Breadcrumb -->
+          <div style="display:flex;align-items:center;gap:8px;height:18px;">
+            <span style="font-size:14px;font-weight:700;color:var(--tone-2);cursor:pointer;">All</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L8.586 7 5.293 3.707a1 1 0 010-1.414z" fill="var(--tone-2)"/></svg>
+            <span style="font-size:14px;font-weight:700;color:#4798FF;cursor:pointer;">Kaltura sales agent</span>
+          </div>
+          <!-- Actions bar -->
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="display:flex;align-items:center;gap:4px;width:160px;height:32px;padding:8px;border:1px solid var(--tone-3);border-radius:var(--radius);background:white;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6" stroke="var(--tone-2)" stroke-width="2"/><path d="M16 16l4 4" stroke="var(--tone-2)" stroke-width="2" stroke-linecap="round"/></svg>
+                <span style="font-size:14px;color:var(--tone-2);">Search</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;width:182px;height:32px;padding:8px;border:1px solid var(--tone-3);border-radius:4px;background:white;cursor:pointer;">
+                <span style="flex:1;font-size:14px;font-weight:700;color:var(--tone-1);">All media types</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.293 5.293a1 1 0 011.414 0L8 8.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fill="var(--tone-1)"/></svg>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;width:182px;height:32px;padding:8px;border:1px solid var(--tone-3);border-radius:4px;background:white;cursor:pointer;">
+                <span style="flex:1;font-size:14px;font-weight:700;color:var(--tone-1);">Added media</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.293 5.293a1 1 0 011.414 0L8 8.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" fill="var(--tone-1)"/></svg>
+              </div>
+              <span style="font-size:14px;color:var(--tone-1);">816 media</span>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button style="height:32px;padding:0 12px;border:none;border-radius:var(--radius);background:var(--tone-6);font-size:14px;font-weight:700;color:var(--tone-1);cursor:pointer;font-family:'Lato',sans-serif;">Import URL</button>
+              <button style="height:32px;padding:0 12px;border:none;border-radius:var(--radius);background:var(--tone-6);font-size:14px;font-weight:700;color:var(--tone-1);cursor:pointer;font-family:'Lato',sans-serif;">Upload</button>
+            </div>
+          </div>
+          <!-- Table -->
+          <div style="display:flex;flex-direction:column;">
+            <!-- Table header -->
+            <div style="display:flex;align-items:center;gap:16px;height:36px;padding:0 16px;border-bottom:1px solid var(--tone-5);">
+              <span style="flex:1;font-size:13px;font-weight:700;color:var(--tone-2);">Name</span>
+              <span style="width:162px;font-size:13px;font-weight:700;color:var(--tone-2);">Type</span>
+            </div>
+            <!-- Rows -->
+            <div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid var(--tone-5);position:relative;">
+              <div style="width:85px;height:48px;border-radius:4px;background:#E8F2FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 7c0-1.1.9-2 2-2h4l2 2h8c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V7z" fill="#BDBDBD"/></svg>
+              </div>
+              <span style="flex:1;font-size:14px;font-weight:700;color:var(--tone-1);">Global knowledge of rockets</span>
+              <span style="width:120px;font-size:14px;color:var(--tone-2);">Document</span>
+              <button style="width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="12" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="18" cy="12" r="1.5" fill="var(--tone-1)"/></svg></button>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid var(--tone-5);position:relative;">
+              <div style="width:85px;height:48px;border-radius:4px;flex-shrink:0;overflow:hidden;position:relative;background:#f0e6f6;">
+                <img src="https://www.figma.com/api/mcp/asset/59db77de-7298-4291-ba1f-95c49a0a0631" style="width:100%;height:100%;object-fit:cover;" alt="">
+                <div style="position:absolute;bottom:0;left:0;right:0;padding:4px;display:flex;align-items:center;background:linear-gradient(to top,rgba(0,0,0,0.5),transparent);border-radius:0 0 4px 4px;"><span style="font-size:12px;font-weight:700;color:white;">0:32</span></div>
+              </div>
+              <span style="flex:1;font-size:14px;font-weight:700;color:var(--tone-1);">Demystifying Kaltura add-ons</span>
+              <span style="width:120px;font-size:14px;color:var(--tone-2);">Document</span>
+              <button style="width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="12" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="18" cy="12" r="1.5" fill="var(--tone-1)"/></svg></button>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid var(--tone-5);position:relative;">
+              <div style="width:85px;height:48px;border-radius:4px;flex-shrink:0;overflow:hidden;position:relative;">
+                <img src="https://www.figma.com/api/mcp/asset/7d5bbe4f-f242-4d67-a683-ab8adfd2bcee" style="width:100%;height:100%;object-fit:cover;" alt="">
+                <div style="position:absolute;bottom:0;left:0;right:0;padding:4px;display:flex;align-items:center;background:linear-gradient(to top,rgba(0,0,0,0.5),transparent);border-radius:0 0 4px 4px;"><span style="font-size:12px;font-weight:700;color:white;">0:32</span></div>
+              </div>
+              <span style="flex:1;font-size:14px;font-weight:700;color:var(--tone-1);">Kaltura Training</span>
+              <span style="width:120px;font-size:14px;color:var(--tone-2);">Document</span>
+              <button style="width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="12" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="18" cy="12" r="1.5" fill="var(--tone-1)"/></svg></button>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid var(--tone-5);position:relative;">
+              <div style="width:85px;height:48px;border-radius:4px;flex-shrink:0;overflow:hidden;background:#FFAA00;display:flex;align-items:center;justify-content:center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="4" width="14" height="16" rx="1" fill="white"/><path d="M8 8h8M8 11h8M8 14h5" stroke="#FFAA00" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+              <span style="flex:1;font-size:14px;font-weight:700;color:var(--tone-1);">Roadmap 2023.pdf</span>
+              <span style="width:120px;font-size:14px;color:var(--tone-2);">Document</span>
+              <button style="width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="12" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="18" cy="12" r="1.5" fill="var(--tone-1)"/></svg></button>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid var(--tone-5);position:relative;">
+              <div style="width:85px;height:48px;border-radius:4px;flex-shrink:0;overflow:hidden;position:relative;">
+                <img src="https://www.figma.com/api/mcp/asset/59db77de-7298-4291-ba1f-95c49a0a0631" style="width:100%;height:100%;object-fit:cover;" alt="">
+                <div style="position:absolute;bottom:0;left:0;right:0;padding:4px;display:flex;align-items:center;background:linear-gradient(to top,rgba(0,0,0,0.5),transparent);border-radius:0 0 4px 4px;"><span style="font-size:12px;font-weight:700;color:white;">0:32</span></div>
+              </div>
+              <span style="flex:1;font-size:14px;font-weight:700;color:var(--tone-1);">Roadmap 2023.pptx</span>
+              <span style="width:120px;font-size:14px;color:var(--tone-2);">Document</span>
+              <button style="width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="12" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="18" cy="12" r="1.5" fill="var(--tone-1)"/></svg></button>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;padding:16px;border-bottom:1px solid var(--tone-5);position:relative;">
+              <div style="width:85px;height:48px;border-radius:4px;flex-shrink:0;overflow:hidden;position:relative;">
+                <img src="https://www.figma.com/api/mcp/asset/1c68ce13-aba9-472d-95e5-bff46a73c9f7" style="width:100%;height:100%;object-fit:cover;" alt="">
+                <div style="position:absolute;bottom:0;left:0;right:0;padding:4px;display:flex;align-items:center;background:linear-gradient(to top,rgba(0,0,0,0.5),transparent);border-radius:0 0 4px 4px;"><span style="font-size:12px;font-weight:700;color:white;">0:32</span></div>
+              </div>
+              <span style="flex:1;font-size:14px;font-weight:700;color:var(--tone-1);">Kaltura Security Training</span>
+              <span style="width:120px;font-size:14px;color:var(--tone-2);">Document</span>
+              <button style="width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="12" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="18" cy="12" r="1.5" fill="var(--tone-1)"/></svg></button>
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;padding:16px;position:relative;">
+              <div style="width:85px;height:48px;border-radius:4px;flex-shrink:0;overflow:hidden;position:relative;">
+                <img src="https://www.figma.com/api/mcp/asset/7d5bbe4f-f242-4d67-a683-ab8adfd2bcee" style="width:100%;height:100%;object-fit:cover;" alt="">
+                <div style="position:absolute;bottom:0;left:0;right:0;padding:4px;display:flex;align-items:center;background:linear-gradient(to top,rgba(0,0,0,0.5),transparent);border-radius:0 0 4px 4px;"><span style="font-size:12px;font-weight:700;color:white;">0:32</span></div>
+              </div>
+              <span style="flex:1;font-size:14px;font-weight:700;color:var(--tone-1);">Productivity workshop</span>
+              <span style="width:120px;font-size:14px;color:var(--tone-2);">Document</span>
+              <button style="width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="12" cy="12" r="1.5" fill="var(--tone-1)"/><circle cx="18" cy="12" r="1.5" fill="var(--tone-1)"/></svg></button>
+            </div>
+            <!-- Pagination -->
+            <div style="display:flex;align-items:center;justify-content:center;gap:8px;height:32px;padding:8px 0;">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.707 2.293a1 1 0 010 1.414L7.414 7l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" fill="var(--tone-2)"/></svg>
+              <div style="display:flex;gap:4px;">
+                <span style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:var(--tone-2);color:white;font-size:13px;font-weight:700;">1</span>
+                <span style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:13px;font-weight:700;color:var(--tone-1);cursor:pointer;">2</span>
+                <span style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:13px;font-weight:700;color:var(--tone-1);cursor:pointer;">3</span>
+                <span style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:13px;font-weight:700;color:var(--tone-1);cursor:pointer;">4</span>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L8.586 7 5.293 3.707a1 1 0 010-1.414z" fill="var(--tone-2)"/></svg>
+            </div>
+          </div>
+        </div>`,
+      experience: `
+        <div style="display:flex;flex-direction:column;gap:24px;">
+          <!-- Interaction model -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <h3 style="font-size:18px;font-weight:700;margin:0;">Interaction model</h3>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:14px;font-weight:700;color:var(--tone-1);">Title</label>
+                <div style="display:flex;gap:4px;align-items:flex-start;">
+                  <span style="flex:1;font-size:14px;color:var(--tone-2);line-height:14px;">What should be written on the agent page</span>
+                  <span style="font-size:14px;color:var(--tone-2);text-align:right;">15/30</span>
+                </div>
+              </div>
+              <input type="text" value="Ask me anything" style="width:100%;height:32px;padding:8px;border:1px solid var(--tone-3);border-radius:var(--radius);font-size:14px;font-family:'Lato',sans-serif;color:var(--tone-1);">
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:14px;font-weight:700;color:var(--tone-1);">Model</label>
+                <p style="font-size:14px;color:var(--tone-2);line-height:18px;margin:0;">What kind of interaction will be available?</p>
+              </div>
+              <div style="display:flex;gap:24px;">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="width:177px;height:106px;border:1px solid var(--tone-5);border-radius:var(--radius);display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center;overflow:hidden;">
+                    <div style="width:77px;height:7px;background:var(--tone-5);border-radius:var(--radius);"></div>
+                    <div style="width:77px;height:44px;background:var(--tone-4);border-radius:var(--radius);"></div>
+                    <div style="width:77px;height:20px;background:var(--tone-4);border-radius:var(--radius);display:flex;align-items:center;justify-content:flex-end;"><svg viewBox="0 0 20 20" width="20" height="20" fill="none"><path d="M4.17 10h11.66M10.83 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div style="display:flex;gap:3px;"><div style="width:23px;height:7px;background:var(--tone-5);border-radius:var(--radius);"></div><div style="width:23px;height:7px;background:var(--tone-5);border-radius:var(--radius);"></div><div style="width:23px;height:7px;background:var(--tone-5);border-radius:var(--radius);"></div></div>
+                  </div>
+                  <div style="display:flex;gap:4px;align-items:flex-start;">
+                    <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:10px;height:10px;border-radius:50%;background:var(--primary);"></div></div>
+                    <span style="font-size:14px;color:var(--tone-1);line-height:18px;">Avatar and chat</span>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="width:177px;height:106px;border:1px solid var(--tone-5);border-radius:var(--radius);display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center;overflow:hidden;">
+                    <div style="width:77px;height:20px;background:var(--tone-4);border-radius:var(--radius);display:flex;align-items:center;justify-content:flex-end;"><svg viewBox="0 0 20 20" width="20" height="20" fill="none"><path d="M4.17 10h11.66M10.83 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                    <div style="display:flex;gap:3px;"><div style="width:23px;height:7px;background:var(--tone-5);border-radius:var(--radius);"></div><div style="width:23px;height:7px;background:var(--tone-5);border-radius:var(--radius);"></div><div style="width:23px;height:7px;background:var(--tone-5);border-radius:var(--radius);"></div></div>
+                  </div>
+                  <div style="display:flex;gap:4px;align-items:flex-start;">
+                    <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--tone-4);flex-shrink:0;"></div>
+                    <span style="font-size:14px;color:var(--tone-1);line-height:18px;">Chat only</span>
+                  </div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <div style="width:177px;height:106px;border:1px solid var(--tone-5);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;">
+                    <div style="width:77px;height:44px;background:var(--tone-4);border-radius:var(--radius);"></div>
+                  </div>
+                  <div style="display:flex;gap:4px;align-items:flex-start;">
+                    <div style="width:18px;height:18px;border-radius:50%;border:2px solid var(--tone-4);flex-shrink:0;"></div>
+                    <span style="font-size:14px;color:var(--tone-1);line-height:18px;">Avatar only</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Branding -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <h3 style="font-size:18px;font-weight:700;margin:0;">Branding</h3>
+            <div style="display:flex;flex-direction:column;gap:8px;width:392px;">
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:14px;font-weight:700;color:var(--tone-1);line-height:14px;">Logo</label>
+                <p style="font-size:14px;color:var(--tone-2);line-height:14px;margin:0;">Ensure your logo has sufficient contrast on darker backgrounds</p>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <div style="width:208px;height:55px;border-radius:var(--radius);overflow:hidden;background:#1a1a3e;display:flex;align-items:center;justify-content:center;">
+                  <img src="https://www.figma.com/api/mcp/asset/6d482066-4d51-4098-8e80-7242ef727858" style="width:100%;height:100%;object-fit:cover;" alt="Logo">
+                </div>
+                <button style="width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);" title="Edit logo">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M16.474 3.37a2.882 2.882 0 1 1 4.076 4.076L9.13 18.868l-5.588 1.513 1.513-5.587L16.474 3.37z" fill="var(--tone-1)"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Avatar appearance -->
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <h3 style="font-size:18px;font-weight:700;margin:0;">Avatar appearance</h3>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:14px;font-weight:700;color:var(--tone-1);">Voice</label>
+                <p style="font-size:14px;color:var(--tone-2);line-height:18px;margin:0;">Choose how your agent will sound</p>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <div style="flex:1;position:relative;">
+                  <select style="width:100%;height:32px;padding:0 32px 0 8px;border:1px solid var(--tone-3);border-radius:var(--radius);font-size:14px;font-family:'Lato',sans-serif;color:var(--tone-1);appearance:none;background:white url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23707070' d='M6 8L1 3h10z'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;">
+                    <option>Professional (Formal, polished, business appropriate)</option>
+                    <option>Casual (Friendly, conversational)</option>
+                    <option>Formal (Corporate, precise)</option>
+                  </select>
+                </div>
+                <button style="width:32px;height:32px;border:none;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);" title="Preview voice">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M5 4.5l14 7.5-14 7.5V4.5z" fill="var(--tone-1)"/></svg>
+                </button>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <label style="font-size:14px;font-weight:700;color:var(--tone-1);">Avatar design</label>
+                <p style="font-size:14px;color:var(--tone-2);line-height:18px;margin:0;">Choose how your agent will look</p>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                <img src="https://www.figma.com/api/mcp/asset/d2185486-8f54-4259-bade-13b62f728cd3" style="width:40px;height:40px;border-radius:var(--radius);object-fit:cover;" alt="Selected avatar">
+                <span style="font-size:14px;color:var(--tone-2);">Christy is selected</span>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <div style="width:110px;height:110px;border:1px dashed var(--tone-4);border-radius:var(--radius-lg);display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;cursor:pointer;">
+                  <svg viewBox="0 0 24 24" width="24" height="24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="var(--tone-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span style="font-size:14px;font-weight:700;color:var(--tone-1);">Add your own</span>
+                </div>
+                <img src="https://www.figma.com/api/mcp/asset/d7c53ea0-d048-4019-9759-5ded42557177" style="width:110px;height:110px;border-radius:var(--radius);object-fit:cover;" alt="Avatar option">
+                <div style="position:relative;width:110px;height:110px;">
+                  <img src="https://www.figma.com/api/mcp/asset/a6b1fa14-ab2c-4963-84e2-96851e576056" style="width:110px;height:110px;border-radius:var(--radius);object-fit:cover;border:2px solid var(--primary);" alt="Avatar option - selected">
+                  <div style="position:absolute;top:8px;left:8px;width:24px;height:24px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                    <svg viewBox="0 0 14 12" width="12" height="10" fill="none"><path d="M12.96.348c.637.53.723 1.476.192 2.112l-7.5 9-2.213-2.4L.44 6.44c-.586-.586-.586-1.536 0-2.122.585-.585 1.536-.585 2.121 0L4.4 6.157l6.448-7.738c.53-.637 1.476-.723 2.112-.192z" fill="white"/></svg>
+                  </div>
+                </div>
+                <img src="https://www.figma.com/api/mcp/asset/d632007f-9d74-45a6-be80-db02d3c7c73b" style="width:110px;height:110px;border-radius:var(--radius);object-fit:cover;" alt="Avatar option">
+                <div style="position:relative;width:110px;height:110px;">
+                  <img src="https://www.figma.com/api/mcp/asset/57075289-4fac-4c10-9510-9be064fac4a2" style="width:110px;height:110px;border-radius:var(--radius);object-fit:cover;" alt="Avatar option">
+                  <div style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);border-radius:var(--radius);padding:4px 8px;">
+                    <span style="font-size:14px;font-weight:700;color:white;white-space:nowrap;">Hannah</span>
+                  </div>
+                </div>
+              </div>
+              <button style="border:none;background:none;cursor:pointer;padding:8px;font-size:14px;font-weight:700;color:var(--primary);font-family:'Lato',sans-serif;text-align:left;width:fit-content;">See more</button>
+            </div>
+          </div>
+        </div>`,
+      analytics: `<h3 style="margin-bottom:24px;">Genie</h3><div style="display:flex;gap:24px;margin-bottom:32px;"><div style="flex:1;"><h4 style="font-size:14px;font-weight:700;margin-bottom:12px;">Highlights</h4><div style="display:flex;flex-direction:column;gap:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:24px;font-weight:700;">1,970</span><span style="font-size:14px;color:var(--tone-2);">Threads created</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:24px;font-weight:700;">2,541</span><span style="font-size:14px;color:var(--tone-2);">Requests sent</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:24px;font-weight:700;">588</span><span style="font-size:14px;color:var(--tone-2);">Unique users</span></div></div></div><div style="flex:1;"><h4 style="font-size:14px;font-weight:700;margin-bottom:12px;">Avatar's session</h4><div style="display:flex;flex-direction:column;gap:8px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:24px;font-weight:700;">114</span><span style="font-size:14px;color:var(--tone-2);">Avatar's sessions</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:24px;font-weight:700;">86</span><span style="font-size:14px;color:var(--tone-2);">Requests during sessions</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:24px;font-weight:700;">262</span><span style="font-size:14px;color:var(--tone-2);">Minutes of avatar's session</span></div></div></div><div style="flex:1;"><h4 style="font-size:14px;font-weight:700;margin-bottom:12px;">Insights</h4><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:24px;font-weight:700;">83%</span><span style="font-size:14px;color:var(--tone-2);">Requests with answer</span></div><div style="width:100%;height:12px;background:var(--tone-6);border-radius:6px;overflow:hidden;"><div style="width:83%;height:100%;background:var(--primary);border-radius:6px;"></div></div></div></div><h3>Requests overtime</h3><div style="height:200px;display:flex;align-items:center;justify-content:center;border:1px solid var(--tone-6);border-radius:var(--radius-lg);margin-top:16px;color:var(--tone-3);">Chart placeholder</div>`,
+      tools: `<h3>Tools</h3><p>Configure external tools and integrations your agent can use.</p>`,
+      advanced: `<h3>Advanced</h3><p>Advanced settings for fine-tuning your agent's behavior.</p>`
+    };
+    targetPanel.innerHTML = tabContent[tab] || '';
+    targetPanel.dataset.loaded = 'true';
+      }
+    }
+  }
+
+  // === USER MENU & THEME ===
+  function toggleUserMenu(e) {
+    e.stopPropagation();
+    document.getElementById('userMenu').classList.toggle('open');
+  }
+
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('userMenu');
+    if (!e.target.closest('.user-menu-wrapper')) {
+      menu.classList.remove('open');
+    }
+  });
+
+  function setTheme(theme) {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    document.getElementById('lightModeBtn').classList.toggle('active', theme === 'light');
+    document.getElementById('darkModeBtn').classList.toggle('active', theme === 'dark');
+    localStorage.setItem('theme', theme);
+  }
+
+  // Load saved theme
+  (function() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark') setTheme('dark');
+  })();
+
+  // Initialize
+  switchState('overview-inactive');
+</script>
+
+</body>
+</html>
