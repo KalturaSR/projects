@@ -222,15 +222,16 @@ As a content editor, I want to switch the main player view between video and sli
 
 | # | Criteria | Expected Behavior |
 |---|----------|-------------------|
-| 1 | Button | 28x28px, positioned top-right (8px inset) inside the slide/video small view |
+| 1 | Button | 28x28px, always positioned on the small/minimized view only |
 | 2 | Button icon | Kaltura DS icon '24/Switch' |
 | 3 | Button style | Semi-transparent dark background (rgba(0,0,0,0.6)), 4px border-radius, icon at 80% opacity |
+| 3b | Button visibility | Switch icon appears ONLY on the small view — never on the main/full view |
 | 4 | Default state | Video is main (full area), slide is small overlay (223px, bottom-right) |
 | 5 | Switched state | Slide moves to main view (full area, object-fit: contain), video moves to small thumbnail (223px, bottom-right, rounded) |
 | 6 | Switch back via button | Clicking the switch button again restores default layout |
 | 7 | Switch back via thumbnail | Clicking the minimized video thumbnail also switches back to default |
 | 8 | Video playback | Video continues playing uninterrupted during switch |
-| 9 | Controls | Player controls remain accessible in both states |
+| 9 | Controls | Player controls always render on top of the video, above all overlays (z-index: 10) |
 | 10 | Stream swap concept | The switch action swaps which stream is in the main view vs. the minimized view — it does not hide either stream |
 
 ### Test Cases
