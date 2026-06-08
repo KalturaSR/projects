@@ -227,8 +227,9 @@ As a content editor, I want to switch the main player view between video and sli
 | 3 | Button style | Semi-transparent dark background (rgba(0,0,0,0.6)), 4px border-radius, icon at 80% opacity |
 | 3b | CTA visibility | Both CTAs (Hide/Show toggle + Switch button) appear ONLY on the small view — never on the main/full view |
 | 3c | CTAs on both streams | CTAs appear on the small view regardless of whether it is showing the video or the slide |
-| 4 | Default state | Video is main (full area), slide is small overlay (223px, bottom-right) |
-| 5 | Switched state | Slide moves to main view (full area, object-fit: contain), video moves to small thumbnail (223px, bottom-right, rounded) |
+| 4 | Default state | Video is main (full area), slide is small overlay (223px, bottom-right, 16:9, rounded 8px) |
+| 5 | Switched state | Slide moves to main view (full area, object-fit: contain), video moves to small thumbnail (223px, bottom-right, 16:9, rounded 8px) |
+| 5b | Small view consistency | The small view is ALWAYS at the same position (bottom: 61px, right: 16px), same size (223px wide, 16:9 aspect ratio), same styling (8px border-radius, shadow) — regardless of which stream is shown |
 | 6 | Switch back via button | Clicking the switch button again restores default layout |
 | 7 | Switch back via thumbnail | Clicking the minimized video thumbnail also switches back to default |
 | 8 | Video playback | Video continues playing uninterrupted during switch |
