@@ -225,7 +225,8 @@ As a content editor, I want to switch the main player view between video and sli
 | 1 | Button | 28x28px, always positioned on the small/minimized view only |
 | 2 | Button icon | Kaltura DS icon '24/Switch' |
 | 3 | Button style | Semi-transparent dark background (rgba(0,0,0,0.6)), 4px border-radius, icon at 80% opacity |
-| 3b | Button visibility | Switch icon appears ONLY on the small view — never on the main/full view |
+| 3b | CTA visibility | Both CTAs (Hide/Show toggle + Switch button) appear ONLY on the small view — never on the main/full view |
+| 3c | CTAs on both streams | CTAs appear on the small view regardless of whether it is showing the video or the slide |
 | 4 | Default state | Video is main (full area), slide is small overlay (223px, bottom-right) |
 | 5 | Switched state | Slide moves to main view (full area, object-fit: contain), video moves to small thumbnail (223px, bottom-right, rounded) |
 | 6 | Switch back via button | Clicking the switch button again restores default layout |
@@ -243,6 +244,11 @@ As a content editor, I want to switch the main player view between video and sli
 - [ ] Seek while in switched view — slide and video both update
 - [ ] Switch view when video is paused — layout changes correctly
 - [ ] Verify Kaltura DS '24/Switch' icon is used
+- [ ] Default mode: both Hide/Show toggle and Switch button visible on slide thumbnail
+- [ ] Switched mode: both Hide/Show toggle and Switch button visible on video thumbnail
+- [ ] Neither CTA visible on the main/full view in either mode
+- [ ] Hide video thumbnail in switched mode — video disappears, toggle shows "Show"
+- [ ] Switch back to default — video thumb hidden state resets
 
 ---
 
