@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chapters & Slides Editor</title>
+  <title>Video Structure</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap">
   <style>
     * {
@@ -174,52 +174,79 @@
 
     .btn-ghost {
       background: transparent;
-      color: var(--tone-4);
-      border: 1px solid var(--tone-4);
+      color: var(--w-80);
+      border: 1px solid var(--w-20);
     }
 
     .btn-ghost:hover {
       background: var(--w-10);
       color: var(--w-100);
-      border-color: var(--w-100);
+      border-color: var(--w-30);
+    }
+
+    .btn-ghost .btn-icon {
+      display: flex;
+      align-items: center;
     }
 
     .btn-primary {
       background: var(--blue);
       color: var(--w-100);
+      border: none;
     }
 
     .btn-primary:hover {
       background: var(--blue-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary .btn-icon {
+      display: flex;
+      align-items: center;
     }
 
     .btn-ai {
       background: var(--ai-gradient);
       color: var(--w-100);
       border: none;
+      box-shadow: 0 2px 8px rgba(0, 110, 250, 0.3);
     }
 
     .btn-ai:hover {
-      opacity: 0.9;
+      opacity: 0.92;
+      box-shadow: 0 4px 16px rgba(0, 110, 250, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-ai .btn-icon {
+      display: flex;
+      align-items: center;
     }
 
     .btn-sm {
       padding: 8px 12px;
       font-size: 14px;
       border-radius: var(--roundness-1);
-      background: var(--b-60);
-      color: var(--w-100);
-      border: none;
+      background: transparent;
+      color: var(--w-80);
+      border: 1px solid var(--w-20);
     }
 
     .btn-sm:hover {
-      background: var(--w-20);
+      background: var(--w-10);
+      color: var(--w-100);
+      border-color: var(--w-30);
+    }
+
+    .btn-sm .btn-icon {
+      display: flex;
+      align-items: center;
     }
 
     .btn-danger {
       background: transparent;
       color: var(--danger);
-      border: 1px solid rgba(255, 68, 68, 0.4);
+      border: 1px solid rgba(255, 68, 68, 0.3);
       font-size: 14px;
       padding: 8px 12px;
     }
@@ -227,6 +254,11 @@
     .btn-danger:hover {
       background: rgba(255, 68, 68, 0.1);
       border-color: var(--danger);
+    }
+
+    .btn-danger .btn-icon {
+      display: flex;
+      align-items: center;
     }
 
     /* Editor Body */
@@ -378,6 +410,173 @@
     .player-action:focus-visible {
       outline: 2px solid var(--accent-primary);
       outline-offset: 2px;
+    }
+
+    /* Selected Slide Overlay */
+    .player-slide-overlay {
+      position: absolute;
+      bottom: 61px;
+      right: 16px;
+      width: 223px;
+      z-index: 5;
+      display: none;
+    }
+
+    .player-slide-overlay.visible {
+      display: block;
+    }
+
+    .player-slide-toggle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: flex-end;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      height: 32px;
+      margin-left: auto;
+      transition: background 0.15s;
+    }
+
+    .player-slide-toggle:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .player-slide-toggle svg {
+      transition: transform 0.2s;
+    }
+
+    .player-slide-overlay.collapsed .player-slide-toggle svg {
+      transform: rotate(180deg);
+    }
+
+    .player-slide-image-wrap {
+      margin-top: 5px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 8px 60px -16px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    .player-slide-overlay.collapsed .player-slide-image-wrap {
+      display: none;
+    }
+
+    .player-slide-image-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .player-switch-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      padding: 0;
+      transition: background 0.15s;
+    }
+
+    .player-switch-btn:hover {
+      background: rgba(0, 0, 0, 0.85);
+    }
+
+    .player-switch-btn svg {
+      opacity: 0.8;
+    }
+
+    /* Slide-main mode: slide is full player area, video is the small thumbnail */
+    .video-area.slide-main .video-player {
+      position: absolute;
+      bottom: 61px;
+      right: 16px;
+      width: 223px;
+      height: auto;
+      aspect-ratio: 16/9;
+      border-radius: 8px;
+      z-index: 6;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 8px 60px -16px rgba(0, 0, 0, 0.2);
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    .video-area.slide-main .player-slide-overlay {
+      position: absolute;
+      inset: 0;
+      bottom: 46px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      z-index: 1;
+    }
+
+    .video-area.slide-main .player-slide-overlay.visible {
+      display: flex;
+    }
+
+    .video-area.slide-main .player-slide-toggle {
+      display: none;
+    }
+
+    .video-area.slide-main .player-slide-image-wrap {
+      width: 100%;
+      height: 100%;
+      margin-top: 0;
+      border-radius: 0;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+
+    .video-area.slide-main .player-slide-image-wrap::before {
+      display: none;
+    }
+
+    .video-area.slide-main .player-slide-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 0;
+    }
+
+    .video-area.slide-main .player-switch-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 7;
+    }
+
+    .player-slide-image {
+      width: 100%;
+      display: block;
+      border-radius: 8px;
     }
 
     /* Timeline Area */
@@ -646,6 +845,65 @@
       background: var(--w-10);
     }
 
+    .chapter-segment:hover .resize-handle,
+    .slide-segment:hover .resize-handle,
+    body.is-resizing .resize-handle {
+      opacity: 1;
+    }
+
+    .resize-handle {
+      position: absolute;
+      top: 0;
+      width: 8px;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.15s, background 0.15s;
+      cursor: col-resize;
+      background: var(--w-30);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .resize-handle.left {
+      left: 0;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .resize-handle.right {
+      right: 0;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .resize-handle::after {
+      content: '';
+      width: 2px;
+      height: calc(100% - 10px);
+      background: var(--w-80);
+      border-radius: 2px;
+    }
+
+    .resize-handle:hover {
+      background: var(--w-50);
+    }
+
+    .chapter-segment.active .resize-handle,
+    .slide-segment.active .resize-handle {
+      background: var(--blue);
+    }
+    .chapter-segment.active .resize-handle::after,
+    .slide-segment.active .resize-handle::after {
+      background: var(--w-100);
+    }
+
+    body.is-resizing {
+      cursor: col-resize !important;
+    }
+    body.is-resizing * {
+      cursor: col-resize !important;
+    }
+
     .chapter-segment:focus-visible {
       outline: 2px solid var(--blue);
       outline-offset: 2px;
@@ -702,46 +960,52 @@
       background: var(--bg-surface);
     }
 
+    .segment-title,
     .slide-segment-label {
       overflow: hidden;
       text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
     }
 
     /* Slide thumbnail in panel */
-    .slide-thumbnail-preview {
-      width: 100%;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--w-30);
-      margin-bottom: 12px;
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
-
-    .slide-thumbnail-preview:hover {
-      border-color: var(--blue);
-    }
-
     .slide-thumb-container {
       position: relative;
+      width: 174px;
+      height: 100px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .slide-thumbnail-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .slide-thumb-replace {
       position: absolute;
       bottom: 8px;
       right: 8px;
-      padding: 4px 10px;
-      font-size: 11px;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: var(--radius-sm);
+      height: 24px;
+      padding: 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+      background: var(--b-60);
+      color: var(--w-100);
+      border: none;
+      border-radius: var(--roundness-1);
       cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
     }
 
-    .slide-thumb-container:hover .slide-thumb-replace {
-      opacity: 1;
+    .slide-thumb-replace:hover {
+      background: rgba(0,0,0,0.8);
     }
 
     /* Video Track */
@@ -775,22 +1039,151 @@
       cursor: grabbing;
     }
 
+    body.is-dragging,
+    body.is-dragging * {
+      cursor: grabbing !important;
+    }
+
     .chapter-segment.dragging, .slide-segment.dragging {
-      opacity: 0.7;
+      opacity: 0.4;
       cursor: grabbing;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      box-shadow: none;
       z-index: 20;
+      transform: scale(0.96);
+      width: 0 !important;
+      padding: 0 !important;
+      border-width: 0 !important;
+      overflow: hidden;
+      margin: 0;
+      transition: width 0.2s, opacity 0.2s, transform 0.2s, padding 0.2s;
+    }
+
+    .chapter-segment.gap-after, .slide-segment.gap-after {
+      margin-right: 14px;
+      transition: margin 0.15s ease;
+    }
+    .chapter-segment.gap-before, .slide-segment.gap-before {
+      margin-left: 14px;
+      transition: margin 0.15s ease;
     }
 
     .drag-indicator {
       position: absolute;
-      top: 4px;
-      bottom: 4px;
-      width: 2px;
-      background: var(--accent-primary);
-      border-radius: 1px;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #4da6ff;
+      border-radius: 2px;
       z-index: 25;
       pointer-events: none;
+      box-shadow: 0 0 8px rgba(77, 166, 255, 0.5);
+    }
+
+    .drag-indicator::before,
+    .drag-indicator::after {
+      content: '';
+      position: absolute;
+      left: -3px;
+      width: 9px;
+      height: 9px;
+      background: #4da6ff;
+      border-radius: 50%;
+    }
+
+    .drag-indicator::before { top: -4px; }
+    .drag-indicator::after { bottom: -4px; }
+
+    .drop-zone-highlight {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      width: 4px;
+      background: var(--blue);
+      border-radius: 2px;
+      z-index: 25;
+      pointer-events: none;
+      opacity: 0.8;
+      transition: left 0.1s ease;
+    }
+
+    /* Drag ghost thumbnail */
+    .drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 0 2px var(--blue);
+      max-width: 200px;
+      max-height: 60px;
+      overflow: hidden;
+      transition: opacity 0.12s;
+    }
+    .drag-ghost.visible { opacity: 0.8; }
+
+    /* Drag indicator timestamp label */
+    .drag-indicator-label {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4da6ff;
+      color: var(--w-100);
+      font-size: 10px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* Track drop target highlight */
+    .track.drop-target-active {
+      background: rgba(0, 110, 250, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(0, 110, 250, 0.25);
+      border-radius: var(--radius-md);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    /* Snap indicator line */
+    .snap-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #ff4081;
+      z-index: 30;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    .snap-line.active {
+      opacity: 1;
+      box-shadow: 0 0 6px #ff4081;
+    }
+
+    /* External file drop zone overlay */
+    .drop-zone-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 110, 250, 0.1);
+      border: 2px dashed var(--blue);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .drop-zone-overlay.visible { opacity: 1; }
+    .drop-zone-overlay-text {
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 600;
     }
 
     /* Playhead on tracks */
@@ -841,9 +1234,8 @@
     /* Right Panel */
     .right-panel {
       width: 401px;
-      background: var(--w-20);
-      backdrop-filter: blur(16px);
-      border-left: none;
+      background: var(--w-10);
+      border-left: 1px solid var(--w-10);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
@@ -856,54 +1248,61 @@
     }
 
     .panel-section-title {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: var(--w-50);
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
-    .form-group { margin-bottom: 16px; }
+    .form-group { margin-bottom: 20px; }
 
     .form-label {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       font-size: 14px;
       font-weight: 700;
-      color: var(--w-80);
-      margin-bottom: 8px;
+      color: var(--w-100);
+      margin-bottom: 4px;
     }
 
     .form-input {
       width: 100%;
-      padding: 8px 12px;
+      height: 32px;
+      padding: 0 10px;
       border-radius: var(--roundness-1);
       border: 1px solid var(--w-30);
-      background: var(--w-10);
+      background: var(--b-100);
       color: var(--w-100);
       font-size: 14px;
       font-family: inherit;
       outline: none;
-      transition: border-color 0.15s;
+      transition: all 0.15s;
     }
 
+    .form-input::placeholder { color: var(--w-30); }
+    .form-input:hover { border-color: var(--w-50); }
     .form-input:focus { border-color: var(--blue); }
 
     .form-textarea {
       width: 100%;
-      padding: 8px 12px;
+      padding: 8px 10px;
       border-radius: var(--roundness-1);
       border: 1px solid var(--w-30);
-      background: var(--w-10);
+      background: var(--b-100);
       color: var(--w-100);
       font-size: 14px;
       outline: none;
       resize: vertical;
-      min-height: 80px;
+      min-height: 88px;
       font-family: inherit;
-      transition: border-color 0.15s;
+      transition: all 0.15s;
     }
 
+    .form-textarea::placeholder { color: var(--w-30); }
+    .form-textarea:hover { border-color: var(--w-50); }
     .form-textarea:focus { border-color: var(--blue); }
 
     .timestamp-input {
@@ -918,21 +1317,73 @@
     }
 
     .use-current-btn {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--blue);
-      background: none;
+      position: relative;
+      width: 32px;
+      height: 32px;
+      background: var(--b-60);
       border: none;
+      border-radius: var(--roundness-1);
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      transition: background 0.15s;
+    }
+
+    .use-current-btn:hover {
+      background: var(--w-20);
+    }
+
+    .use-current-btn svg {
+      display: block;
+    }
+
+    .use-current-btn .ds-hint {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      top: calc(100% + 6px);
+      left: 50%;
+      translate: -50% 0;
+      display: inline-flex;
+      flex-direction: column-reverse;
+      align-items: center;
+    }
+
+    .use-current-btn:hover .ds-hint {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .use-current-btn .ds-hint-body {
+      background: var(--w-100);
+      color: var(--b-100);
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 16px;
+      padding: 6px 8px;
+      border-radius: 4px;
       white-space: nowrap;
     }
 
-    .use-current-btn:hover { text-decoration: underline; }
+    .use-current-btn .ds-hint-arrow {
+      line-height: 0;
+      margin-bottom: -1px;
+    }
+
+    .use-current-btn .ds-hint-arrow svg path {
+      fill: var(--w-100);
+    }
 
     .panel-actions {
-      padding: 12px 24px;
+      padding: 16px 24px;
       display: flex;
       gap: 8px;
+      border-top: 1px solid var(--w-10);
     }
 
     /* Introduction Section */
@@ -951,27 +1402,27 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: var(--w-50);
       background: var(--b-60);
       padding: 3px 8px;
-      border-radius: 10px;
+      border-radius: var(--roundness-1);
       margin-bottom: 8px;
     }
 
     .intro-title-display {
       font-size: 14px;
-      font-weight: 600;
-      color: var(--text-primary);
+      font-weight: 700;
+      color: var(--w-100);
       margin-bottom: 4px;
     }
 
     .intro-text-display {
-      font-size: 12px;
-      color: var(--text-secondary);
+      font-size: 13px;
+      color: var(--w-80);
       line-height: 1.5;
     }
 
@@ -981,43 +1432,51 @@
     .chapter-list-item {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px 24px;
+      gap: 10px;
+      padding: 10px 24px;
       cursor: pointer;
-      transition: background 0.1s;
+      transition: all 0.15s;
       border-left: 3px solid transparent;
+      border-radius: 0;
     }
 
-    .chapter-list-item:hover { background: var(--w-10); }
+    .chapter-list-item:hover {
+      background: var(--w-10);
+    }
 
     .chapter-list-item.active {
-      background: rgba(0, 110, 250, 0.15);
+      background: rgba(0, 110, 250, 0.1);
       border-left-color: var(--blue);
     }
 
     .chapter-list-time {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--w-50);
       font-variant-numeric: tabular-nums;
-      min-width: 42px;
+      min-width: 44px;
     }
 
     .chapter-list-title {
       font-size: 14px;
+      font-weight: 400;
       color: var(--w-100);
       flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .chapter-list-type {
       font-size: 11px;
-      padding: 2px 8px;
+      padding: 2px 6px;
       border-radius: var(--roundness-1);
       font-weight: 700;
+      line-height: 16px;
     }
 
-    .type-chapter { background: var(--w-10); color: var(--w-80); }
-    .type-slide { background: var(--w-10); color: var(--w-80); }
+    .type-chapter { background: var(--w-10); color: var(--w-50); }
+    .type-slide { background: var(--w-10); color: var(--w-50); }
 
     /* AI Badge */
     .ai-badge {
@@ -1036,28 +1495,32 @@
     .selected-indicator {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       padding: 12px 24px;
-      background: rgba(0, 110, 250, 0.15);
+      background: rgba(0, 110, 250, 0.08);
       border-bottom: 1px solid var(--w-10);
+      border-left: 3px solid var(--blue);
     }
 
     .selected-color {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
+      flex-shrink: 0;
     }
 
     .selected-label {
       font-size: 14px;
       font-weight: 700;
       color: var(--w-100);
+      flex: 1;
     }
 
     .selected-time {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--w-50);
+      font-variant-numeric: tabular-nums;
       margin-left: auto;
       font-variant-numeric: tabular-nums;
     }
@@ -1137,10 +1600,10 @@
     }
 
     .btn-ai-lg {
-      padding: 16px;
-      font-size: 16px;
+      padding: 12px 24px;
+      font-size: 15px;
       font-weight: 700;
-      border-radius: var(--roundness-1);
+      border-radius: var(--radius-md);
       background: var(--ai-gradient);
       color: var(--w-100);
       border: none;
@@ -1148,19 +1611,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      height: 40px;
-      transition: all 0.15s;
-      box-shadow: none;
-      width: auto;
+      gap: 8px;
+      height: 44px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(0, 110, 250, 0.3);
+      width: 100%;
+      max-width: 280px;
     }
 
     .btn-ai-lg:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
+      opacity: 0.92;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 110, 250, 0.45);
     }
 
     .btn-ai-lg:active { transform: scale(0.97); }
+
+    .btn-ai-lg .btn-icon {
+      display: flex;
+      align-items: center;
+    }
 
     .panel-empty-divider {
       display: flex;
@@ -1192,24 +1662,30 @@
     }
 
     .btn-secondary-sm {
-      padding: 8px 12px;
-      font-size: 14px;
+      padding: 8px 16px;
+      font-size: 13px;
       font-weight: 700;
       border-radius: var(--roundness-1);
-      background: var(--b-60);
-      color: var(--w-100);
-      border: none;
+      background: transparent;
+      color: var(--w-80);
+      border: 1px solid var(--w-20);
       cursor: pointer;
       transition: all 0.15s;
-      height: 32px;
+      height: 36px;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
     }
 
     .btn-secondary-sm:hover {
-      background: var(--w-20);
+      background: var(--w-10);
       color: var(--w-100);
+      border-color: var(--w-30);
+    }
+
+    .btn-secondary-sm .btn-icon {
+      display: flex;
+      align-items: center;
     }
 
     .hidden { display: none !important; }
@@ -1552,15 +2028,74 @@
     .skip-link:focus {
       top: 0;
     }
+
+    /* Page Loader */
+    .page-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: var(--b-100);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .page-loader.loaded {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-spinner {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid var(--w-10);
+      border-top-color: var(--blue);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .loader-text {
+      font-size: 14px;
+      color: var(--w-50);
+      font-weight: 400;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    body.is-loading .top-bar,
+    body.is-loading .editor-body {
+      opacity: 0;
+    }
+
+    body:not(.is-loading) .top-bar,
+    body:not(.is-loading) .editor-body {
+      opacity: 1;
+      transition: opacity 0.3s ease 0.1s;
+    }
   </style>
 </head>
-<body>
+<body class="is-loading">
+
+  <!-- Page Loader -->
+  <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Loading editor">
+    <div class="loader-spinner"></div>
+    <span class="loader-text">Loading editor…</span>
+  </div>
 
   <!-- Skip Link -->
   <a href="#timelineTracks" class="skip-link">Skip to timeline</a>
 
   <!-- ARIA Live region for status announcements -->
   <div id="liveAnnouncer" aria-live="polite" aria-atomic="true" class="hidden" role="status"></div>
+
+  <!-- Drag ghost (follows cursor during drag) -->
+  <div id="dragGhost" class="drag-ghost" aria-hidden="true"></div>
 
   <!-- Top Bar -->
   <header class="top-bar">
@@ -1571,11 +2106,11 @@
         <span id="saveText">Draft saved</span>
       </span>
     </div>
-    <span class="editor-title">Chapters & slides</span>
+    <span class="editor-title">Video structure</span>
     <div class="top-bar-right">
-      <button class="btn btn-ai" id="aiGenerateBtn">&#10022; Generate with AI</button>
-      <button class="btn btn-ghost" id="previewBtn">Save draft</button>
-      <button class="btn btn-ghost" id="publishBtn">&#10003; Publish to media</button>
+      <button class="btn btn-ai" id="aiGenerateBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 7l-3.5 1.5L8 12l-1.5-3.5L3 7l3.5-1.5L8 2z" fill="currentColor"/><path d="M12 1l.75 1.75L14.5 3.5l-1.75.75L12 6l-.75-1.75L9.5 3.5l1.75-.75L12 1z" fill="currentColor" opacity="0.6"/></svg></span>Generate with AI</button>
+      <button class="btn btn-ghost" id="previewBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3C4.5 3 2 8 2 8s2.5 5 6 5 6-5 6-5-2.5-5-6-5z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></span>Preview</button>
+      <button class="btn btn-primary" id="publishBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Publish</button>
     </div>
   </header>
 
@@ -1590,6 +2125,20 @@
         <video id="videoPlayer" class="video-player" preload="metadata">
           <source src="Content/AX vs. UX Is This the Next Evolution of Design - Bonterra (1080p, h264).mp4" type="video/mp4">
         </video>
+        <!-- Selected Slide Overlay -->
+        <div class="player-slide-overlay" id="playerSlideOverlay" aria-label="Current slide">
+          <button class="player-slide-toggle" id="playerSlideToggle">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="playerSlideToggleText">Hide</span>
+          </button>
+          <div class="player-slide-image-wrap">
+            <button class="player-switch-btn" id="playerSwitchBtn" aria-label="Switch view">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.6744 9.27934L21.7563 13.3632L21.8282 13.4537L21.887 13.5492L21.9333 13.6489L21.9684 13.7556L21.9824 13.8172L21.9974 13.929L22 14L21.9897 14.1405L21.9824 14.1828L21.9535 14.2949L21.9231 14.3759L21.887 14.4508L21.8281 14.5463L21.7763 14.6137L21.7207 14.6744L17.6744 18.7207C17.3019 19.0931 16.6981 19.0931 16.3256 18.7207C15.9818 18.3769 15.9554 17.8359 16.2463 17.4617L16.3256 17.3719L18.7439 14.9536L12.9537 14.9537C12.4675 14.9537 12.0663 14.5899 12.0074 14.1196L12 14C12 13.5109 12.3682 13.1078 12.8425 13.0527L12.9537 13.0463L18.7426 13.0451L16.3256 10.6281C15.9798 10.2823 15.9551 9.73687 16.2515 9.36252L16.3256 9.27934C16.6981 8.90689 17.3019 8.90689 17.6744 9.27934ZM6.32562 5.27934C6.69807 4.90689 7.30193 4.90689 7.67438 5.27934L7.74849 5.36252C8.04493 5.73687 8.02023 6.28225 7.67438 6.6281L5.2574 9.04508L11.0463 9.04628L11.1575 9.0527C11.6318 9.10779 12 9.5109 12 10L11.9926 10.1196C11.9337 10.5899 11.5325 10.9537 11.0463 10.9537L5.25605 10.9536L7.67438 13.3719L7.75372 13.4617C8.04463 13.8359 8.01818 14.3769 7.67438 14.7207C7.30193 15.0931 6.69807 15.0931 6.32562 14.7207L2.25793 10.6523L2.18664 10.5668L2.12413 10.4708L2.07695 10.3759L2.03697 10.2639L2.01028 10.1405L2 10C2 9.95226 2.00351 9.90534 2.01036 9.85937L2.01758 9.81716L2.04651 9.70514L2.08932 9.59642L2.12415 9.52899L2.18631 9.43351L2.24369 9.36325L6.32562 5.27934Z" fill="currentColor"/></svg>
+            </button>
+            <img class="player-slide-image" id="playerSlideImage" src="" alt="Current slide">
+          </div>
+        </div>
+
         <div class="player-controls">
           <button class="play-btn" id="playBtn" aria-label="Play">&#9654;</button>
           <div class="progress-bar" id="progressBar">
@@ -1608,8 +2157,8 @@
       <div class="timeline-area">
         <div class="timeline-toolbar">
           <div class="timeline-actions">
-            <button class="btn btn-sm" id="addChapterBtn">+ Add chapter</button>
-            <button class="btn btn-sm" id="addSlideBtn">+ Upload slide deck</button>
+            <button class="btn btn-sm" id="addChapterBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6C4 5.44772 4.44772 5 5 5H16C16.5523 5 17 5.44772 17 6C17 6.55228 16.5523 7 16 7H5C4.44772 7 4 6.55228 4 6Z" fill="currentColor"/><path d="M4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12Z" fill="currentColor"/><path d="M4 18C4 17.4477 4.44772 17 5 17H11C11.5523 17 12 17.4477 12 18C12 18.5523 11.5523 19 11 19H5C4.44772 19 4 18.5523 4 18Z" fill="currentColor"/></svg></span>Add chapter</button>
+            <button class="btn btn-sm" id="addSlideBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></span>Add slides</button>
           </div>
           <div class="zoom-controls">
             <button class="zoom-btn" id="zoomFitBtn" aria-label="Fit timeline to view" title="Fit to view (0)">Fit</button>
@@ -1632,12 +2181,13 @@
           <!-- Tracks -->
           <div class="timeline-tracks" id="timelineTracks">
             <div class="tracks-playhead" id="tracksPlayhead"></div>
+            <div id="snapLine" class="snap-line" aria-hidden="true"></div>
             <div class="track" role="region" aria-label="Chapter track" id="chapterTrack">
               <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h12v2H3v-2z" fill="currentColor"/></svg></div>
               <div class="track-content" id="chapterTrackContent"></div>
             </div>
             <div class="track" role="region" aria-label="Slide track" id="slideTrack">
-              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v12h16V6H4zm2 2h5v5H6V8zm7 0h5v2h-5V8zm0 4h5v2h-5v-2z" fill="currentColor"/></svg></div>
+              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></div>
               <div class="track-content" id="slideTrackContent"></div>
             </div>
             <div class="track" role="region" aria-label="Video track">
@@ -1662,8 +2212,8 @@
       <h2 class="modal-title" id="deleteModalTitle">Delete item?</h2>
       <p class="modal-desc" id="deleteModalDesc">This action cannot be undone.</p>
       <div class="modal-actions">
-        <button class="btn btn-ghost" id="deleteCancelBtn">Cancel</button>
-        <button class="btn btn-danger" id="deleteConfirmBtn">Delete</button>
+        <button class="btn btn-ghost" id="deleteCancelBtn">Keep it</button>
+        <button class="btn btn-danger" id="deleteConfirmBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 4h8M5.5 4V3a1 1 0 011-1h1a1 1 0 011 1v1M4.5 4v7a1 1 0 001 1h3a1 1 0 001-1V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>Delete</button>
       </div>
     </div>
   </div>
@@ -1724,8 +2274,24 @@
       return m + ':' + s.toString().padStart(2, '0');
     }
 
+    function formatTimeHMS(seconds) {
+      if (isNaN(seconds)) return '00:00:00';
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+    }
+
     playBtn.addEventListener('click', togglePlay);
-    video.addEventListener('click', togglePlay);
+    video.addEventListener('click', () => {
+      const videoArea = document.querySelector('.video-area');
+      if (videoArea.classList.contains('slide-main')) {
+        videoArea.classList.remove('slide-main');
+        if (typeof slideIsMainView !== 'undefined') slideIsMainView = false;
+        return;
+      }
+      togglePlay();
+    });
 
     function togglePlay() {
       if (video.paused) {
@@ -1757,6 +2323,7 @@
         progressFill.style.width = pct + '%';
         timestampEl.textContent = formatTime(video.currentTime) + ' / ' + formatTime(videoDuration);
         updatePlayhead(pct);
+        updatePlayerSlide();
       });
     });
 
@@ -1798,7 +2365,8 @@
       const tracksLeft = trackRect.left - tracksRect.left + px;
       tracksPlayhead.style.left = tracksLeft + 'px';
 
-      document.getElementById('scrubberTooltip').textContent = formatTime(video.currentTime);
+      document.getElementById('scrubberTooltip').textContent = videoDuration >= 3600 ? formatTimeHMS(video.currentTime) : formatTime(video.currentTime);
+      updatePlayerSlide();
     }
 
     function updatePlayhead(pct) {
@@ -2047,13 +2615,21 @@
       renderChapterTrack();
       renderSlideTrack();
       renderPanel();
+      updatePlayerSlide();
+      const isEmpty = data.chapters.length === 0 && data.slides.length === 0;
+      document.getElementById('playheadRuler').style.display = isEmpty ? 'none' : '';
+      document.getElementById('tracksPlayhead').style.display = isEmpty ? 'none' : '';
     }
 
     function renderChapterTrack() {
       const container = document.getElementById('chapterTrackContent');
       container.innerHTML = '';
+      container.setAttribute('role', 'list');
+      container.setAttribute('aria-label', 'Chapter segments');
 
       if (data.chapters.length === 0) {
+        container.removeAttribute('role');
+        container.removeAttribute('aria-label');
         container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptyChapterClick">Click to add your first chapter</div></div>';
         document.getElementById('emptyChapterClick').addEventListener('click', addChapter);
         return;
@@ -2066,12 +2642,24 @@
         const el = document.createElement('div');
         el.className = 'chapter-segment' + (selectedItem && selectedItem.type === 'chapter' && selectedItem.index === i ? ' active' : '');
         el.style.width = widthPx + 'px';
-        el.textContent = ch.title;
-        el.title = formatTime(ch.time) + ' - ' + ch.title + ' (drag to move)';
-        el.setAttribute('role', 'button');
+
+        let handles = '';
+        if (i > 0) handles += '<span class="resize-handle left" data-side="left"></span>';
+        if (i < data.chapters.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
+        el.innerHTML = handles + '<span class="segment-title">' + ch.title + '</span>';
+
+        el.title = formatTime(ch.time) + ' - ' + ch.title;
+        el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
         el.setAttribute('aria-label', 'Chapter: ' + ch.title + ' at ' + formatTime(ch.time));
-        el.addEventListener('mousedown', (e) => initDrag(e, 'chapter', i));
+        el.setAttribute('aria-roledescription', 'resizable chapter');
+        el.addEventListener('mousedown', (e) => {
+          if (e.target.classList.contains('resize-handle')) {
+            initResize(e, 'chapter', i, e.target.dataset.side);
+          } else {
+            initDrag(e, 'chapter', i);
+          }
+        });
         el.addEventListener('dblclick', (e) => {
           e.stopPropagation();
           const startT = ch.time;
@@ -2088,9 +2676,13 @@
     function renderSlideTrack() {
       const container = document.getElementById('slideTrackContent');
       container.innerHTML = '';
+      container.setAttribute('role', 'list');
+      container.setAttribute('aria-label', 'Slide segments');
 
       if (data.slides.length === 0) {
-        container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptySlideClick">Click or drag and drop a slide deck</div></div>';
+        container.removeAttribute('role');
+        container.removeAttribute('aria-label');
+        container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptySlideClick">Drag and drop or click to add slides</div></div>';
         document.getElementById('emptySlideClick').addEventListener('click', addSlide);
         return;
       }
@@ -2103,13 +2695,26 @@
         const el = document.createElement('div');
         el.className = 'slide-segment' + (selectedItem && selectedItem.type === 'slide' && selectedItem.index === i ? ' active' : '');
         el.style.width = widthPx + 'px';
-        el.title = formatTime(sl.time) + ' - ' + (sl.title || 'Slide ' + (i + 1)) + ' (drag to move)';
-        el.setAttribute('role', 'button');
+        el.title = formatTime(sl.time) + ' - ' + sl.title;
+        el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
-        el.setAttribute('aria-label', 'Slide: ' + (sl.title || 'Slide ' + (i + 1)) + ' at ' + formatTime(sl.time));
-        el.innerHTML = (sl.image ? '<img class="slide-segment-thumb" src="' + sl.image + '" alt="' + (sl.title || 'Slide ' + (i + 1)) + ' thumbnail" draggable="false">' : '') +
-          '<span class="slide-segment-label">' + (sl.title || 'Slide ' + (i + 1)) + '</span>';
-        el.addEventListener('mousedown', (e) => initDrag(e, 'slide', i));
+        el.setAttribute('aria-label', 'Slide: ' + sl.title + ' at ' + formatTime(sl.time));
+        el.setAttribute('aria-roledescription', 'resizable slide');
+
+        let handles = '';
+        if (i > 0) handles += '<span class="resize-handle left" data-side="left"></span>';
+        if (i < data.slides.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
+        el.innerHTML = handles +
+          (sl.image ? '<img class="slide-segment-thumb" src="' + sl.image + '" alt="' + sl.title + ' thumbnail" draggable="false">' : '') +
+          '<span class="slide-segment-label">' + sl.title + '</span>';
+
+        el.addEventListener('mousedown', (e) => {
+          if (e.target.classList.contains('resize-handle')) {
+            initResize(e, 'slide', i, e.target.dataset.side);
+          } else {
+            initDrag(e, 'slide', i);
+          }
+        });
         el.addEventListener('dblclick', (e) => {
           e.stopPropagation();
           const startT = sl.time;
@@ -2132,12 +2737,12 @@
             <div class="panel-empty-title">Get started</div>
             <div class="panel-empty-desc">Generate chapters with AI, add a chapter, or upload a slide deck to begin editing.</div>
             <div class="panel-empty-actions">
-              <button class="btn-ai-lg" id="panelAiBtn">&#10022; Generate with AI</button>
+              <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 7l-3.5 1.5L8 12l-1.5-3.5L3 7l3.5-1.5L8 2z" fill="currentColor"/><path d="M12 1l.75 1.75L14.5 3.5l-1.75.75L12 6l-.75-1.75L9.5 3.5l1.75-.75L12 1z" fill="currentColor" opacity="0.6"/></svg></span>Generate with AI</button>
             </div>
             <div class="panel-empty-divider">or add manually</div>
             <div class="panel-empty-secondary">
-              <button class="btn-secondary-sm" id="panelAddChBtn">+ Add chapter</button>
-              <button class="btn-secondary-sm" id="panelAddSlBtn">+ Upload slide deck</button>
+              <button class="btn-secondary-sm" id="panelAddChBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6C4 5.44772 4.44772 5 5 5H16C16.5523 5 17 5.44772 17 6C17 6.55228 16.5523 7 16 7H5C4.44772 7 4 6.55228 4 6Z" fill="currentColor"/><path d="M4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12Z" fill="currentColor"/><path d="M4 18C4 17.4477 4.44772 17 5 17H11C11.5523 17 12 17.4477 12 18C12 18.5523 11.5523 19 11 19H5C4.44772 19 4 18.5523 4 18Z" fill="currentColor"/></svg></span>Add chapter</button>
+              <button class="btn-secondary-sm" id="panelAddSlBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></span>Add slides</button>
             </div>
           </div>
         `;
@@ -2163,18 +2768,18 @@
             <div class="panel-section-title">Introduction</div>
             <div class="form-group">
               <label class="form-label" for="introTitleInput">Title</label>
-              <input type="text" class="form-input" id="introTitleInput" value="${data.introduction.title}">
+              <input type="text" class="form-input" id="introTitleInput" value="${data.introduction.title}" placeholder="Enter video title">
             </div>
             <div class="form-group">
               <label class="form-label" for="introTextInput">Description</label>
-              <textarea class="form-textarea" id="introTextInput">${data.introduction.text}</textarea>
+              <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers">${data.introduction.text}</textarea>
             </div>
           </div>`;
         } else if (selectedItem.type === 'chapter' && data.chapters[selectedItem.index]) {
           const ch = data.chapters[selectedItem.index];
           html += `<div class="selected-indicator">
             <span class="selected-color" style="background: var(--chapter-color);"></span>
-            <span class="selected-label">Chapter ${selectedItem.index + 1} of ${data.chapters.length}</span>
+            <span class="selected-label">Chapter</span>
             <span class="selected-time">${formatTime(ch.time)}</span>
           </div>
           <div class="panel-section">
@@ -2183,53 +2788,53 @@
               <label class="form-label" for="chapterTimeInput">Timestamp</label>
               <div class="timestamp-input">
                 <input type="text" class="form-input" id="chapterTimeInput" value="${formatTime(ch.time)}" style="width:100px;">
-                <button class="use-current-btn" id="useCurrentTimeBtn">Use current time</button>
+                <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3V4.06189C7.38128 4.51314 4.51314 7.38128 4.06189 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H4.06189C4.51314 16.6187 7.38128 19.4869 11 19.9381V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V19.9381C16.6187 19.4869 19.4869 16.6187 19.9381 13H21C21.5523 13 22 12.5523 22 12C22 11.4477 21.5523 11 21 11H19.9381C19.4869 7.38128 16.6187 4.51314 13 4.06189V3ZM6.08296 11C6.50448 8.4875 8.4875 6.50448 11 6.08296V7C11 7.55228 11.4477 8 12 8C12.5523 8 13 7.55228 13 7V6.08296C15.5125 6.50448 17.4955 8.4875 17.917 11H17C16.4477 11 16 11.4477 16 12C16 12.5523 16.4477 13 17 13H17.917C17.4955 15.5125 15.5125 17.4955 13 17.917V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V17.917C8.4875 17.4955 6.50448 15.5125 6.08296 13H7C7.55228 13 8 12.5523 8 12C8 11.4477 7.55228 11 7 11H6.08296ZM12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="currentColor"/></svg><span class="ds-hint"><span class="ds-hint-arrow"><svg width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M0 9L5.4 2Q7 0 8.6 2L14 9Z" fill="currentColor"/></svg></span><span class="ds-hint-body">Snap to playhead</span></span></button>
               </div>
             </div>
             <div class="form-group">
               <label class="form-label" for="chapterTitleInput">Title</label>
-              <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}">
+              <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Chapter title" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="chapterSummaryInput">Summary</label>
-              <textarea class="form-textarea" id="chapterSummaryInput">${ch.summary || ''}</textarea>
+              <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers">${ch.summary || ''}</textarea>
             </div>
             ${ch.ai ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><span class="ai-badge">&#10022; AI</span><span style="font-size:11px;color:var(--text-tertiary);">Generated</span></div>' : ''}
           </div>
           <div class="panel-actions">
-            <button class="btn btn-danger btn-sm" id="deleteItemBtn">Delete chapter</button>
+            <button class="btn btn-danger btn-sm" id="deleteItemBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 4h8M5.5 4V3a1 1 0 011-1h1a1 1 0 011 1v1M4.5 4v7a1 1 0 001 1h3a1 1 0 001-1V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>Delete chapter</button>
           </div>`;
         } else if (selectedItem.type === 'slide' && data.slides[selectedItem.index]) {
           const sl = data.slides[selectedItem.index];
           html += `<div class="selected-indicator">
             <span class="selected-color" style="background: var(--slide-color);"></span>
-            <span class="selected-label">Slide ${selectedItem.index + 1} of ${data.slides.length}</span>
+            <span class="selected-label">Slide</span>
             <span class="selected-time">${formatTime(sl.time)}</span>
           </div>
           <div class="panel-section">
             <div class="panel-section-title">Slide Properties</div>
             ${sl.image ? `<div class="slide-thumb-container">
-              <img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title || 'Slide ' + (selectedItem.index + 1)}">
-              <button class="slide-thumb-replace" id="replaceSlideBtn">Replace</button>
+              <img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title}">
+              <button class="slide-thumb-replace" id="replaceSlideBtn">Replace slide</button>
             </div>` : ''}
             <div class="form-group">
               <label class="form-label" for="slideTimeInput">Timestamp</label>
               <div class="timestamp-input">
                 <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}" style="width:100px;">
-                <button class="use-current-btn" id="useCurrentTimeBtn">Use current time</button>
+                <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3V4.06189C7.38128 4.51314 4.51314 7.38128 4.06189 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H4.06189C4.51314 16.6187 7.38128 19.4869 11 19.9381V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V19.9381C16.6187 19.4869 19.4869 16.6187 19.9381 13H21C21.5523 13 22 12.5523 22 12C22 11.4477 21.5523 11 21 11H19.9381C19.4869 7.38128 16.6187 4.51314 13 4.06189V3ZM6.08296 11C6.50448 8.4875 8.4875 6.50448 11 6.08296V7C11 7.55228 11.4477 8 12 8C12.5523 8 13 7.55228 13 7V6.08296C15.5125 6.50448 17.4955 8.4875 17.917 11H17C16.4477 11 16 11.4477 16 12C16 12.5523 16.4477 13 17 13H17.917C17.4955 15.5125 15.5125 17.4955 13 17.917V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V17.917C8.4875 17.4955 6.50448 15.5125 6.08296 13H7C7.55228 13 8 12.5523 8 12C8 11.4477 7.55228 11 7 11H6.08296ZM12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="currentColor"/></svg><span class="ds-hint"><span class="ds-hint-arrow"><svg width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M0 9L5.4 2Q7 0 8.6 2L14 9Z" fill="currentColor"/></svg></span><span class="ds-hint-body">Snap to playhead</span></span></button>
               </div>
             </div>
             <div class="form-group">
               <label class="form-label" for="slideTitleInput">Title</label>
-              <input type="text" class="form-input" id="slideTitleInput" value="${sl.title || ''}">
+              <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Slide title" required>
             </div>
             <div class="form-group">
               <label class="form-label" for="slideDescInput">Description</label>
-              <textarea class="form-textarea" id="slideDescInput">${sl.description || ''}</textarea>
+              <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide">${sl.description || ''}</textarea>
             </div>
           </div>
           <div class="panel-actions">
-            <button class="btn btn-danger btn-sm" id="deleteItemBtn">Remove slide</button>
+            <button class="btn btn-danger btn-sm" id="deleteItemBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 4h8M5.5 4V3a1 1 0 011-1h1a1 1 0 011 1v1M4.5 4v7a1 1 0 001 1h3a1 1 0 001-1V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>Remove slide</button>
           </div>`;
         }
       }
@@ -2248,7 +2853,7 @@
           const isActive = selectedItem && selectedItem.type === item.type && selectedItem.index === item.index;
           html += `<li class="chapter-list-item ${isActive ? 'active' : ''}" data-type="${item.type}" data-index="${item.index}">
             <span class="chapter-list-time">${formatTime(item.time)}</span>
-            <span class="chapter-list-title">${item.title || (item.type === 'slide' ? 'Slide ' + (item.index + 1) : 'Untitled')}</span>
+            <span class="chapter-list-title">${item.title}</span>
             <span class="chapter-list-type type-${item.type}">${item.type === 'chapter' ? 'Ch' : 'Sl'}</span>
           </li>`;
         });
@@ -2293,7 +2898,18 @@
       if (introText) introText.addEventListener('input', (e) => { data.introduction.text = e.target.value; triggerSave(); });
 
       const chTitle = document.getElementById('chapterTitleInput');
-      if (chTitle) chTitle.addEventListener('input', (e) => { data.chapters[selectedItem.index].title = e.target.value; renderChapterTrack(); triggerSave(); });
+      if (chTitle) {
+        chTitle.addEventListener('input', (e) => {
+          if (e.target.value.trim()) {
+            data.chapters[selectedItem.index].title = e.target.value;
+            renderChapterTrack();
+            triggerSave();
+          }
+        });
+        chTitle.addEventListener('blur', (e) => {
+          if (!e.target.value.trim()) e.target.value = data.chapters[selectedItem.index].title;
+        });
+      }
 
       const chSummary = document.getElementById('chapterSummaryInput');
       if (chSummary) chSummary.addEventListener('input', (e) => { data.chapters[selectedItem.index].summary = e.target.value; triggerSave(); });
@@ -2316,7 +2932,18 @@
       });
 
       const slTitle = document.getElementById('slideTitleInput');
-      if (slTitle) slTitle.addEventListener('input', (e) => { data.slides[selectedItem.index].title = e.target.value; renderSlideTrack(); triggerSave(); });
+      if (slTitle) {
+        slTitle.addEventListener('input', (e) => {
+          if (e.target.value.trim()) {
+            data.slides[selectedItem.index].title = e.target.value;
+            renderSlideTrack();
+            triggerSave();
+          }
+        });
+        slTitle.addEventListener('blur', (e) => {
+          if (!e.target.value.trim()) e.target.value = data.slides[selectedItem.index].title;
+        });
+      }
 
       const slDesc = document.getElementById('slideDescInput');
       if (slDesc) slDesc.addEventListener('input', (e) => { data.slides[selectedItem.index].description = e.target.value; triggerSave(); });
@@ -2340,12 +2967,22 @@
 
       const replaceBtn = document.getElementById('replaceSlideBtn');
       if (replaceBtn) replaceBtn.addEventListener('click', () => {
-        const nextImg = slideImages[slideImageIndex % slideImages.length];
-        slideImageIndex++;
-        data.slides[selectedItem.index].image = nextImg;
-        render();
-        triggerSave();
-        showToast('Slide image replaced');
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            data.slides[selectedItem.index].image = ev.target.result;
+            render();
+            triggerSave();
+            showToast('Slide image replaced');
+          };
+          reader.readAsDataURL(file);
+        });
+        input.click();
       });
 
       // Content list items
@@ -2374,7 +3011,7 @@
       let time = video.currentTime || 0;
       // First chapter always starts at 0:00 to fill timeline from the beginning
       if (data.chapters.length === 0) time = 0;
-      const newChapter = { time, title: 'New Chapter', summary: '', ai: false };
+      const newChapter = { time, title: 'Untitled chapter', summary: '', ai: false };
       data.chapters.push(newChapter);
       data.chapters.sort((a, b) => a.time - b.time);
       const newIndex = data.chapters.indexOf(newChapter);
@@ -2391,7 +3028,7 @@
       if (data.slides.length === 0) time = 0;
       const image = slideImages[slideImageIndex % slideImages.length];
       slideImageIndex++;
-      const newSlide = { time, title: '', description: '', image };
+      const newSlide = { time, title: 'Untitled slide', description: '', image };
       data.slides.push(newSlide);
       data.slides.sort((a, b) => a.time - b.time);
       const newIndex = data.slides.indexOf(newSlide);
@@ -2597,6 +3234,56 @@
       }, 1000);
     }
 
+    // ===== PLAYER SLIDE OVERLAY =====
+    let slideOverlayHidden = false;
+
+    function updatePlayerSlide() {
+      const overlay = document.getElementById('playerSlideOverlay');
+      if (data.slides.length === 0) {
+        overlay.classList.remove('visible');
+        return;
+      }
+
+      const currentTime = video.currentTime;
+      let activeSlide = null;
+      for (let i = data.slides.length - 1; i >= 0; i--) {
+        if (currentTime >= data.slides[i].time) {
+          activeSlide = data.slides[i];
+          break;
+        }
+      }
+
+      if (!activeSlide || !activeSlide.image) {
+        overlay.classList.remove('visible');
+        return;
+      }
+
+      overlay.classList.add('visible');
+      const img = document.getElementById('playerSlideImage');
+      if (img.src !== activeSlide.image) {
+        img.src = activeSlide.image;
+        img.alt = activeSlide.title;
+      }
+    }
+
+    document.getElementById('playerSlideToggle').addEventListener('click', () => {
+      const overlay = document.getElementById('playerSlideOverlay');
+      slideOverlayHidden = !slideOverlayHidden;
+      overlay.classList.toggle('collapsed', slideOverlayHidden);
+      document.getElementById('playerSlideToggleText').textContent = slideOverlayHidden ? 'Show' : 'Hide';
+    });
+
+    let slideIsMainView = false;
+    function toggleSwitchView() {
+      const videoArea = document.querySelector('.video-area');
+      slideIsMainView = !slideIsMainView;
+      videoArea.classList.toggle('slide-main', slideIsMainView);
+    }
+    document.getElementById('playerSwitchBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSwitchView();
+    });
+
     // ===== TOAST =====
     function showToast(message) {
       const toast = document.getElementById('toast');
@@ -2621,6 +3308,34 @@
       }
 
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      // Keyboard reorder of selected segment (swap with neighbor, preserve durations)
+      if ((e.code === 'ArrowLeft' || e.code === 'ArrowRight') && selectedItem
+          && (selectedItem.type === 'chapter' || selectedItem.type === 'slide')
+          && document.activeElement
+          && (document.activeElement.classList.contains('chapter-segment') || document.activeElement.classList.contains('slide-segment'))) {
+        e.preventDefault();
+        const direction = e.code === 'ArrowLeft' ? -1 : 1;
+        const arr = selectedItem.type === 'chapter' ? data.chapters : data.slides;
+        const idx = selectedItem.index;
+        const swapIdx = idx + direction;
+        if (swapIdx < 0 || swapIdx >= arr.length) return;
+
+        pushHistory();
+        const durations = getSegmentDurations(selectedItem.type);
+        // Swap item and duration
+        [arr[idx], arr[swapIdx]] = [arr[swapIdx], arr[idx]];
+        [durations[idx], durations[swapIdx]] = [durations[swapIdx], durations[idx]];
+        rebuildTimesFromDurations(selectedItem.type, durations);
+
+        selectedItem.index = swapIdx;
+        render();
+        triggerSaveUI();
+        announce((selectedItem.type === 'chapter' ? 'Chapter' : 'Slide') + ' moved to position ' + (swapIdx + 1));
+        const segments = document.querySelectorAll('.' + selectedItem.type + '-segment');
+        if (segments[swapIdx]) segments[swapIdx].focus();
+        return;
+      }
 
       if (e.code === 'Space') {
         e.preventDefault();
@@ -2755,8 +3470,26 @@
       });
     }
 
-    // ===== DRAG & DROP =====
+    // ===== DRAG & DROP (reorder — preserves duration) =====
     let dragState = null;
+
+    function getSegmentDurations(type) {
+      const arr = type === 'chapter' ? data.chapters : data.slides;
+      const dur = videoDuration || 1;
+      return arr.map((item, i) => {
+        const nextTime = (i < arr.length - 1) ? arr[i + 1].time : dur;
+        return nextTime - item.time;
+      });
+    }
+
+    function rebuildTimesFromDurations(type, durations) {
+      const arr = type === 'chapter' ? data.chapters : data.slides;
+      let t = 0;
+      for (let i = 0; i < arr.length; i++) {
+        arr[i].time = t;
+        t += durations[i];
+      }
+    }
 
     function initDrag(e, type, index) {
       if (e.button !== 0) return;
@@ -2766,17 +3499,211 @@
         ? document.getElementById('chapterTrackContent')
         : document.getElementById('slideTrackContent');
       const rect = trackContent.getBoundingClientRect();
+      const timelineArea = document.querySelector('.timeline-area');
+
+      const durations = getSegmentDurations(type);
 
       dragState = {
         type,
         index,
         trackRect: rect,
         startX: e.clientX,
-        moved: false
+        moved: false,
+        indicator: null,
+        indicatorLabel: null,
+        scrollLeft: timelineArea.scrollLeft,
+        lastClientX: e.clientX,
+        lastClientY: e.clientY,
+        element: e.currentTarget,
+        autoScrollRAF: null,
+        originalDurations: durations,
+        targetInsertIdx: index
       };
 
       document.addEventListener('mousemove', onDragMove);
       document.addEventListener('mouseup', onDragEnd);
+    }
+
+    // -- Ghost thumbnail --
+    function createDragGhost(segmentEl) {
+      const ghost = document.getElementById('dragGhost');
+      // Clone content without resize handles
+      const clone = segmentEl.cloneNode(true);
+      clone.querySelectorAll('.resize-handle').forEach(h => h.remove());
+      ghost.innerHTML = clone.innerHTML;
+      ghost.style.width = Math.min(200, segmentEl.offsetWidth) + 'px';
+      ghost.style.height = segmentEl.offsetHeight + 'px';
+      ghost.style.background = getComputedStyle(segmentEl).background;
+      ghost.classList.add('visible');
+    }
+
+    function updateGhostPosition(clientX, clientY) {
+      const ghost = document.getElementById('dragGhost');
+      ghost.style.left = (clientX - ghost.offsetWidth / 2) + 'px';
+      ghost.style.top = (clientY - ghost.offsetHeight - 16) + 'px';
+    }
+
+    function removeDragGhost() {
+      const ghost = document.getElementById('dragGhost');
+      ghost.classList.remove('visible');
+      setTimeout(() => { ghost.innerHTML = ''; }, 150);
+    }
+
+    // -- Snap logic --
+    function getSnapTargets(type) {
+      const targets = [0, videoDuration, video.currentTime];
+      data.chapters.forEach((ch, i) => {
+        if (type === 'chapter' && i === dragState.index) return;
+        targets.push(ch.time);
+      });
+      data.slides.forEach((sl, i) => {
+        if (type === 'slide' && i === dragState.index) return;
+        targets.push(sl.time);
+      });
+      return targets;
+    }
+
+    function applySnap(rawTime, targets) {
+      const threshold = 10 / pixelsPerSecond;
+      let closest = null;
+      let closestDist = Infinity;
+      for (let i = 0; i < targets.length; i++) {
+        const dist = Math.abs(rawTime - targets[i]);
+        if (dist < threshold && dist < closestDist) {
+          closest = targets[i];
+          closestDist = dist;
+        }
+      }
+      return closest !== null ? { time: closest, snapped: true } : { time: rawTime, snapped: false };
+    }
+
+    function showSnapLine(timePx) {
+      const snapLine = document.getElementById('snapLine');
+      snapLine.style.left = timePx + 'px';
+      snapLine.classList.add('active');
+    }
+
+    function hideSnapLine() {
+      document.getElementById('snapLine').classList.remove('active');
+    }
+
+    // -- Auto-scroll --
+    function startAutoScroll() {
+      if (dragState.autoScrollRAF) return;
+      autoScrollFrame();
+    }
+
+    function autoScrollFrame() {
+      if (!dragState || !dragState.moved) return;
+      const timelineArea = document.querySelector('.timeline-area');
+      const areaRect = timelineArea.getBoundingClientRect();
+      const cursorX = dragState.lastClientX;
+      const edgeZone = 60;
+
+      let scrollDelta = 0;
+      if (cursorX < areaRect.left + edgeZone) {
+        scrollDelta = -((areaRect.left + edgeZone - cursorX) / edgeZone) * 8;
+      } else if (cursorX > areaRect.right - edgeZone) {
+        scrollDelta = ((cursorX - (areaRect.right - edgeZone)) / edgeZone) * 8;
+      }
+
+      if (scrollDelta !== 0) {
+        timelineArea.scrollLeft += scrollDelta;
+        updateDragPosition(dragState.lastClientX);
+      }
+
+      dragState.autoScrollRAF = requestAnimationFrame(autoScrollFrame);
+    }
+
+    function stopAutoScroll() {
+      if (dragState && dragState.autoScrollRAF) {
+        cancelAnimationFrame(dragState.autoScrollRAF);
+        dragState.autoScrollRAF = null;
+      }
+    }
+
+    // -- Core position update (used by both mousemove and auto-scroll) --
+    function updateDragPosition(clientX) {
+      if (!dragState || !dragState.moved) return;
+
+      const trackContent = dragState.type === 'chapter'
+        ? document.getElementById('chapterTrackContent')
+        : document.getElementById('slideTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      dragState.trackRect = rect;
+
+      const relX = Math.max(0, Math.min(clientX - rect.left, rect.width));
+      const cursorTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+
+      // Determine target insertion index based on cursor position over segments
+      const arr = dragState.type === 'chapter' ? data.chapters : data.slides;
+      const durations = dragState.originalDurations;
+      let targetIdx = 0;
+
+      // Walk through segment boundaries (excluding dragged) to find where cursor lands
+      let accTime = 0;
+      let otherIdx = 0;
+      for (let i = 0; i < arr.length; i++) {
+        if (i === dragState.index) continue;
+        const segEnd = accTime + durations[i];
+        const midpoint = accTime + durations[i] / 2;
+        if (cursorTime > midpoint) {
+          targetIdx = otherIdx + 1;
+        }
+        accTime = segEnd;
+        otherIdx++;
+      }
+      dragState.targetInsertIdx = targetIdx;
+
+      // Calculate the pixel position of the insertion point
+      let insertPx = 0;
+      let count = 0;
+      for (let i = 0; i < arr.length; i++) {
+        if (i === dragState.index) continue;
+        if (count === targetIdx) break;
+        insertPx += durations[i] * pixelsPerSecond;
+        count++;
+      }
+
+      // Snap indicator
+      const snapTargets = getSnapTargets(dragState.type);
+      const snapResult = applySnap(cursorTime, snapTargets);
+      if (snapResult.snapped) {
+        showSnapLine(snapResult.time * pixelsPerSecond);
+      } else {
+        hideSnapLine();
+      }
+
+      // Apply gap classes to segments
+      const segments = trackContent.querySelectorAll('.' + dragState.type + '-segment');
+      segments.forEach((seg, i) => {
+        seg.classList.toggle('dragging', i === dragState.index);
+        seg.classList.remove('gap-before', 'gap-after');
+      });
+
+      // Open gap at insertion point between other segments
+      let segCount = 0;
+      for (let i = 0; i < segments.length; i++) {
+        if (i === dragState.index) continue;
+        if (segCount === targetIdx - 1 && targetIdx > 0) {
+          segments[i].classList.add('gap-after');
+        } else if (segCount === targetIdx && targetIdx === 0) {
+          segments[i].classList.add('gap-before');
+        }
+        segCount++;
+      }
+
+      // Position the insertion indicator
+      if (!dragState.indicator) {
+        dragState.indicator = document.createElement('div');
+        dragState.indicator.className = 'drag-indicator';
+        dragState.indicatorLabel = document.createElement('span');
+        dragState.indicatorLabel.className = 'drag-indicator-label';
+        dragState.indicator.appendChild(dragState.indicatorLabel);
+        trackContent.appendChild(dragState.indicator);
+      }
+      dragState.indicator.style.left = insertPx + 'px';
+      dragState.indicatorLabel.textContent = formatTime(insertPx / pixelsPerSecond);
     }
 
     function onDragMove(e) {
@@ -2784,52 +3711,251 @@
 
       const dx = Math.abs(e.clientX - dragState.startX);
       if (dx < 5 && !dragState.moved) return;
-      dragState.moved = true;
 
-      const rect = dragState.trackRect;
-      const relX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
-      const newTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+      if (!dragState.moved) {
+        dragState.moved = true;
+        document.body.classList.add('is-dragging');
+        pushHistory();
+        createDragGhost(dragState.element);
+        announce('Dragging ' + dragState.type + '. Drop to reposition.');
 
-      if (dragState.type === 'chapter') {
-        data.chapters[dragState.index].time = newTime;
-      } else {
-        data.slides[dragState.index].time = newTime;
+        const track = dragState.type === 'chapter'
+          ? document.getElementById('chapterTrack')
+          : document.getElementById('slideTrack');
+        track.classList.add('drop-target-active');
+
+        // Collapse the dragged segment visually
+        const segments = track.querySelectorAll('.' + dragState.type + '-segment');
+        if (segments[dragState.index]) {
+          segments[dragState.index].classList.add('dragging');
+        }
+
+        startAutoScroll();
       }
 
-      // Re-sort and update index
-      const item = dragState.type === 'chapter' ? data.chapters[dragState.index] : data.slides[dragState.index];
-      const arr = dragState.type === 'chapter' ? data.chapters : data.slides;
-      arr.sort((a, b) => a.time - b.time);
-      dragState.index = arr.indexOf(item);
-      selectedItem = { type: dragState.type, index: dragState.index };
+      dragState.lastClientX = e.clientX;
+      dragState.lastClientY = e.clientY;
 
-      renderChapterTrack();
-      renderSlideTrack();
-
-      // Add dragging class
-      const segments = dragState.type === 'chapter'
-        ? document.querySelectorAll('.chapter-segment')
-        : document.querySelectorAll('.slide-segment');
-      segments.forEach((seg, i) => {
-        seg.classList.toggle('dragging', i === dragState.index);
-      });
+      updateGhostPosition(e.clientX, e.clientY);
+      updateDragPosition(e.clientX);
     }
 
     function onDragEnd(e) {
       if (!dragState) return;
 
+      document.body.classList.remove('is-dragging');
+      stopAutoScroll();
+      removeDragGhost();
+      hideSnapLine();
+
+      if (dragState.indicator) {
+        dragState.indicator.remove();
+      }
+
+      document.querySelectorAll('.track').forEach(t => t.classList.remove('drop-target-active'));
+
       if (!dragState.moved) {
-        // It was a click, not a drag
         selectItem(dragState.type, dragState.index);
       } else {
+        // Reorder while preserving all durations
+        const arr = dragState.type === 'chapter' ? data.chapters : data.slides;
+        const durations = dragState.originalDurations;
+        const fromIdx = dragState.index;
+        const targetIdx = dragState.targetInsertIdx;
+
+        // Remove item and its duration from their positions
+        const item = arr.splice(fromIdx, 1)[0];
+        const itemDuration = durations.splice(fromIdx, 1)[0];
+
+        // Insert at new position
+        const insertAt = targetIdx > fromIdx ? targetIdx - 1 : targetIdx;
+        arr.splice(insertAt, 0, item);
+        durations.splice(insertAt, 0, itemDuration);
+
+        // Rebuild all times from durations (preserves all segment lengths)
+        rebuildTimesFromDurations(dragState.type, durations);
+
+        selectedItem = { type: dragState.type, index: insertAt };
         render();
         triggerSave();
-        showToast(dragState.type === 'chapter' ? 'Chapter moved to ' + formatTime(data.chapters[dragState.index].time) : 'Slide moved to ' + formatTime(data.slides[dragState.index].time));
+        const itemName = item.title;
+        showToast('"' + itemName + '" moved to position ' + (insertAt + 1));
       }
 
       dragState = null;
       document.removeEventListener('mousemove', onDragMove);
       document.removeEventListener('mouseup', onDragEnd);
+    }
+
+    // ===== RESIZE HANDLES =====
+    let resizeState = null;
+    const MIN_SEGMENT_DURATION = 1;
+
+    function initResize(e, type, index, side) {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const trackContent = type === 'chapter'
+        ? document.getElementById('chapterTrackContent')
+        : document.getElementById('slideTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+
+      resizeState = {
+        type,
+        index,
+        side,
+        startX: e.clientX,
+        trackRect: rect,
+        moved: false
+      };
+
+      document.addEventListener('mousemove', onResizeMove);
+      document.addEventListener('mouseup', onResizeEnd);
+    }
+
+    function onResizeMove(e) {
+      if (!resizeState) return;
+
+      const dx = Math.abs(e.clientX - resizeState.startX);
+      if (dx < 3 && !resizeState.moved) return;
+
+      if (!resizeState.moved) {
+        resizeState.moved = true;
+        document.body.classList.add('is-resizing');
+        pushHistory();
+      }
+
+      const trackContent = resizeState.type === 'chapter'
+        ? document.getElementById('chapterTrackContent')
+        : document.getElementById('slideTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      const relX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+      const rawTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+
+      const arr = resizeState.type === 'chapter' ? data.chapters : data.slides;
+      const i = resizeState.index;
+
+      if (resizeState.side === 'left') {
+        const prevTime = (i > 0) ? arr[i - 1].time + MIN_SEGMENT_DURATION : 0;
+        const nextBound = (i < arr.length - 1) ? arr[i + 1].time - MIN_SEGMENT_DURATION : videoDuration - MIN_SEGMENT_DURATION;
+        const maxTime = Math.min(nextBound, videoDuration - MIN_SEGMENT_DURATION);
+        arr[i].time = Math.max(prevTime, Math.min(maxTime, rawTime));
+      } else {
+        const thisStart = arr[i].time + MIN_SEGMENT_DURATION;
+        const nextEnd = (i + 2 < arr.length) ? arr[i + 2].time - MIN_SEGMENT_DURATION : videoDuration - MIN_SEGMENT_DURATION;
+        arr[i + 1].time = Math.max(thisStart, Math.min(nextEnd, rawTime));
+      }
+
+      renderChapterTrack();
+      renderSlideTrack();
+    }
+
+    function onResizeEnd(e) {
+      if (!resizeState) return;
+
+      document.body.classList.remove('is-resizing');
+
+      if (resizeState.moved) {
+        render();
+        triggerSave();
+        showToast('Segment boundary adjusted');
+      }
+
+      resizeState = null;
+      document.removeEventListener('mousemove', onResizeMove);
+      document.removeEventListener('mouseup', onResizeEnd);
+    }
+
+    // ===== EXTERNAL FILE DROP =====
+    function initExternalDrop() {
+      const slideTrack = document.getElementById('slideTrack');
+      let dropOverlay = null;
+      let dropIndicator = null;
+      let enterCount = 0;
+
+      document.addEventListener('dragover', (e) => e.preventDefault());
+      document.addEventListener('drop', (e) => {
+        if (!e.target.closest('#slideTrack')) e.preventDefault();
+      });
+
+      slideTrack.addEventListener('dragenter', (e) => {
+        if (!e.dataTransfer.types.includes('Files')) return;
+        enterCount++;
+        e.preventDefault();
+        if (!dropOverlay) {
+          dropOverlay = document.createElement('div');
+          dropOverlay.className = 'drop-zone-overlay visible';
+          dropOverlay.innerHTML = '<span class="drop-zone-overlay-text">Drop image to add slide</span>';
+          slideTrack.style.position = 'relative';
+          slideTrack.appendChild(dropOverlay);
+        }
+        announce('Drop zone active. Drop image file to add a slide.');
+      });
+
+      slideTrack.addEventListener('dragover', (e) => {
+        if (!e.dataTransfer.types.includes('Files')) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+
+        if (!dropIndicator) {
+          dropIndicator = document.createElement('div');
+          dropIndicator.className = 'drag-indicator';
+          const label = document.createElement('span');
+          label.className = 'drag-indicator-label';
+          dropIndicator.appendChild(label);
+          const trackContent = document.getElementById('slideTrackContent');
+          trackContent.appendChild(dropIndicator);
+        }
+        const trackContent = document.getElementById('slideTrackContent');
+        const rect = trackContent.getBoundingClientRect();
+        const relX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+        const time = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+        dropIndicator.style.left = (time * pixelsPerSecond) + 'px';
+        dropIndicator.querySelector('.drag-indicator-label').textContent = formatTime(time);
+      });
+
+      slideTrack.addEventListener('dragleave', (e) => {
+        enterCount--;
+        if (enterCount <= 0) {
+          enterCount = 0;
+          if (dropOverlay) { dropOverlay.remove(); dropOverlay = null; }
+          if (dropIndicator) { dropIndicator.remove(); dropIndicator = null; }
+        }
+      });
+
+      slideTrack.addEventListener('drop', (e) => {
+        e.preventDefault();
+        enterCount = 0;
+        if (dropOverlay) { dropOverlay.remove(); dropOverlay = null; }
+        if (dropIndicator) { dropIndicator.remove(); dropIndicator = null; }
+
+        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        if (files.length === 0) { showToast('Only image files can be added as slides'); return; }
+
+        const trackContent = document.getElementById('slideTrackContent');
+        const rect = trackContent.getBoundingClientRect();
+        const relX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+        const dropTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+
+        pushHistory();
+        let added = 0;
+        files.forEach((file, i) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const slideTime = Math.min(videoDuration, dropTime + i * 2);
+            data.slides.push({ time: slideTime, title: file.name.replace(/\.[^.]+$/, ''), image: ev.target.result });
+            added++;
+            if (added === files.length) {
+              data.slides.sort((a, b) => a.time - b.time);
+              render();
+              triggerSave();
+              showToast(files.length === 1 ? 'Slide added from ' + file.name : files.length + ' slides added');
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+      });
     }
 
     // ===== RESIZE SYNC =====
@@ -2848,6 +3974,32 @@
     // ===== INIT =====
     pushHistory();
     render();
+    initExternalDrop();
+
+    function revealApp() {
+      document.body.classList.remove('is-loading');
+      document.getElementById('pageLoader').classList.add('loaded');
+    }
+
+    let videoReady = false;
+    let fontsReady = false;
+
+    function checkAllReady() {
+      if (videoReady && fontsReady) revealApp();
+    }
+
+    if (video.readyState >= 1) {
+      videoReady = true;
+    } else {
+      video.addEventListener('loadedmetadata', () => { videoReady = true; checkAllReady(); }, { once: true });
+    }
+
+    document.fonts.ready.then(() => { fontsReady = true; checkAllReady(); });
+
+    checkAllReady();
+
+    // Failsafe — reveal after 5s regardless
+    setTimeout(revealApp, 5000);
   </script>
 </body>
 </html>
