@@ -17,8 +17,8 @@ As a content editor, I want to reorder chapters and slides by dragging them alon
 |---|----------|-------------------|
 | 1 | Drag initiation | Drag activates after 5px mouse movement from mousedown position (dead zone prevents accidental drags) |
 | 2 | Duration preservation | Dragged segment retains its original duration after drop — no length change |
-| 3 | Gap indicator | A 14px gap opens between adjacent segments at the nearest valid drop position |
-| 4 | Insertion marker | A solid bright blue (#4da6ff) vertical marker appears in the gap with a timestamp label showing the target time |
+| 3 | Gap indicator | A gap equal to the dragged segment's width opens between adjacent segments at the nearest valid drop position |
+| 4 | Ghost placeholder | A semi-transparent ghost (dashed blue border, 35% opacity) of the segment appears in the gap, showing the segment name and target timestamp |
 | 5 | Ghost thumbnail | A semi-transparent (0.75 opacity) scaled-down clone of the segment follows the cursor during drag |
 | 6 | Original position | The dragged segment collapses to 0 width at 0.4 opacity in its original position |
 | 7 | Name preservation | Segment names remain unchanged after reordering |
@@ -29,6 +29,8 @@ As a content editor, I want to reorder chapters and slides by dragging them alon
 ### Test Cases
 
 - [ ] Drag first chapter to last position — verify all durations unchanged, names unchanged
+- [ ] Verify gap width matches the dragged segment's width exactly
+- [ ] Verify ghost placeholder shows segment name and target timestamp
 - [ ] Drag last slide to first position — verify times rebuild correctly from 0
 - [ ] Start drag then release within 5px — verify no reorder occurs
 - [ ] Drag and drop at same position — verify no state change
