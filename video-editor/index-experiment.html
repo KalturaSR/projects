@@ -224,6 +224,8 @@
     .btn-ai .btn-icon {
       display: flex;
       align-items: center;
+      width: 24px;
+      height: 24px;
     }
 
     .btn-sm {
@@ -273,10 +275,19 @@
 
     /* Main Canvas */
     .main-canvas {
-      flex: 1;
+      flex: 1 1 0;
       display: flex;
       flex-direction: column;
       min-width: 0;
+      overflow: hidden;
+    }
+
+    /* Main Area: Player + Sidebar row */
+    .main-area {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
     }
 
     /* Video Player */
@@ -1288,12 +1299,89 @@
 
     /* Right Panel */
     .right-panel {
-      width: 401px;
-      background: var(--w-20);
+      width: 320px;
+      background: #242424;
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      overflow-y: auto;
+      overflow: hidden;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      width: 40px;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .sidebar-nav-item {
+      width: 40px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-right: 2px solid transparent;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      border-radius: 0;
+      cursor: pointer;
+      transition: all 0.15s;
+      padding: 0;
+      position: relative;
+    }
+
+    .sidebar-nav-item:hover:not(:disabled) {
+      color: rgba(255,255,255,0.8);
+    }
+
+    .sidebar-nav-item.active {
+      color: #ffffff;
+      border-right-color: #006EFA;
+    }
+
+    .sidebar-nav-item:disabled,
+    .sidebar-nav-item.disabled {
+      color: rgba(255,255,255,0.2);
+      cursor: not-allowed;
+    }
+
+    .sidebar-nav-item:focus-visible {
+      outline: 2px solid #006EFA;
+      outline-offset: -2px;
+    }
+
+    .sidebar-nav-item svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Sidebar Tooltips */
+    .sidebar-nav-item[data-tooltip]:hover::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translate(-100%, -50%);
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      font-size: 12px;
+      line-height: 1;
+      padding: 6px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
     }
 
     .panel-section {
@@ -1310,57 +1398,57 @@
       margin-bottom: 16px;
     }
 
-    .form-group { margin-bottom: 20px; }
+    .form-group { margin-bottom: 0; }
 
     .form-label {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-size: 14px;
       font-weight: 700;
       line-height: 16px;
-      color: var(--w-100);
+      color: #ffffff;
       margin-bottom: 8px;
     }
 
     .form-input {
       width: 100%;
       height: 32px;
-      padding: 8px;
-      border-radius: var(--roundness-1);
-      border: 1px solid var(--w-40);
-      background: var(--b-30);
-      color: var(--w-100);
+      padding: 0 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.3);
+      color: #ffffff;
       font-size: 14px;
       line-height: 16px;
-      font-family: inherit;
+      font-family: 'Lato', sans-serif;
       outline: none;
       transition: border-color 0.15s;
     }
 
-    .form-input::placeholder { color: var(--w-30); }
-    .form-input:hover { border-color: var(--w-50); }
-    .form-input:focus { border-color: var(--w-100); }
+    .form-input::placeholder { color: rgba(255,255,255,0.4); }
+    .form-input:hover { border-color: rgba(255,255,255,0.6); }
+    .form-input:focus { border-color: #006EFA; }
 
     .form-textarea {
       width: 100%;
-      padding: 8px;
-      border-radius: var(--roundness-1);
-      border: 1px solid var(--w-40);
-      background: var(--b-30);
-      color: var(--w-100);
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.3);
+      color: #ffffff;
       font-size: 14px;
       line-height: 16px;
       outline: none;
       resize: vertical;
       min-height: 88px;
-      font-family: inherit;
+      font-family: 'Lato', sans-serif;
       transition: border-color 0.15s;
     }
 
-    .form-textarea::placeholder { color: var(--w-30); }
-    .form-textarea:hover { border-color: var(--w-50); }
-    .form-textarea:focus { border-color: var(--w-100); }
+    .form-textarea::placeholder { color: rgba(255,255,255,0.4); }
+    .form-textarea:hover { border-color: rgba(255,255,255,0.6); }
+    .form-textarea:focus { border-color: #006EFA; }
 
     .timestamp-input {
       display: flex;
@@ -1369,7 +1457,7 @@
     }
 
     .timestamp-input .form-input {
-      width: 100px;
+      width: 94px;
       font-variant-numeric: tabular-nums;
     }
 
@@ -1377,9 +1465,9 @@
       position: relative;
       width: 32px;
       height: 32px;
-      background: var(--b-60);
+      background: rgba(0,0,0,0.6);
       border: none;
-      border-radius: var(--roundness-1);
+      border-radius: 4px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -1389,7 +1477,7 @@
     }
 
     .use-current-btn:hover {
-      background: var(--w-20);
+      background: rgba(0,0,0,0.7);
     }
 
     .use-current-btn svg {
@@ -1417,14 +1505,15 @@
     }
 
     .use-current-btn .ds-hint-body {
-      background: var(--w-100);
-      color: var(--b-100);
+      background: #ffffff;
+      color: #000000;
       font-weight: 700;
       font-size: 12px;
       line-height: 16px;
       padding: 6px 8px;
       border-radius: 4px;
       white-space: nowrap;
+      font-family: 'Lato', sans-serif;
     }
 
     .use-current-btn .ds-hint-arrow {
@@ -1433,7 +1522,7 @@
     }
 
     .use-current-btn .ds-hint-arrow svg path {
-      fill: var(--w-100);
+      fill: #ffffff;
     }
 
     .panel-actions {
@@ -1488,10 +1577,23 @@
       list-style: none;
       overflow-y: auto;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
 
     .accordion-item:not(.expanded) {
-      border-bottom: 1px solid var(--w-40);
+      border-bottom: 1px solid rgba(255,255,255,0.4);
+      flex-shrink: 0;
+      min-height: 56px;
+    }
+
+    .accordion-item.expanded {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 200px;
+      overflow: hidden;
     }
 
     .accordion-row {
@@ -1508,26 +1610,38 @@
     }
 
     .accordion-item.expanded > .accordion-row {
-      background: var(--b-30);
+      background: rgba(0,0,0,0.3);
+      flex-shrink: 0;
     }
 
     .accordion-row-holder {
       display: flex;
       flex: 1 0 0;
-      gap: 16px;
+      gap: 8px;
       align-items: center;
       min-width: 0;
       font-weight: 700;
     }
 
-    .accordion-row-type {
-      font-size: 11px;
+    .accordion-row-time {
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: var(--w-80);
-      width: 80px;
+      color: rgba(255,255,255,0.7);
+      width: 35px;
       flex-shrink: 0;
+      text-align: center;
+    }
+
+    .accordion-row-type {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.7);
+      flex-shrink: 0;
+      white-space: nowrap;
     }
 
     .accordion-row-title {
@@ -1539,18 +1653,20 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 18px;
     }
 
     .accordion-row-chevron {
       width: 24px;
       height: 24px;
-      background: var(--b-60);
-      border-radius: var(--roundness-1);
+      background: rgba(0,0,0,0.6);
+      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       transition: transform 0.2s;
+      padding: 8px;
     }
 
     .accordion-row-chevron svg {
@@ -1564,12 +1680,15 @@
 
     .accordion-body {
       display: none;
-      background: var(--b-30);
+      background: rgba(0,0,0,0.3);
     }
 
     .accordion-item.expanded > .accordion-body {
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
     }
 
     .accordion-form {
@@ -1577,7 +1696,8 @@
       flex-direction: column;
       gap: 16px;
       padding: 24px;
-      background: var(--b-30);
+      background: rgba(0,0,0,0.3);
+      flex: 1;
     }
 
     .accordion-form .form-group {
@@ -1589,7 +1709,8 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      background: var(--b-30);
+      background: rgba(0,0,0,0.3);
+      flex-shrink: 0;
     }
 
     .accordion-delete-btn {
@@ -1599,17 +1720,18 @@
       height: 32px;
       padding: 8px 12px;
       cursor: pointer;
-      color: var(--tone-4);
+      color: #ca1c2d;
       font-size: 14px;
       font-weight: 700;
-      transition: color 0.15s;
+      font-family: 'Lato', sans-serif;
+      transition: background 0.15s;
       border: none;
-      background: none;
-      border-radius: var(--roundness-1);
+      background: transparent;
+      border-radius: 4px;
     }
 
     .accordion-delete-btn:hover {
-      color: var(--danger);
+      background: rgba(202,28,45,0.1);
     }
 
     .accordion-delete-btn svg {
@@ -1739,29 +1861,24 @@
     }
 
     .btn-ai-lg {
-      padding: 12px 24px;
-      font-size: 15px;
+      padding: 0 16px;
+      font-size: 16px;
       font-weight: 700;
-      border-radius: var(--radius-md);
-      background: var(--ai-gradient);
-      color: var(--w-100);
+      border-radius: 4px;
+      background: linear-gradient(70deg, #006EFA 11%, #2485FF 30%, #FF9DFF 134%);
+      color: white;
       border: none;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      height: 44px;
+      gap: 4px;
+      height: 40px;
       transition: all 0.2s;
-      box-shadow: 0 4px 16px rgba(0, 110, 250, 0.3);
-      width: 100%;
-      max-width: 280px;
     }
 
     .btn-ai-lg:hover {
-      opacity: 0.92;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(0, 110, 250, 0.45);
+      opacity: 0.9;
     }
 
     .btn-ai-lg:active { transform: scale(0.97); }
@@ -1769,6 +1886,8 @@
     .btn-ai-lg .btn-icon {
       display: flex;
       align-items: center;
+      width: 24px;
+      height: 24px;
     }
 
     .panel-empty-divider {
@@ -1828,6 +1947,156 @@
     }
 
     .hidden { display: none !important; }
+
+    /* Panel Intro View */
+    .panel-intro-view {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 40px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .panel-intro-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel-intro-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.2;
+    }
+
+    .panel-intro-card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel-intro-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: white;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      gap: 4px;
+      height: 24px;
+      padding: 0 8px;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .pill-btn:hover {
+      background: rgba(0,0,0,0.8);
+    }
+
+    .pill-btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .pill-btn-md {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .pill-btn-md:hover {
+      background: rgba(0,0,0,0.8);
+    }
+
+    .pill-btn-md svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .panel-getstarted {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 0 16px;
+      text-align: center;
+    }
+
+    .panel-getstarted-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+    }
+
+    .panel-getstarted-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: white;
+      line-height: 21px;
+      margin: 0;
+    }
+
+    .panel-getstarted-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .panel-getstarted-divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .panel-getstarted-divider > span:first-child,
+    .panel-getstarted-divider > span:last-child {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    .panel-getstarted-divider-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
 
     /* Toast */
     .toast {
@@ -2051,16 +2320,16 @@
     }
 
     .use-current-btn:focus-visible {
-      outline: 2px solid var(--accent-primary);
+      outline: 2px solid #006EFA;
       outline-offset: 2px;
     }
 
     .form-input:focus-visible {
-      border-color: var(--w-100);
+      border-color: #006EFA;
     }
 
     .form-textarea:focus-visible {
-      border-color: var(--w-100);
+      border-color: #006EFA;
     }
 
     .track-empty-text:focus-visible {
@@ -2088,13 +2357,28 @@
     /* Responsive layout - usable at 1024px */
     @media (max-width: 1279px) {
       .right-panel {
-        width: 340px;
+        width: 320px;
       }
     }
 
     @media (max-width: 1023px) {
       .editor-body {
         flex-direction: column;
+      }
+
+      .main-area {
+        flex: none;
+        min-height: 200px;
+      }
+
+      .sidebar-nav {
+        width: 40px;
+        padding: 0;
+      }
+
+      .sidebar-nav-item {
+        width: 40px;
+        height: 48px;
       }
 
       .right-panel {
@@ -2245,7 +2529,7 @@
     </div>
     <span class="editor-title">Video structure</span>
     <div class="top-bar-right">
-      <button class="btn btn-ai" id="aiGenerateBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 7l-3.5 1.5L8 12l-1.5-3.5L3 7l3.5-1.5L8 2z" fill="currentColor"/><path d="M12 1l.75 1.75L14.5 3.5l-1.75.75L12 6l-.75-1.75L9.5 3.5l1.75-.75L12 1z" fill="currentColor" opacity="0.6"/></svg></span>Generate with AI</button>
+      <button class="btn btn-ai" id="aiGenerateBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
       <button class="btn btn-ghost" id="previewBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3C4.5 3 2 8 2 8s2.5 5 6 5 6-5 6-5-2.5-5-6-5z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></span>Preview</button>
       <button class="btn btn-primary" id="publishBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Publish</button>
     </div>
@@ -2256,6 +2540,9 @@
 
     <!-- Main Canvas -->
     <main class="main-canvas">
+
+      <!-- Main Area: Player + Sidebar -->
+      <div class="main-area">
 
       <!-- Video Player -->
       <div class="video-area">
@@ -2299,6 +2586,26 @@
           <button class="player-action" id="fullscreenBtn" aria-label="Fullscreen">&#9974;</button>
         </div>
       </div>
+
+      <!-- Sidebar Navigation -->
+      <nav class="sidebar-nav" id="sidebarNav" aria-label="Panel navigation">
+        <div class="sidebar-nav-list">
+          <button class="sidebar-nav-item active" data-panel="intro" aria-label="Introduction" data-tooltip="Introduction">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2.52799 1.74765C2.19183 1.3214 2.2742 0.715626 2.71197 0.394611C3.14974 0.0735968 3.77713 0.158906 4.11329 0.585154L9.28699 7.14537C9.45507 7.3585 9.76876 7.40115 9.98765 7.24064C10.2065 7.08014 10.2477 6.77725 10.0796 6.56413L6.12328 1.54749C5.78712 1.12124 5.86949 0.515463 6.30726 0.194448C6.74502 -0.126566 7.37242 -0.0412577 7.70858 0.38499L13.3084 7.48547L12.5888 4.86474C12.4469 4.34781 12.7642 3.82144 13.2976 3.68906C13.831 3.55668 14.3784 3.86842 14.5204 4.38535C15.589 8.27753 18.1892 13.4078 14.0927 16.4117C11.4661 18.3378 7.70178 17.8259 5.68482 15.2684L0.206787 8.3223C-0.129372 7.89605 -0.0470024 7.29028 0.390765 6.96926C0.828533 6.64825 1.45592 6.73356 1.79208 7.1598L4.5311 10.6329C4.69918 10.846 5.01288 10.8886 5.23176 10.7281C5.45064 10.5676 5.49183 10.2647 5.32375 10.0516L1.36739 5.03498C1.03123 4.60873 1.1136 4.00295 1.55137 3.68194C1.98914 3.36092 2.61653 3.44623 2.95269 3.87248L6.45254 8.31028C6.62062 8.5234 6.93432 8.56605 7.1532 8.40555C7.37208 8.24504 7.41327 7.94215 7.24519 7.72903L2.52799 1.74765Z" fill="currentColor" transform="translate(3.84,3.21)"/></svg>
+          </button>
+          <button class="sidebar-nav-item disabled" data-panel="chapters" aria-label="Chapters" data-tooltip="Chapters" disabled>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg>
+          </button>
+          <button class="sidebar-nav-item disabled" data-panel="slides" aria-label="Slides" data-tooltip="Slides" disabled>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg>
+          </button>
+          <button class="sidebar-nav-item disabled" data-panel="all" aria-label="All" data-tooltip="All" disabled>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 0C1.44772 0 1 0.447715 1 1C1 1.55228 1.44772 2 2 2H15.5C16.8807 2 18 3.11929 18 4.5C18 5.88071 16.8807 7 15.5 7H4.5C2.01472 7 0 9.01472 0 11.5C0 13.9853 2.01472 16 4.5 16H15V17.0962C15 17.8169 15.8114 18.2467 16.4172 17.8469L19.5941 15.7507C20.1353 15.3936 20.1353 14.6064 19.5941 14.2493L16.4172 12.1531C15.8114 11.7533 15 12.1831 15 12.9038V14H4.5C3.11929 14 2 12.8807 2 11.5C2 10.1193 3.11929 9 4.5 9H15.5C17.9853 9 20 6.98528 20 4.5C20 2.01472 17.9853 0 15.5 0H2Z" fill="currentColor" transform="translate(2,3)"/></svg>
+          </button>
+        </div>
+      </nav>
+
+      </div><!-- /.main-area -->
 
       <!-- Timeline -->
       <div class="timeline-area">
@@ -2346,7 +2653,7 @@
       </div>
     </main>
 
-    <!-- Right Panel -->
+    <!-- Right Panel (Form) -->
     <aside class="right-panel" id="rightPanel" aria-label="Properties panel"></aside>
   </div>
 
@@ -2393,6 +2700,7 @@
     };
 
     let selectedItem = null; // { type: 'chapter'|'slide'|'intro', index: number }
+    let panelFilter = 'intro'; // 'all' | 'intro' | 'chapters' | 'slides'
     let videoDuration = 0;
     let deleteTarget = null;
 
@@ -2875,27 +3183,83 @@
       });
     }
 
+    function updateSidebarTabs() {
+      const hasChapters = data.chapters.length > 0;
+      const hasSlides = data.slides.length > 0;
+      const hasContent = hasChapters || hasSlides;
+      document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+        const panel = btn.dataset.panel;
+        if (panel === 'intro') {
+          btn.disabled = false;
+          btn.classList.remove('disabled');
+        } else if (panel === 'chapters') {
+          btn.disabled = !hasChapters;
+          btn.classList.toggle('disabled', !hasChapters);
+        } else if (panel === 'slides') {
+          btn.disabled = !hasSlides;
+          btn.classList.toggle('disabled', !hasSlides);
+        } else if (panel === 'all') {
+          btn.disabled = !hasContent;
+          btn.classList.toggle('disabled', !hasContent);
+        }
+      });
+    }
+
     function renderPanel() {
       const panel = document.getElementById('rightPanel');
+      updateSidebarTabs();
 
-      if (data.chapters.length === 0 && data.slides.length === 0 && !data.introduction.title) {
-        panel.innerHTML = `
-          <div class="panel-empty">
-            <div class="panel-empty-title">Get started</div>
-            <div class="panel-empty-desc">Generate chapters with AI, add a chapter, or upload a slide deck to begin editing.</div>
-            <div class="panel-empty-actions">
-              <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="18" height="18" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 7l-3.5 1.5L8 12l-1.5-3.5L3 7l3.5-1.5L8 2z" fill="currentColor"/><path d="M12 1l.75 1.75L14.5 3.5l-1.75.75L12 6l-.75-1.75L9.5 3.5l1.75-.75L12 1z" fill="currentColor" opacity="0.6"/></svg></span>Generate with AI</button>
-            </div>
-            <div class="panel-empty-divider">or add manually</div>
-            <div class="panel-empty-secondary">
-              <button class="btn-secondary-sm" id="panelAddChBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6C4 5.44772 4.44772 5 5 5H16C16.5523 5 17 5.44772 17 6C17 6.55228 16.5523 7 16 7H5C4.44772 7 4 6.55228 4 6Z" fill="currentColor"/><path d="M4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12Z" fill="currentColor"/><path d="M4 18C4 17.4477 4.44772 17 5 17H11C11.5523 17 12 17.4477 12 18C12 18.5523 11.5523 19 11 19H5C4.44772 19 4 18.5523 4 18Z" fill="currentColor"/></svg></span>Add chapter</button>
-              <button class="btn-secondary-sm" id="panelAddSlBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></span>Add slides</button>
-            </div>
+      const isEmpty = data.chapters.length === 0 && data.slides.length === 0;
+
+      if (panelFilter === 'intro' || (isEmpty && !data.introduction.text)) {
+        let introHtml = `<div class="panel-intro-view">`;
+        introHtml += `<div class="panel-intro-section">
+          <div class="panel-intro-title">Introduction</div>
+          <div class="panel-intro-card">
+            <p class="panel-intro-desc">Help viewers quickly understand what this video covers before they start watching.</p>
+            <button class="pill-btn" id="addIntroBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Add intro</button>
           </div>
-        `;
-        document.getElementById('panelAiBtn').addEventListener('click', generateWithAI);
-        document.getElementById('panelAddChBtn').addEventListener('click', addChapter);
-        document.getElementById('panelAddSlBtn').addEventListener('click', addSlide);
+        </div>`;
+
+        if (isEmpty) {
+          introHtml += `<div class="panel-getstarted">
+            <div class="panel-getstarted-title">Get started</div>
+            <p class="panel-getstarted-desc">Generate chapters with AI, add a chapter, or upload a slide deck to begin editing.</p>
+            <div class="panel-getstarted-actions">
+              <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
+              <div class="panel-getstarted-divider"><span></span><span class="panel-getstarted-divider-text">Or add manually</span><span></span></div>
+              <button class="pill-btn-md" id="panelAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Add chapter</button>
+              <button class="pill-btn-md" id="panelAddSlBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Upload slide deck</button>
+            </div>
+          </div>`;
+        }
+
+        introHtml += `</div>`;
+        panel.innerHTML = introHtml;
+
+        document.getElementById('addIntroBtn')?.addEventListener('click', () => {
+          selectedItem = { type: 'intro', index: 0 };
+          renderPanel();
+        });
+        if (isEmpty) {
+          document.getElementById('panelAiBtn')?.addEventListener('click', generateWithAI);
+          document.getElementById('panelAddChBtn')?.addEventListener('click', addChapter);
+          document.getElementById('panelAddSlBtn')?.addEventListener('click', addSlide);
+        }
+
+        if (data.introduction.text || selectedItem?.type === 'intro') {
+          panel.innerHTML = `<div class="panel-intro-view">
+            <div class="panel-intro-section">
+              <div class="panel-intro-title">Introduction</div>
+              <div class="accordion-form" style="padding:0;">
+                <div class="form-group">
+                  <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+                </div>
+              </div>
+            </div>
+          </div>`;
+          bindIntroPanelEvents();
+        }
         return;
       }
 
@@ -2908,34 +3272,38 @@
 
       html += '<div class="accordion-list">';
 
-      // Introduction (always first)
-      const introExpanded = isExpanded('intro', 0);
-      html += `<div class="accordion-item ${introExpanded ? 'expanded' : ''}" data-type="intro" data-index="0">
-        <div class="accordion-row">
-          <div class="accordion-row-holder">
-            <span class="accordion-row-type">Intro</span>
-          </div>
-          <span class="accordion-row-chevron">${chevronSvg}</span>
-        </div>
-        <div class="accordion-body">
-          <div class="accordion-form">
-            <div class="form-group">
-              <div class="form-label"><span>Title</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(data.introduction.title || '').length}/75</span></div>
-              <input type="text" class="form-input" id="introTitleInput" value="${data.introduction.title}" placeholder="Enter video title" maxlength="75">
+      // Introduction — show in 'all' filter
+      if (panelFilter === 'all') {
+        const introExpanded = isExpanded('intro', 0);
+        html += `<div class="accordion-item ${introExpanded ? 'expanded' : ''}" data-type="intro" data-index="0">
+          <div class="accordion-row">
+            <div class="accordion-row-holder">
+              <span class="accordion-row-type">Intro</span>
             </div>
-            <div class="form-group">
-              <div class="form-label"><span>Description</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(data.introduction.text || '').length}/500</span></div>
-              <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+            <span class="accordion-row-chevron">${chevronSvg}</span>
+          </div>
+          <div class="accordion-body">
+            <div class="accordion-form">
+              <div class="form-group">
+                <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+              </div>
             </div>
           </div>
-        </div>
-      </div>`;
+        </div>`;
+      }
 
-      // Chapters + Slides sorted by time
-      const allItems = [
-        ...data.chapters.map((c, i) => ({ ...c, type: 'chapter', index: i })),
-        ...data.slides.map((s, i) => ({ ...s, type: 'slide', index: i }))
-      ].sort((a, b) => a.time - b.time);
+      // Build items list based on filter
+      let allItems = [];
+      if (panelFilter === 'all') {
+        allItems = [
+          ...data.chapters.map((c, i) => ({ ...c, type: 'chapter', index: i })),
+          ...data.slides.map((s, i) => ({ ...s, type: 'slide', index: i }))
+        ].sort((a, b) => a.time - b.time);
+      } else if (panelFilter === 'chapters') {
+        allItems = data.chapters.map((c, i) => ({ ...c, type: 'chapter', index: i }));
+      } else if (panelFilter === 'slides') {
+        allItems = data.slides.map((s, i) => ({ ...s, type: 'slide', index: i }));
+      }
 
       allItems.forEach(item => {
         const expanded = isExpanded(item.type, item.index);
@@ -2944,6 +3312,7 @@
         html += `<div class="accordion-item ${expanded ? 'expanded' : ''}" data-type="${item.type}" data-index="${item.index}">
           <div class="accordion-row">
             <div class="accordion-row-holder">
+              <span class="accordion-row-time">${formatTime(item.time)}</span>
               <span class="accordion-row-type">${typeLabel}</span>
               <span class="accordion-row-title">${item.title}</span>
             </div>
@@ -2956,19 +3325,19 @@
           html += `
             <div class="accordion-form">
               <div class="form-group">
-                <div class="form-label"><span>Timestamp</span></div>
-                <div class="timestamp-input">
-                  <input type="text" class="form-input" id="chapterTimeInput" value="${formatTime(ch.time)}" style="width:94px;">
-                  <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead">${targetSvg}</button>
-                </div>
-              </div>
-              <div class="form-group">
                 <div class="form-label"><span>Title</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(ch.title || '').length}/75</span></div>
                 <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Chapter title" maxlength="75" required>
               </div>
               <div class="form-group">
                 <div class="form-label"><span>Summary</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(ch.summary || '').length}/500</span></div>
                 <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers" maxlength="500">${ch.summary || ''}</textarea>
+              </div>
+              <div class="form-group">
+                <div class="form-label"><span>Timestamp</span></div>
+                <div class="timestamp-input">
+                  <input type="text" class="form-input" id="chapterTimeInput" value="${formatTime(ch.time)}" style="width:94px;">
+                  <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                </div>
               </div>
             </div>
             <div class="accordion-delete-section">
@@ -2983,19 +3352,19 @@
                 <button class="slide-thumb-replace" id="replaceSlideBtn">Replace</button>
               </div>` : ''}
               <div class="form-group">
-                <div class="form-label"><span>Timestamp</span></div>
-                <div class="timestamp-input">
-                  <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}" style="width:94px;">
-                  <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead">${targetSvg}</button>
-                </div>
-              </div>
-              <div class="form-group">
                 <div class="form-label"><span>Title</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(sl.title || '').length}/75</span></div>
                 <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Slide title" maxlength="75" required>
               </div>
               <div class="form-group">
                 <div class="form-label"><span>Description</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(sl.description || '').length}/500</span></div>
                 <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+              </div>
+              <div class="form-group">
+                <div class="form-label"><span>Timestamp</span></div>
+                <div class="timestamp-input">
+                  <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}" style="width:94px;">
+                  <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                </div>
               </div>
             </div>
             <div class="accordion-delete-section">
@@ -3028,6 +3397,11 @@
       return null;
     }
 
+    function bindIntroPanelEvents() {
+      const introText = document.getElementById('introTextInput');
+      if (introText) introText.addEventListener('input', (e) => { data.introduction.text = e.target.value; triggerSave(); });
+    }
+
     function bindPanelEvents() {
       const useCurrentBtn = document.getElementById('useCurrentTimeBtn');
       if (useCurrentBtn) useCurrentBtn.addEventListener('click', useCurrentTime);
@@ -3036,9 +3410,6 @@
       if (deleteBtn) deleteBtn.addEventListener('click', confirmDelete);
 
       // Form inputs
-      const introTitle = document.getElementById('introTitleInput');
-      if (introTitle) introTitle.addEventListener('input', (e) => { data.introduction.title = e.target.value; triggerSave(); });
-
       const introText = document.getElementById('introTextInput');
       if (introText) introText.addEventListener('input', (e) => { data.introduction.text = e.target.value; triggerSave(); });
 
@@ -3151,6 +3522,17 @@
     // ===== SELECTION =====
     function selectItem(type, index) {
       selectedItem = { type, index };
+      // Switch panel filter to show the selected item's type
+      if (type === 'intro' && panelFilter !== 'all' && panelFilter !== 'intro') {
+        panelFilter = 'intro';
+        updateSidebarActive();
+      } else if (type === 'chapter' && panelFilter !== 'all' && panelFilter !== 'chapters') {
+        panelFilter = 'chapters';
+        updateSidebarActive();
+      } else if (type === 'slide' && panelFilter !== 'all' && panelFilter !== 'slides') {
+        panelFilter = 'slides';
+        updateSidebarActive();
+      }
       render();
       if (type === 'chapter' && data.chapters[index]) {
         video.currentTime = data.chapters[index].time;
@@ -3159,16 +3541,49 @@
       }
     }
 
+    function updateSidebarActive() {
+      document.querySelectorAll('.sidebar-nav-item').forEach(b => {
+        b.classList.toggle('active', b.dataset.panel === panelFilter);
+      });
+    }
+
     // ===== ADD CHAPTER =====
+    function findAvailableTime(requestedTime, existingTimes) {
+      let time = Math.round(requestedTime);
+      const maxTime = Math.floor(videoDuration);
+      const taken = new Set(existingTimes.map(t => Math.round(t)));
+      if (!taken.has(time)) return time;
+      // Jump forward in 1s increments
+      for (let t = time + 1; t <= maxTime; t++) {
+        if (!taken.has(t)) return t;
+      }
+      // Try backward from requested time
+      for (let t = time - 1; t >= 0; t--) {
+        if (!taken.has(t)) return t;
+      }
+      return null;
+    }
+
     function addChapter() {
       let time = video.currentTime || 0;
-      // First chapter always starts at 0:00 to fill timeline from the beginning
-      if (data.chapters.length === 0) time = 0;
+      if (data.chapters.length === 0) {
+        time = 0;
+      } else {
+        const existingTimes = data.chapters.map(c => c.time);
+        const available = findAvailableTime(time, existingTimes);
+        if (available === null) {
+          showToast('No available time — all seconds are taken');
+          return;
+        }
+        time = available;
+      }
       const newChapter = { time, title: 'Untitled chapter', summary: '', ai: false };
       data.chapters.push(newChapter);
       data.chapters.sort((a, b) => a.time - b.time);
       const newIndex = data.chapters.indexOf(newChapter);
       selectedItem = { type: 'chapter', index: newIndex };
+      panelFilter = 'chapters';
+      updateSidebarActive();
       render();
       triggerSave();
       showToast('Chapter added at ' + formatTime(time));
@@ -3177,8 +3592,17 @@
     // ===== ADD SLIDE =====
     function addSlide() {
       let time = video.currentTime || 0;
-      // First slide always starts at 0:00 to fill timeline from the beginning
-      if (data.slides.length === 0) time = 0;
+      if (data.slides.length === 0) {
+        time = 0;
+      } else {
+        const existingTimes = data.slides.map(s => s.time);
+        const available = findAvailableTime(time, existingTimes);
+        if (available === null) {
+          showToast('No available time — all seconds are taken');
+          return;
+        }
+        time = available;
+      }
       const image = slideImages[slideImageIndex % slideImages.length];
       slideImageIndex++;
       const newSlide = { time, title: 'Untitled slide', description: '', image };
@@ -3186,6 +3610,8 @@
       data.slides.sort((a, b) => a.time - b.time);
       const newIndex = data.slides.indexOf(newSlide);
       selectedItem = { type: 'slide', index: newIndex };
+      panelFilter = 'slides';
+      updateSidebarActive();
       render();
       triggerSave();
       showToast('Slide added at ' + formatTime(time));
@@ -3193,6 +3619,18 @@
 
     document.getElementById('addChapterBtn').addEventListener('click', addChapter);
     document.getElementById('addSlideBtn').addEventListener('click', addSlide);
+
+    // ===== SIDEBAR NAVIGATION =====
+    document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        panelFilter = btn.dataset.panel;
+        selectedItem = null;
+        renderPanel();
+      });
+    });
 
     // ===== USE CURRENT TIME =====
     function useCurrentTime() {
