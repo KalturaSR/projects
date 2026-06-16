@@ -19,6 +19,7 @@
       --b-30: rgba(0, 0, 0, 0.3);
       --w-100: #ffffff;
       --w-80: rgba(255, 255, 255, 0.8);
+      --w-60: rgba(255, 255, 255, 0.6);
       --w-50: rgba(255, 255, 255, 0.5);
       --w-40: rgba(255, 255, 255, 0.4);
       --w-30: rgba(255, 255, 255, 0.3);
@@ -727,6 +728,26 @@
       gap: 8px;
     }
 
+    .toolbar-icon-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--w-50);
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .toolbar-icon-btn:hover {
+      color: var(--w-100);
+      background: var(--w-10);
+    }
+
     .zoom-controls {
       display: flex;
       align-items: center;
@@ -901,10 +922,13 @@
       padding: 0 24px 0 0;
     }
     .track-chapters {
-      height: 24px;
+      height: 32px;
     }
     .track-slides {
-      height: 40px;
+      height: 48px;
+    }
+    .track-video {
+      height: 32px;
     }
 
     .track-label {
@@ -944,7 +968,7 @@
 
     /* Chapter Segments */
     .chapter-segment {
-      height: 24px;
+      height: 32px;
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -1040,7 +1064,7 @@
 
     /* Slide Segments */
     .slide-segment {
-      height: 40px;
+      height: 48px;
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -1380,11 +1404,12 @@
     /* Right Panel */
     .right-panel {
       width: 360px;
-      background: var(--w-10);
+      background: var(--b-100);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
       overflow: hidden;
+      border-left: 1px solid var(--w-10);
     }
 
     /* Panel Tabs (inside right panel) */
@@ -1436,7 +1461,11 @@
       position: relative;
     }
 
-    .panel-tab[data-tooltip]:hover::after {
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]:hover::after {
       content: attr(data-tooltip);
       position: absolute;
       top: calc(100% + 6px);
@@ -1452,6 +1481,13 @@
       white-space: nowrap;
       pointer-events: none;
       z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .chapter-segment[data-tooltip]:hover::after,
+    .slide-segment[data-tooltip]:hover::after {
+      top: auto;
+      bottom: calc(100% + 6px);
     }
 
     .panel-section {
@@ -1679,15 +1715,33 @@
     /* Accordion List */
     .accordion-list {
       list-style: none;
-      overflow-y: auto;
       flex: 1;
       display: flex;
       flex-direction: column;
       min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+
+    .accordion-list::-webkit-scrollbar { width: 6px; }
+    .accordion-list::-webkit-scrollbar-track { background: transparent; }
+    .accordion-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+    .accordion-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
+
+    .accordion-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--w-50);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--w-10);
+      background: rgba(255,255,255,0.04);
     }
 
     .accordion-item:not(.expanded) {
-      border-bottom: 1px solid var(--w-10);
+      border-bottom: 1px solid var(--w-30);
       flex-shrink: 0;
       min-height: 48px;
     }
@@ -1695,9 +1749,8 @@
     .accordion-item.expanded {
       display: flex;
       flex-direction: column;
-      flex: 1;
-      min-height: 200px;
       overflow: hidden;
+      background: rgba(255,255,255,0.04);
     }
 
     .accordion-row {
@@ -1715,6 +1768,14 @@
 
     .accordion-item.expanded > .accordion-row {
       flex-shrink: 0;
+      background: var(--w-10);
+      border-left: 4px solid var(--blue);
+      border-bottom: 1px solid var(--w-10);
+    }
+
+    .accordion-item.expanded > .accordion-row .accordion-row-time,
+    .accordion-item.expanded > .accordion-row .accordion-row-title {
+      color: var(--w-100);
     }
 
     .accordion-row-holder {
@@ -1753,14 +1814,12 @@
     .accordion-row-chevron {
       width: 24px;
       height: 24px;
-      background: rgba(0,0,0,0.6);
-      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       transition: transform 0.2s;
-      padding: 8px;
+      color: var(--w-50);
     }
 
     .accordion-row-chevron svg {
@@ -1779,9 +1838,8 @@
     .accordion-item.expanded > .accordion-body {
       display: flex;
       flex-direction: column;
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
+      border-left: 4px solid var(--blue);
+      background: var(--w-10);
     }
 
     .accordion-form {
@@ -1789,7 +1847,6 @@
       flex-direction: column;
       gap: 16px;
       padding: 16px;
-      flex: 1;
       border-bottom: 1px solid var(--w-10);
     }
 
@@ -1800,8 +1857,8 @@
     .accordion-delete-section {
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
-      margin-top: 24px;
+      align-items: center;
+      padding-top: 24px;
       padding-bottom: 24px;
       flex-shrink: 0;
     }
@@ -1892,7 +1949,7 @@
     .track-empty-text {
       font-size: 14px;
       font-weight: 700;
-      color: var(--w-100);
+      color: var(--w-60);
       border: 2px solid var(--w-30);
       border-radius: var(--radius-md);
       padding: 0 16px;
@@ -2050,6 +2107,24 @@
       gap: 16px;
       overflow-y: auto;
       flex: 1;
+    }
+
+    .panel-intro-form {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      overflow-y: auto;
+      flex: 1;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+
+    .panel-intro-form::-webkit-scrollbar { width: 6px; }
+    .panel-intro-form::-webkit-scrollbar-track { background: transparent; }
+    .panel-intro-form::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+
+    .panel-intro-form .panel-intro-view {
+      padding: 0;
     }
 
     .panel-intro-section {
@@ -2540,20 +2615,21 @@
     .timeline-context-menu {
       position: fixed;
       z-index: 9999;
-      background: var(--b-80);
-      border: 1px solid var(--w-20);
-      border-radius: 4px;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 8px;
       padding: 4px 0;
-      min-width: 140px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      min-width: 160px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
     }
     .timeline-context-menu-item {
       display: flex;
       align-items: center;
       gap: 8px;
       padding: 8px 12px;
-      font-size: 13px;
-      color: var(--w-100);
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
       cursor: pointer;
       border: none;
       background: none;
@@ -2561,13 +2637,13 @@
       text-align: left;
     }
     .timeline-context-menu-item:hover {
-      background: var(--w-10);
+      background: rgba(0,0,0,0.05);
     }
     .timeline-context-menu-item.destructive {
-      color: #ff4d4d;
+      color: #e53935;
     }
     .timeline-context-menu-item.destructive:hover {
-      background: rgba(255,77,77,0.1);
+      background: rgba(229,57,53,0.08);
     }
 
     /* Skip link for keyboard users */
@@ -2731,6 +2807,8 @@
           <div class="timeline-actions">
             <button class="btn btn-borderless" id="addChapterBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add summary & chapter</button>
             <button class="btn btn-borderless" id="addSlideBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add slides</button>
+            <button class="toolbar-icon-btn" id="undoBtn" data-tooltip="Undo" aria-label="Undo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7.41421 11H17C19.2091 11 21 12.7909 21 15C21 17.2091 19.2091 19 17 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 14L7 11L10 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="toolbar-icon-btn" id="redoBtn" data-tooltip="Redo" aria-label="Redo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M16.5858 11H7C4.79086 11 3 12.7909 3 15C3 17.2091 4.79086 19 7 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 14L17 11L14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
           <div class="zoom-controls">
             <button class="zoom-btn" id="zoomFitBtn" aria-label="Fit timeline to view" title="Fit to view (0)">Fit</button>
@@ -2972,6 +3050,17 @@
       tracksPlayhead.classList.add('dragging');
       video.pause();
       playBtn.innerHTML = '&#9654;';
+      // Immediately seek to click position
+      const trackContent = document.getElementById('chapterTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      let newTime = pct * videoDuration;
+      const snapped = findSnapTime(newTime, rect.width);
+      if (snapped !== null) newTime = snapped;
+      video.currentTime = newTime;
+      const posPercent = (newTime / videoDuration) * 100;
+      positionPlayhead(posPercent);
+      document.getElementById('scrubberTooltip').textContent = formatTimeMs(newTime);
       document.addEventListener('mousemove', onScrubberMove);
       document.addEventListener('mouseup', onScrubberUp);
     });
@@ -3028,6 +3117,21 @@
 
     document.getElementById('fullscreenBtn').addEventListener('click', () => {
       if (video.requestFullscreen) video.requestFullscreen();
+    });
+
+    // Click on timeline tracks area to position scrubber
+    document.getElementById('timelineTracks').addEventListener('click', (e) => {
+      if (e.target.closest('.chapter-segment') || e.target.closest('.slide-segment') || e.target.closest('.track-empty-text')) return;
+      const trackContent = document.getElementById('chapterTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      if (e.clientX < rect.left || e.clientX > rect.right) return;
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      let newTime = pct * videoDuration;
+      const snapped = findSnapTime(newTime, rect.width);
+      if (snapped !== null) newTime = snapped;
+      video.currentTime = newTime;
+      const posPercent = (newTime / videoDuration) * 100;
+      positionPlayhead(posPercent);
     });
 
     document.getElementById('volumeBtn').addEventListener('click', () => {
@@ -3094,6 +3198,13 @@
           container.appendChild(subTick);
         }
       }
+
+      // Update timeline grid lines
+      const tracks = document.getElementById('timelineTracks');
+      const gridSpacing = interval * pixelsPerSecond;
+      tracks.style.backgroundImage = `repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent ${gridSpacing}px)`;
+      tracks.style.backgroundPositionX = '56px';
+      tracks.style.backgroundSize = `${gridSpacing}px 100%`;
     }
 
     // ===== ZOOM ENGINE =====
@@ -3302,7 +3413,7 @@
         if (i < data.chapters.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
         el.innerHTML = handles + '<span class="segment-title">' + formatTime(ch.time) + ' — ' + ch.title + '</span><span class="segment-duration">' + formatTime(duration) + '</span>';
 
-        el.title = formatTime(ch.time) + ' - ' + ch.title;
+        el.setAttribute('data-tooltip', 'Chapter: ' + ch.title);
         el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
         el.setAttribute('aria-label', 'Chapter: ' + ch.title + ' at ' + formatTime(ch.time));
@@ -3357,7 +3468,7 @@
         if (i === 0 && sl.time > 0) {
           el.style.marginLeft = (sl.time * pixelsPerSecond) + 'px';
         }
-        el.title = formatTime(sl.time) + ' - ' + sl.title;
+        el.setAttribute('data-tooltip', 'Slide: ' + sl.title);
         el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
         el.setAttribute('aria-label', 'Slide: ' + sl.title + ' at ' + formatTime(sl.time));
@@ -3401,8 +3512,16 @@
       document.querySelectorAll('.panel-tab').forEach(btn => {
         btn.addEventListener('click', () => {
           if (btn.disabled) return;
-          panelFilter = btn.dataset.panel;
-          selectedItem = null;
+          const newFilter = btn.dataset.panel;
+          panelFilter = newFilter;
+          // Keep selection if it matches the new tab
+          if (selectedItem) {
+            const matchesTab = (newFilter === 'all') ||
+              (newFilter === 'chapters' && selectedItem.type === 'chapter') ||
+              (newFilter === 'slides' && selectedItem.type === 'slide') ||
+              (newFilter === 'intro' && selectedItem.type === 'intro');
+            if (!matchesTab) selectedItem = null;
+          }
           renderPanel();
         });
       });
@@ -3434,14 +3553,18 @@
       if (panelFilter === 'intro') {
         if (data.introduction.text || selectedItem?.type === 'intro') {
           const charCount = (data.introduction.text || '').length;
-          panel.innerHTML = getPanelTabsHtml() + `<div class="panel-intro-view">
-            <div class="panel-intro-section">
+          panel.innerHTML = getPanelTabsHtml() + `<div class="panel-intro-form">
+            <div class="accordion-section-title">Intro</div>
+            <div class="accordion-form">
               <div class="form-field">
                 <div class="form-label-row">
-                  <span class="form-label">Introduction</span>
+                  <span class="form-label">Add introduction</span>
                   <span class="form-counter" id="introCharCount">${charCount}/500</span>
                 </div>
                 <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+              </div>
+              <div class="accordion-delete-section">
+                <button class="accordion-delete-btn" id="introDeleteBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg> Delete introduction</button>
               </div>
             </div>
           </div>`;
@@ -3530,7 +3653,7 @@
       }
 
       let html = getPanelTabsHtml();
-      const chevronSvg = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.29289 11.7071C5.90237 11.3166 5.90237 10.6834 6.29289 10.2929L8.58579 8L6.29289 5.70711C5.90237 5.31658 5.90237 4.68342 6.29289 4.29289C6.68342 3.90237 7.31658 3.90237 7.70711 4.29289L10.7071 7.29289C11.0976 7.68342 11.0976 8.31658 10.7071 8.70711L7.70711 11.7071C7.31658 12.0976 6.68342 12.0976 6.29289 11.7071Z" fill="white"/></svg>';
+      const chevronSvg = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.29289 11.7071C5.90237 11.3166 5.90237 10.6834 6.29289 10.2929L8.58579 8L6.29289 5.70711C5.90237 5.31658 5.90237 4.68342 6.29289 4.29289C6.68342 3.90237 7.31658 3.90237 7.70711 4.29289L10.7071 7.29289C11.0976 7.68342 11.0976 8.31658 10.7071 8.70711L7.70711 11.7071C7.31658 12.0976 6.68342 12.0976 6.29289 11.7071Z" fill="currentColor"/></svg>';
       const targetSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3V4.06189C7.38128 4.51314 4.51314 7.38128 4.06189 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H4.06189C4.51314 16.6187 7.38128 19.4869 11 19.9381V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V19.9381C16.6187 19.4869 19.4869 16.6187 19.9381 13H21C21.5523 13 22 12.5523 22 12C22 11.4477 21.5523 11 21 11H19.9381C19.4869 7.38128 16.6187 4.51314 13 4.06189V3ZM6.08296 11C6.50448 8.4875 8.4875 6.50448 11 6.08296V7C11 7.55228 11.4477 8 12 8C12.5523 8 13 7.55228 13 7V6.08296C15.5125 6.50448 17.4955 8.4875 17.917 11H17C16.4477 11 16 11.4477 16 12C16 12.5523 16.4477 13 17 13H17.917C17.4955 15.5125 15.5125 17.4955 13 17.917V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V17.917C8.4875 17.4955 6.50448 15.5125 6.08296 13H7C7.55228 13 8 12.5523 8 12C8 11.4477 7.55228 11 7 11H6.08296ZM12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="white"/></svg>';
       const deleteSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg>';
 
@@ -3556,6 +3679,15 @@
             </div>
           </div>
         </div>`;
+      }
+
+      // Section title
+      if (panelFilter === 'chapters') {
+        html += `<div class="accordion-section-title">Chapters</div>`;
+      } else if (panelFilter === 'slides') {
+        html += `<div class="accordion-section-title">Slides</div>`;
+      } else if (panelFilter === 'all') {
+        html += `<div class="accordion-section-title">All items</div>`;
       }
 
       // Build items list based on filter
@@ -3692,11 +3824,13 @@
           triggerSave();
         });
       }
-      const saveBtn = document.getElementById('introSaveBtn');
-      if (saveBtn) saveBtn.addEventListener('click', () => {
+      const deleteBtn = document.getElementById('introDeleteBtn');
+      if (deleteBtn) deleteBtn.addEventListener('click', () => {
+        data.introduction.text = '';
         selectedItem = null;
-        renderPanel();
-        showToast('Introduction saved');
+        render();
+        triggerSave();
+        showToast('Introduction deleted');
       });
     }
 
@@ -3872,8 +4006,6 @@
       for (let offset = 1; offset <= Math.ceil(maxTime); offset++) {
         const forward = Math.round((time + offset) * 10) / 10;
         if (forward <= maxTime && !existingTimes.some(t => Math.abs(t - forward) < 0.5)) return forward;
-        const backward = Math.round((time - offset) * 10) / 10;
-        if (backward >= 0 && !existingTimes.some(t => Math.abs(t - backward) < 0.5)) return backward;
       }
       return null;
     }
@@ -3884,13 +4016,43 @@
         time = 0;
       } else {
         time = video.currentTime || 0;
-        const existingTimes = data.chapters.map(c => c.time);
-        const available = findAvailableTime(time, existingTimes);
-        if (available === null) {
-          showToast('No available time — all seconds are taken');
-          return;
+        const existingChapterTimes = data.chapters.map(c => c.time);
+        const rounded = Math.round(time * 10) / 10;
+        const tooClose = existingChapterTimes.some(t => Math.abs(t - rounded) < 0.5);
+
+        if (!tooClose) {
+          time = rounded;
+        } else {
+          // Snap to slide positions on the other timeline first
+          let placed = false;
+          if (data.slides.length > 0) {
+            const sortedSlides = [...data.slides].sort((a, b) => a.time - b.time);
+            for (const slide of sortedSlides) {
+              const sTime = Math.round(slide.time * 10) / 10;
+              if (sTime >= rounded && !existingChapterTimes.some(t => Math.abs(t - sTime) < 0.5)) {
+                time = sTime;
+                placed = true;
+                break;
+              }
+            }
+          }
+          // Then try 2s gaps forward from current time
+          if (!placed) {
+            let candidate = rounded;
+            while (candidate <= videoDuration) {
+              candidate = Math.round((candidate + 2) * 10) / 10;
+              if (candidate <= videoDuration && !existingChapterTimes.some(t => Math.abs(t - candidate) < 0.5)) {
+                time = candidate;
+                placed = true;
+                break;
+              }
+            }
+          }
+          if (!placed) {
+            showToast('No more room — timeline is full');
+            return;
+          }
         }
-        time = available;
       }
       const newChapter = { time, title: 'Untitled chapter', summary: '', ai: false };
       data.chapters.push(newChapter);
@@ -3909,38 +4071,37 @@
       let time = video.currentTime || 0;
       const existingSlideTimes = data.slides.map(s => Math.round(s.time * 10) / 10);
       const rounded = Math.round(time * 10) / 10;
+      const tooClose = existingSlideTimes.some(t => Math.abs(t - rounded) < 0.5);
 
-      if (existingSlideTimes.includes(rounded)) {
-        // Try to place at the next chapter boundary that doesn't have a slide
-        if (data.chapters.length > 1) {
-          let placed = false;
-          for (let i = 0; i < data.chapters.length; i++) {
-            const chTime = Math.round(data.chapters[i].time * 10) / 10;
-            if (!existingSlideTimes.includes(chTime)) {
+      if (tooClose) {
+        let placed = false;
+        // Snap to chapter positions on the other timeline first (forward only)
+        if (data.chapters.length > 0) {
+          const sortedChapters = [...data.chapters].sort((a, b) => a.time - b.time);
+          for (const ch of sortedChapters) {
+            const chTime = Math.round(ch.time * 10) / 10;
+            if (chTime >= rounded && !existingSlideTimes.some(t => Math.abs(t - chTime) < 0.5)) {
               time = chTime;
               placed = true;
               break;
             }
           }
-          if (!placed) {
-            // All chapter positions taken — add 1s after last slide
-            const lastSlide = data.slides[data.slides.length - 1];
-            const candidate = Math.round((lastSlide.time + 1) * 10) / 10;
-            if (candidate > videoDuration) {
-              showToast('No more room — timeline is full');
-              return;
+        }
+        // Then try 2s gaps forward from current time
+        if (!placed) {
+          let candidate = rounded;
+          while (candidate <= videoDuration) {
+            candidate = Math.round((candidate + 2) * 10) / 10;
+            if (candidate <= videoDuration && !existingSlideTimes.some(t => Math.abs(t - candidate) < 0.5)) {
+              time = candidate;
+              placed = true;
+              break;
             }
-            time = candidate;
           }
-        } else {
-          // No chapters to align to — add 1s after last slide
-          const lastSlide = data.slides[data.slides.length - 1];
-          const candidate = Math.round((lastSlide.time + 1) * 10) / 10;
-          if (candidate > videoDuration) {
-            showToast('No more room — timeline is full');
-            return;
-          }
-          time = candidate;
+        }
+        if (!placed) {
+          showToast('No more room — timeline is full');
+          return;
         }
       } else {
         time = rounded;
@@ -3962,6 +4123,8 @@
 
     document.getElementById('addChapterBtn').addEventListener('click', addChapter);
     document.getElementById('addSlideBtn').addEventListener('click', addSlide);
+    document.getElementById('undoBtn').addEventListener('click', undo);
+    document.getElementById('redoBtn').addEventListener('click', redo);
 
     // Panel tab events are bound dynamically in bindPanelTabEvents()
 
@@ -3995,9 +4158,22 @@
       snapBtn.className = 'timeline-context-menu-item';
       snapBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>Snap to playhead';
       snapBtn.addEventListener('click', () => {
-        selectedItem = { type, index };
-        useCurrentTime();
         hideTimelineContextMenu();
+        const time = video.currentTime;
+        if (type === 'chapter' && data.chapters[index]) {
+          data.chapters[index].time = time;
+          data.chapters.sort((a, b) => a.time - b.time);
+          const newIndex = data.chapters.findIndex(c => c.time === time);
+          selectedItem = { type: 'chapter', index: newIndex };
+        } else if (type === 'slide' && data.slides[index]) {
+          data.slides[index].time = time;
+          data.slides.sort((a, b) => a.time - b.time);
+          const newIndex = data.slides.findIndex(s => s.time === time);
+          selectedItem = { type: 'slide', index: newIndex };
+        }
+        render();
+        triggerSave();
+        showToast('Snapped to ' + formatTime(time));
       });
       menu.appendChild(snapBtn);
 
@@ -4681,7 +4857,11 @@
         segCount++;
       }
 
-      // Position ghost placeholder in the gap
+      // Position ghost placeholder in the gap — clamp within timeline bounds
+      const maxPx = videoDuration * pixelsPerSecond;
+      const clampedInsertPx = Math.max(0, Math.min(insertPx, maxPx - draggedWidth));
+      const clampedWidth = Math.min(draggedWidth, maxPx - clampedInsertPx);
+
       if (!dragState.indicator) {
         dragState.indicator = document.createElement('div');
         dragState.indicator.className = 'drag-ghost-placeholder';
@@ -4690,9 +4870,9 @@
         dragState.indicator.appendChild(content);
         trackContent.appendChild(dragState.indicator);
       }
-      dragState.indicator.style.left = insertPx + 'px';
-      dragState.indicator.style.width = draggedWidth + 'px';
-      const insertTime = insertPx / pixelsPerSecond;
+      dragState.indicator.style.left = clampedInsertPx + 'px';
+      dragState.indicator.style.width = clampedWidth + 'px';
+      const insertTime = clampedInsertPx / pixelsPerSecond;
       const segName = (dragState.type === 'chapter' ? data.chapters : data.slides)[dragState.index].title;
       dragState.indicator.querySelector('.drag-ghost-placeholder-content').textContent = formatTime(insertTime) + ' · ' + segName;
     }
