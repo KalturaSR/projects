@@ -248,6 +248,27 @@
       align-items: center;
     }
 
+    .btn-borderless {
+      padding: 4px 8px;
+      font-size: 14px;
+      border-radius: var(--roundness-1);
+      background: transparent;
+      color: var(--w-80);
+      border: none;
+    }
+
+    .btn-borderless:hover {
+      background: var(--w-10);
+      color: var(--w-100);
+    }
+
+    .btn-borderless .btn-icon {
+      display: flex;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+    }
+
     .btn-danger {
       background: transparent;
       color: var(--danger);
@@ -376,6 +397,35 @@
       position: relative;
       transition: width 0.1s linear;
     }
+
+    .progress-bar.has-chapters {
+      background: transparent;
+      display: flex;
+      gap: 2px;
+      border-radius: 3px;
+    }
+    .progress-bar.has-chapters .progress-fill {
+      display: none;
+    }
+    .progress-bar.has-chapters .progress-handle {
+      display: none;
+    }
+    .progress-chapter-seg {
+      height: 100%;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-chapter-seg-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: var(--blue);
+      border-radius: 100px;
+    }
+
 
     .progress-handle {
       position: absolute;
@@ -642,6 +692,21 @@
       width: 100%;
       min-width: 0;
       max-width: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+    .timeline-area::-webkit-scrollbar {
+      height: 8px;
+    }
+    .timeline-area::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .timeline-area::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 4px;
+    }
+    .timeline-area::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.5);
     }
 
     .timeline-toolbar {
@@ -786,7 +851,7 @@
     .playhead-ruler {
       position: absolute;
       top: 0;
-      width: 2px;
+      width: 1px;
       background: var(--blue);
       height: 100%;
       z-index: 10;
@@ -835,6 +900,12 @@
       gap: 8px;
       padding: 0 24px 0 0;
     }
+    .track-chapters {
+      height: 24px;
+    }
+    .track-slides {
+      height: 40px;
+    }
 
     .track-label {
       width: 32px;
@@ -873,11 +944,11 @@
 
     /* Chapter Segments */
     .chapter-segment {
-      height: 30px;
-      border-radius: var(--radius-md);
+      height: 24px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      padding: 0 12px;
+      padding: 0 8px;
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
@@ -886,14 +957,14 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      border: 2px solid var(--w-30);
+      border: 2px solid rgba(255,255,255,0.5);
       background: transparent;
       backdrop-filter: blur(16px);
       color: var(--w-100);
     }
 
     .chapter-segment:hover {
-      border-color: var(--w-50);
+      border-color: rgba(255,255,255,0.7);
       background: var(--w-10);
     }
 
@@ -906,7 +977,7 @@
     .resize-handle {
       position: absolute;
       top: 0;
-      width: 8px;
+      width: 14px;
       height: 100%;
       opacity: 0;
       transition: opacity 0.15s, background 0.15s;
@@ -919,13 +990,15 @@
     }
 
     .resize-handle.left {
-      left: 0;
+      left: -4px;
       border-radius: 4px 0 0 4px;
+      padding-left: 4px;
     }
 
     .resize-handle.right {
-      right: 0;
+      right: -4px;
       border-radius: 0 4px 4px 0;
+      padding-right: 4px;
     }
 
     .resize-handle::after {
@@ -963,16 +1036,15 @@
 
     .chapter-segment.active {
       border-color: var(--blue);
-      box-shadow: 0 0 0 1px var(--blue);
     }
 
     /* Slide Segments */
     .slide-segment {
       height: 40px;
-      border-radius: var(--radius-md);
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      padding: 0 8px;
+      padding: 6px;
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
@@ -981,7 +1053,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      border: 2px solid var(--w-30);
+      border: 2px solid rgba(255,255,255,0.5);
       background: transparent;
       backdrop-filter: blur(16px);
       color: var(--w-100);
@@ -989,7 +1061,7 @@
     }
 
     .slide-segment:hover {
-      border-color: var(--w-50);
+      border-color: rgba(255,255,255,0.7);
       background: var(--w-10);
     }
 
@@ -1000,13 +1072,12 @@
 
     .slide-segment.active {
       border-color: var(--blue);
-      box-shadow: 0 0 0 1px var(--blue);
     }
 
     .slide-segment-thumb {
-      width: 44px;
-      height: 28px;
-      border-radius: 3px;
+      width: 52px;
+      height: 29px;
+      border-radius: 4px;
       object-fit: cover;
       flex-shrink: 0;
       background: var(--bg-surface);
@@ -1020,12 +1091,21 @@
       min-width: 0;
     }
 
+    .segment-duration {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+      margin-left: auto;
+      padding-left: 8px;
+      flex-shrink: 0;
+    }
+
     /* Slide thumbnail in panel */
     .slide-thumb-container {
       position: relative;
-      width: 174px;
-      height: 100px;
-      border-radius: var(--radius-md);
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -1075,7 +1155,7 @@
     .video-track-content canvas {
       height: 100%;
       width: 100%;
-      border-radius: var(--radius-md);
+      border-radius: 8px;
       image-rendering: auto;
     }
 
@@ -1256,7 +1336,7 @@
     .tracks-playhead {
       position: absolute;
       top: 0;
-      width: 2px;
+      width: 1px;
       background: var(--blue);
       height: 100%;
       z-index: 10;
@@ -1299,85 +1379,75 @@
 
     /* Right Panel */
     .right-panel {
-      width: 320px;
-      background: #242424;
+      width: 360px;
+      background: var(--w-10);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
       overflow: hidden;
     }
 
-    /* Sidebar Navigation */
-    .sidebar-nav {
-      width: 40px;
-      background: transparent;
+    /* Panel Tabs (inside right panel) */
+    .panel-tabs {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      padding: 0;
+      gap: 24px;
+      height: 48px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--w-10);
       flex-shrink: 0;
     }
 
-    .sidebar-nav-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .sidebar-nav-item {
-      width: 40px;
-      height: 56px;
+    .panel-tab {
+      flex: 1 0 0;
+      height: 47px;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 8px 0;
       border: none;
-      border-right: 2px solid transparent;
+      border-bottom: 3px solid transparent;
       background: transparent;
-      color: rgba(255,255,255,0.5);
-      border-radius: 0;
+      color: var(--w-100);
       cursor: pointer;
-      transition: all 0.15s;
-      padding: 0;
-      position: relative;
+      transition: color 0.15s;
     }
 
-    .sidebar-nav-item:hover:not(:disabled) {
-      color: rgba(255,255,255,0.8);
+    .panel-tab:hover:not(:disabled) {
+      color: var(--w-100);
     }
 
-    .sidebar-nav-item.active {
-      color: #ffffff;
-      border-right-color: #006EFA;
+    .panel-tab.active {
+      color: var(--w-100);
+      border-bottom-color: var(--blue);
     }
 
-    .sidebar-nav-item:disabled,
-    .sidebar-nav-item.disabled {
-      color: rgba(255,255,255,0.2);
+    .panel-tab:disabled {
+      color: var(--w-20);
       cursor: not-allowed;
     }
 
-    .sidebar-nav-item:focus-visible {
-      outline: 2px solid #006EFA;
-      outline-offset: -2px;
-    }
-
-    .sidebar-nav-item svg {
+    .panel-tab svg {
       width: 24px;
       height: 24px;
     }
 
-    /* Sidebar Tooltips */
-    .sidebar-nav-item[data-tooltip]:hover::before {
+    .panel-tab {
+      position: relative;
+    }
+
+    .panel-tab[data-tooltip]:hover::after {
       content: attr(data-tooltip);
       position: absolute;
-      left: -8px;
-      top: 50%;
-      transform: translate(-100%, -50%);
-      background: rgba(0,0,0,0.85);
-      color: #fff;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffffff;
+      color: #000000;
       font-size: 12px;
-      line-height: 1;
-      padding: 6px 10px;
+      font-weight: 700;
+      line-height: 16px;
+      padding: 6px 8px;
       border-radius: 4px;
       white-space: nowrap;
       pointer-events: none;
@@ -1450,15 +1520,49 @@
     .form-textarea:hover { border-color: rgba(255,255,255,0.6); }
     .form-textarea:focus { border-color: #006EFA; }
 
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .form-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      line-height: 16px;
+    }
+
+    .form-counter {
+      font-size: 14px;
+      font-weight: 400;
+      color: white;
+      line-height: 16px;
+    }
+
     .timestamp-input {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
     }
 
     .timestamp-input .form-input {
-      width: 94px;
+      width: 64px;
       font-variant-numeric: tabular-nums;
+    }
+
+    .timestamp-separator {
+      color: var(--w-50);
+      font-size: 13px;
+      font-weight: 400;
     }
 
     .use-current-btn {
@@ -1583,9 +1687,9 @@
     }
 
     .accordion-item:not(.expanded) {
-      border-bottom: 1px solid rgba(255,255,255,0.4);
+      border-bottom: 1px solid var(--w-10);
       flex-shrink: 0;
-      min-height: 56px;
+      min-height: 48px;
     }
 
     .accordion-item.expanded {
@@ -1600,7 +1704,7 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 16px 24px;
+      padding: 16px;
       cursor: pointer;
       transition: background 0.15s;
     }
@@ -1610,17 +1714,17 @@
     }
 
     .accordion-item.expanded > .accordion-row {
-      background: rgba(0,0,0,0.3);
       flex-shrink: 0;
     }
 
     .accordion-row-holder {
       display: flex;
       flex: 1 0 0;
-      gap: 8px;
+      gap: 16px;
       align-items: center;
       min-width: 0;
       font-weight: 700;
+      color: var(--w-100);
     }
 
     .accordion-row-time {
@@ -1628,26 +1732,16 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: rgba(255,255,255,0.7);
+      color: var(--w-100);
       width: 35px;
       flex-shrink: 0;
       text-align: center;
     }
 
-    .accordion-row-type {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: rgba(255,255,255,0.7);
-      flex-shrink: 0;
-      white-space: nowrap;
-    }
-
     .accordion-row-title {
       font-size: 14px;
       font-weight: 700;
-      color: white;
+      color: var(--w-100);
       flex: 1 0 0;
       min-width: 0;
       white-space: nowrap;
@@ -1680,7 +1774,6 @@
 
     .accordion-body {
       display: none;
-      background: rgba(0,0,0,0.3);
     }
 
     .accordion-item.expanded > .accordion-body {
@@ -1695,9 +1788,9 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      padding: 24px;
-      background: rgba(0,0,0,0.3);
+      padding: 16px;
       flex: 1;
+      border-bottom: 1px solid var(--w-10);
     }
 
     .accordion-form .form-group {
@@ -1706,10 +1799,10 @@
 
     .accordion-delete-section {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(0,0,0,0.3);
+      flex-direction: column;
+      align-items: flex-start;
+      margin-top: 24px;
+      padding-bottom: 24px;
       flex-shrink: 0;
     }
 
@@ -1720,7 +1813,7 @@
       height: 32px;
       padding: 8px 12px;
       cursor: pointer;
-      color: #ca1c2d;
+      color: var(--w-100);
       font-size: 14px;
       font-weight: 700;
       font-family: 'Lato', sans-serif;
@@ -1731,7 +1824,7 @@
     }
 
     .accordion-delete-btn:hover {
-      background: rgba(202,28,45,0.1);
+      background: var(--w-10);
     }
 
     .accordion-delete-btn svg {
@@ -1952,8 +2045,9 @@
     .panel-intro-view {
       display: flex;
       flex-direction: column;
-      padding: 16px;
-      gap: 40px;
+      align-items: center;
+      padding: 60px 16px 16px;
+      gap: 16px;
       overflow-y: auto;
       flex: 1;
     }
@@ -1961,14 +2055,26 @@
     .panel-intro-section {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 16px;
+      align-items: center;
+      width: 100%;
     }
 
     .panel-intro-title {
-      font-size: 14px;
+      font-size: 18px;
       font-weight: 700;
-      color: rgba(255,255,255,0.8);
+      color: white;
       line-height: 1.2;
+      text-align: center;
+    }
+
+    .panel-intro-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: white;
+      line-height: 21px;
+      text-align: center;
+      margin: 0;
     }
 
     .panel-intro-card {
@@ -1977,14 +2083,17 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
     }
 
-    .panel-intro-desc {
+    .panel-intro-card-desc {
       font-size: 14px;
       font-weight: 400;
       color: white;
       line-height: 1.4;
+      text-align: center;
       margin: 0;
     }
 
@@ -2101,26 +2210,30 @@
     /* Toast */
     .toast {
       position: fixed;
-      bottom: 24px;
+      top: 24px;
       left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--w-20);
+      transform: translateX(100%) translateX(50vw);
+      background: var(--b-80);
       backdrop-filter: blur(16px);
       color: var(--w-100);
       padding: 12px 24px;
-      border-radius: var(--roundness-1);
+      border-radius: 8px;
       font-size: 14px;
       font-weight: 700;
-      border: 1px solid var(--w-30);
-      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--w-20);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
       z-index: 200;
-      transition: transform 0.3s ease, opacity 0.3s ease;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
       opacity: 0;
+      pointer-events: none;
+      max-width: 400px;
+      white-space: nowrap;
     }
 
     .toast.visible {
-      transform: translateX(-50%) translateY(0);
+      transform: translateX(-50%);
       opacity: 1;
+      pointer-events: auto;
     }
 
     /* AI Loading */
@@ -2343,9 +2456,9 @@
       opacity: 1;
     }
 
-    /* Minimum height for chapter/slide segments - 44px touch target */
+    /* Touch target via padding, not min-height (tracks have their own heights) */
     .chapter-segment, .slide-segment {
-      min-height: 44px;
+      min-height: 0;
     }
 
     /* Playhead scrubber expanded hit area */
@@ -2369,16 +2482,6 @@
       .main-area {
         flex: none;
         min-height: 200px;
-      }
-
-      .sidebar-nav {
-        width: 40px;
-        padding: 0;
-      }
-
-      .sidebar-nav-item {
-        width: 40px;
-        height: 48px;
       }
 
       .right-panel {
@@ -2432,6 +2535,39 @@
       clip: rect(0,0,0,0);
       width: 1px;
       height: 1px;
+    }
+
+    .timeline-context-menu {
+      position: fixed;
+      z-index: 9999;
+      background: var(--b-80);
+      border: 1px solid var(--w-20);
+      border-radius: 4px;
+      padding: 4px 0;
+      min-width: 140px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .timeline-context-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--w-100);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .timeline-context-menu-item:hover {
+      background: var(--w-10);
+    }
+    .timeline-context-menu-item.destructive {
+      color: #ff4d4d;
+    }
+    .timeline-context-menu-item.destructive:hover {
+      background: rgba(255,77,77,0.1);
     }
 
     /* Skip link for keyboard users */
@@ -2587,32 +2723,14 @@
         </div>
       </div>
 
-      <!-- Sidebar Navigation -->
-      <nav class="sidebar-nav" id="sidebarNav" aria-label="Panel navigation">
-        <div class="sidebar-nav-list">
-          <button class="sidebar-nav-item active" data-panel="intro" aria-label="Introduction" data-tooltip="Introduction">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2.52799 1.74765C2.19183 1.3214 2.2742 0.715626 2.71197 0.394611C3.14974 0.0735968 3.77713 0.158906 4.11329 0.585154L9.28699 7.14537C9.45507 7.3585 9.76876 7.40115 9.98765 7.24064C10.2065 7.08014 10.2477 6.77725 10.0796 6.56413L6.12328 1.54749C5.78712 1.12124 5.86949 0.515463 6.30726 0.194448C6.74502 -0.126566 7.37242 -0.0412577 7.70858 0.38499L13.3084 7.48547L12.5888 4.86474C12.4469 4.34781 12.7642 3.82144 13.2976 3.68906C13.831 3.55668 14.3784 3.86842 14.5204 4.38535C15.589 8.27753 18.1892 13.4078 14.0927 16.4117C11.4661 18.3378 7.70178 17.8259 5.68482 15.2684L0.206787 8.3223C-0.129372 7.89605 -0.0470024 7.29028 0.390765 6.96926C0.828533 6.64825 1.45592 6.73356 1.79208 7.1598L4.5311 10.6329C4.69918 10.846 5.01288 10.8886 5.23176 10.7281C5.45064 10.5676 5.49183 10.2647 5.32375 10.0516L1.36739 5.03498C1.03123 4.60873 1.1136 4.00295 1.55137 3.68194C1.98914 3.36092 2.61653 3.44623 2.95269 3.87248L6.45254 8.31028C6.62062 8.5234 6.93432 8.56605 7.1532 8.40555C7.37208 8.24504 7.41327 7.94215 7.24519 7.72903L2.52799 1.74765Z" fill="currentColor" transform="translate(3.84,3.21)"/></svg>
-          </button>
-          <button class="sidebar-nav-item disabled" data-panel="chapters" aria-label="Chapters" data-tooltip="Chapters" disabled>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg>
-          </button>
-          <button class="sidebar-nav-item disabled" data-panel="slides" aria-label="Slides" data-tooltip="Slides" disabled>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg>
-          </button>
-          <button class="sidebar-nav-item disabled" data-panel="all" aria-label="All" data-tooltip="All" disabled>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 0C1.44772 0 1 0.447715 1 1C1 1.55228 1.44772 2 2 2H15.5C16.8807 2 18 3.11929 18 4.5C18 5.88071 16.8807 7 15.5 7H4.5C2.01472 7 0 9.01472 0 11.5C0 13.9853 2.01472 16 4.5 16H15V17.0962C15 17.8169 15.8114 18.2467 16.4172 17.8469L19.5941 15.7507C20.1353 15.3936 20.1353 14.6064 19.5941 14.2493L16.4172 12.1531C15.8114 11.7533 15 12.1831 15 12.9038V14H4.5C3.11929 14 2 12.8807 2 11.5C2 10.1193 3.11929 9 4.5 9H15.5C17.9853 9 20 6.98528 20 4.5C20 2.01472 17.9853 0 15.5 0H2Z" fill="currentColor" transform="translate(2,3)"/></svg>
-          </button>
-        </div>
-      </nav>
-
       </div><!-- /.main-area -->
 
       <!-- Timeline -->
       <div class="timeline-area">
         <div class="timeline-toolbar">
           <div class="timeline-actions">
-            <button class="btn btn-sm" id="addChapterBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6C4 5.44772 4.44772 5 5 5H16C16.5523 5 17 5.44772 17 6C17 6.55228 16.5523 7 16 7H5C4.44772 7 4 6.55228 4 6Z" fill="currentColor"/><path d="M4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12Z" fill="currentColor"/><path d="M4 18C4 17.4477 4.44772 17 5 17H11C11.5523 17 12 17.4477 12 18C12 18.5523 11.5523 19 11 19H5C4.44772 19 4 18.5523 4 18Z" fill="currentColor"/></svg></span>Add chapter</button>
-            <button class="btn btn-sm" id="addSlideBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></span>Add slides</button>
+            <button class="btn btn-borderless" id="addChapterBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add summary & chapter</button>
+            <button class="btn btn-borderless" id="addSlideBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add slides</button>
           </div>
           <div class="zoom-controls">
             <button class="zoom-btn" id="zoomFitBtn" aria-label="Fit timeline to view" title="Fit to view (0)">Fit</button>
@@ -2636,15 +2754,15 @@
           <div class="timeline-tracks" id="timelineTracks">
             <div class="tracks-playhead" id="tracksPlayhead"></div>
             <div id="snapLine" class="snap-line" aria-hidden="true"></div>
-            <div class="track" role="region" aria-label="Chapter track" id="chapterTrack">
-              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h12v2H3v-2z" fill="currentColor"/></svg></div>
-              <div class="track-content" id="chapterTrackContent"></div>
-            </div>
-            <div class="track" role="region" aria-label="Slide track" id="slideTrack">
-              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></div>
+            <div class="track track-slides" role="region" aria-label="Slide track" id="slideTrack">
+              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg></div>
               <div class="track-content" id="slideTrackContent"></div>
             </div>
-            <div class="track" role="region" aria-label="Video track">
+            <div class="track track-chapters" role="region" aria-label="Chapter track" id="chapterTrack">
+              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg></div>
+              <div class="track-content" id="chapterTrackContent"></div>
+            </div>
+            <div class="track track-video" role="region" aria-label="Video track">
               <div class="track-label track-label-video" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4V6.5l-4 4z" fill="currentColor"/></svg></div>
               <div class="track-content"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas></div></div>
             </div>
@@ -2737,6 +2855,14 @@
       return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
     }
 
+    function formatTimeMs(seconds) {
+      if (isNaN(seconds)) return '0:00.000';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      const ms = Math.floor((seconds % 1) * 1000);
+      return m + ':' + s.toString().padStart(2, '0') + '.' + ms.toString().padStart(3, '0');
+    }
+
     playBtn.addEventListener('click', togglePlay);
     video.addEventListener('click', () => {
       const videoArea = document.querySelector('.video-area');
@@ -2776,6 +2902,7 @@
         if (scrubberDragging) return;
         const pct = (video.currentTime / videoDuration) * 100;
         progressFill.style.width = pct + '%';
+        updateProgressChapterFills();
         timestampEl.textContent = formatTime(video.currentTime) + ' / ' + formatTime(videoDuration);
         updatePlayhead(pct);
         updatePlayerSlide();
@@ -2787,6 +2914,7 @@
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       video.currentTime = pct * videoDuration;
       progressFill.style.width = (pct * 100) + '%';
+      updateProgressChapterFills();
       positionPlayhead(pct * 100);
     });
 
@@ -2820,7 +2948,7 @@
       const tracksLeft = trackRect.left - tracksRect.left + px;
       tracksPlayhead.style.left = tracksLeft + 'px';
 
-      document.getElementById('scrubberTooltip').textContent = videoDuration >= 3600 ? formatTimeHMS(video.currentTime) : formatTime(video.currentTime);
+      document.getElementById('scrubberTooltip').textContent = scrubberDragging ? formatTimeMs(video.currentTime) : (videoDuration >= 3600 ? formatTimeHMS(video.currentTime) : formatTime(video.currentTime));
       updatePlayerSlide();
     }
 
@@ -2848,17 +2976,46 @@
       document.addEventListener('mouseup', onScrubberUp);
     });
 
+    const SNAP_THRESHOLD_PX = 8;
+
+    function getSnapPoints() {
+      const points = [];
+      data.chapters.forEach(ch => points.push(ch.time));
+      data.slides.forEach(sl => points.push(sl.time));
+      return [...new Set(points)].sort((a, b) => a - b);
+    }
+
+    function findSnapTime(time, trackWidth) {
+      const snapPoints = getSnapPoints();
+      const pxPerSec = trackWidth / videoDuration;
+      for (const pt of snapPoints) {
+        if (Math.abs(pt - time) * pxPerSec < SNAP_THRESHOLD_PX) {
+          return pt;
+        }
+      }
+      return null;
+    }
+
+
     function onScrubberMove(e) {
       if (!scrubberDragging) return;
       const trackContent = document.getElementById('chapterTrackContent');
       const rect = trackContent.getBoundingClientRect();
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      const newTime = pct * videoDuration;
+      let newTime = pct * videoDuration;
+
+      const snappedTime = findSnapTime(newTime, rect.width);
+      if (snappedTime !== null) {
+        newTime = snappedTime;
+      }
 
       video.currentTime = newTime;
-      positionPlayhead(pct * 100);
+      const actualPct = (newTime / videoDuration) * 100;
+      positionPlayhead(actualPct);
       timestampEl.textContent = formatTime(newTime) + ' / ' + formatTime(videoDuration);
-      progressFill.style.width = (pct * 100) + '%';
+      progressFill.style.width = actualPct + '%';
+      updateProgressChapterFills();
+      document.getElementById('scrubberTooltip').textContent = formatTimeMs(newTime);
     }
 
     function onScrubberUp(e) {
@@ -3070,10 +3227,51 @@
       renderChapterTrack();
       renderSlideTrack();
       renderPanel();
+      renderProgressSplits();
       updatePlayerSlide();
       const isEmpty = data.chapters.length === 0 && data.slides.length === 0;
-      document.getElementById('playheadRuler').style.display = isEmpty ? 'none' : '';
-      document.getElementById('tracksPlayhead').style.display = isEmpty ? 'none' : '';
+    }
+
+    function renderProgressSplits() {
+      const bar = document.getElementById('progressBar');
+      bar.querySelectorAll('.progress-chapter-seg').forEach(el => el.remove());
+      if (videoDuration <= 0 || data.chapters.length <= 1) {
+        bar.classList.remove('has-chapters');
+        return;
+      }
+      bar.classList.add('has-chapters');
+      for (let i = 0; i < data.chapters.length; i++) {
+        const startTime = data.chapters[i].time;
+        const endTime = i < data.chapters.length - 1 ? data.chapters[i + 1].time : videoDuration;
+        const widthPct = ((endTime - startTime) / videoDuration) * 100;
+        const seg = document.createElement('div');
+        seg.className = 'progress-chapter-seg';
+        seg.style.flex = '0 0 ' + widthPct + '%';
+        seg.dataset.start = startTime;
+        seg.dataset.end = endTime;
+        seg.innerHTML = '<div class="progress-chapter-seg-fill"></div>';
+        bar.appendChild(seg);
+      }
+      updateProgressChapterFills();
+    }
+
+    function updateProgressChapterFills() {
+      const bar = document.getElementById('progressBar');
+      if (!bar.classList.contains('has-chapters')) return;
+      const currentTime = video.currentTime || 0;
+      bar.querySelectorAll('.progress-chapter-seg').forEach(seg => {
+        const start = parseFloat(seg.dataset.start);
+        const end = parseFloat(seg.dataset.end);
+        const fill = seg.querySelector('.progress-chapter-seg-fill');
+        if (currentTime >= end) {
+          fill.style.width = '100%';
+        } else if (currentTime <= start) {
+          fill.style.width = '0%';
+        } else {
+          const pct = ((currentTime - start) / (end - start)) * 100;
+          fill.style.width = pct + '%';
+        }
+      });
     }
 
     function renderChapterTrack() {
@@ -3085,12 +3283,13 @@
       if (data.chapters.length === 0) {
         container.removeAttribute('role');
         container.removeAttribute('aria-label');
-        container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptyChapterClick">Click to add your first chapter</div></div>';
+        container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptyChapterClick">Click to add your first summary & chapter</div></div>';
         document.getElementById('emptyChapterClick').addEventListener('click', addChapter);
         return;
       }
 
       data.chapters.forEach((ch, i) => {
+        if (i === 0 && ch.time !== 0) { ch.time = 0; }
         const nextTime = (i < data.chapters.length - 1) ? data.chapters[i + 1].time : videoDuration;
         const duration = nextTime - ch.time;
         const widthPx = duration * pixelsPerSecond;
@@ -3101,7 +3300,7 @@
         let handles = '';
         if (i > 0) handles += '<span class="resize-handle left" data-side="left"></span>';
         if (i < data.chapters.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
-        el.innerHTML = handles + '<span class="segment-title">' + ch.title + '</span>';
+        el.innerHTML = handles + '<span class="segment-title">' + formatTime(ch.time) + ' — ' + ch.title + '</span><span class="segment-duration">' + formatTime(duration) + '</span>';
 
         el.title = formatTime(ch.time) + ' - ' + ch.title;
         el.setAttribute('role', 'listitem');
@@ -3120,6 +3319,11 @@
           const startT = ch.time;
           const endT = (i < data.chapters.length - 1) ? data.chapters[i + 1].time : videoDuration;
           zoomToTimeRange(startT, endT);
+        });
+        el.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          selectItem('chapter', i);
+          showTimelineContextMenu(e.clientX, e.clientY, 'chapter', i);
         });
         el.addEventListener('keydown', (e) => {
           if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); selectItem('chapter', i); }
@@ -3150,18 +3354,21 @@
         const el = document.createElement('div');
         el.className = 'slide-segment' + (selectedItem && selectedItem.type === 'slide' && selectedItem.index === i ? ' active' : '');
         el.style.width = widthPx + 'px';
+        if (i === 0 && sl.time > 0) {
+          el.style.marginLeft = (sl.time * pixelsPerSecond) + 'px';
+        }
         el.title = formatTime(sl.time) + ' - ' + sl.title;
         el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
         el.setAttribute('aria-label', 'Slide: ' + sl.title + ' at ' + formatTime(sl.time));
         el.setAttribute('aria-roledescription', 'resizable slide');
 
-        let handles = '';
-        if (i > 0) handles += '<span class="resize-handle left" data-side="left"></span>';
+        let handles = '<span class="resize-handle left" data-side="left"></span>';
         if (i < data.slides.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
         el.innerHTML = handles +
           (sl.image ? '<img class="slide-segment-thumb" src="' + sl.image + '" alt="' + sl.title + ' thumbnail" draggable="false">' : '') +
-          '<span class="slide-segment-label">' + sl.title + '</span>';
+          '<span class="slide-segment-label">' + formatTime(sl.time) + ' — ' + sl.title + '</span>' +
+          '<span class="segment-duration">' + formatTime(duration) + '</span>';
 
         el.addEventListener('mousedown', (e) => {
           if (e.target.classList.contains('resize-handle')) {
@@ -3176,6 +3383,11 @@
           const endT = (i < data.slides.length - 1) ? data.slides[i + 1].time : videoDuration;
           zoomToTimeRange(startT, endT);
         });
+        el.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          selectItem('slide', i);
+          showTimelineContextMenu(e.clientX, e.clientY, 'slide', i);
+        });
         el.addEventListener('keydown', (e) => {
           if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); selectItem('slide', i); }
         });
@@ -3183,26 +3395,34 @@
       });
     }
 
-    function updateSidebarTabs() {
-      const hasChapters = data.chapters.length > 0;
-      const hasSlides = data.slides.length > 0;
-      const hasContent = hasChapters || hasSlides;
-      document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
-        const panel = btn.dataset.panel;
-        if (panel === 'intro') {
-          btn.disabled = false;
-          btn.classList.remove('disabled');
-        } else if (panel === 'chapters') {
-          btn.disabled = !hasChapters;
-          btn.classList.toggle('disabled', !hasChapters);
-        } else if (panel === 'slides') {
-          btn.disabled = !hasSlides;
-          btn.classList.toggle('disabled', !hasSlides);
-        } else if (panel === 'all') {
-          btn.disabled = !hasContent;
-          btn.classList.toggle('disabled', !hasContent);
-        }
+    function updateSidebarTabs() {}
+
+    function bindPanelTabEvents() {
+      document.querySelectorAll('.panel-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.disabled) return;
+          panelFilter = btn.dataset.panel;
+          selectedItem = null;
+          renderPanel();
+        });
       });
+    }
+
+    function getPanelTabsHtml() {
+      return `<div class="panel-tabs">
+        <button class="panel-tab ${panelFilter === 'intro' ? 'active' : ''}" data-panel="intro" data-tooltip="Introduction" aria-label="Introduction">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2.52799 1.74765C2.19183 1.3214 2.2742 0.715626 2.71197 0.394611C3.14974 0.0735968 3.77713 0.158906 4.11329 0.585154L9.28699 7.14537C9.45507 7.3585 9.76876 7.40115 9.98765 7.24064C10.2065 7.08014 10.2477 6.77725 10.0796 6.56413L6.12328 1.54749C5.78712 1.12124 5.86949 0.515463 6.30726 0.194448C6.74502 -0.126566 7.37242 -0.0412577 7.70858 0.38499L13.3084 7.48547L12.5888 4.86474C12.4469 4.34781 12.7642 3.82144 13.2976 3.68906C13.831 3.55668 14.3784 3.86842 14.5204 4.38535C15.589 8.27753 18.1892 13.4078 14.0927 16.4117C11.4661 18.3378 7.70178 17.8259 5.68482 15.2684L0.206787 8.3223C-0.129372 7.89605 -0.0470024 7.29028 0.390765 6.96926C0.828533 6.64825 1.45592 6.73356 1.79208 7.1598L4.5311 10.6329C4.69918 10.846 5.01288 10.8886 5.23176 10.7281C5.45064 10.5676 5.49183 10.2647 5.32375 10.0516L1.36739 5.03498C1.03123 4.60873 1.1136 4.00295 1.55137 3.68194C1.98914 3.36092 2.61653 3.44623 2.95269 3.87248L6.45254 8.31028C6.62062 8.5234 6.93432 8.56605 7.1532 8.40555C7.37208 8.24504 7.41327 7.94215 7.24519 7.72903L2.52799 1.74765Z" fill="currentColor" transform="translate(3.84,3.21)"/></svg>
+        </button>
+        <button class="panel-tab ${panelFilter === 'chapters' ? 'active' : ''}" data-panel="chapters" data-tooltip="Chapters" aria-label="Chapters">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg>
+        </button>
+        <button class="panel-tab ${panelFilter === 'slides' ? 'active' : ''}" data-panel="slides" data-tooltip="Slides" aria-label="Slides">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg>
+        </button>
+        <button class="panel-tab ${panelFilter === 'all' ? 'active' : ''}" data-panel="all" data-tooltip="All" aria-label="All" ${data.chapters.length === 0 && data.slides.length === 0 ? 'disabled' : ''}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 0C1.44772 0 1 0.447715 1 1C1 1.55228 1.44772 2 2 2H15.5C16.8807 2 18 3.11929 18 4.5C18 5.88071 16.8807 7 15.5 7H4.5C2.01472 7 0 9.01472 0 11.5C0 13.9853 2.01472 16 4.5 16H15V17.0962C15 17.8169 15.8114 18.2467 16.4172 17.8469L19.5941 15.7507C20.1353 15.3936 20.1353 14.6064 19.5941 14.2493L16.4172 12.1531C15.8114 11.7533 15 12.1831 15 12.9038V14H4.5C3.11929 14 2 12.8807 2 11.5C2 10.1193 3.11929 9 4.5 9H15.5C17.9853 9 20 6.98528 20 4.5C20 2.01472 17.9853 0 15.5 0H2Z" fill="currentColor" transform="translate(2,3)"/></svg>
+        </button>
+      </div>`;
     }
 
     function renderPanel() {
@@ -3211,59 +3431,105 @@
 
       const isEmpty = data.chapters.length === 0 && data.slides.length === 0;
 
-      if (panelFilter === 'intro' || (isEmpty && !data.introduction.text)) {
-        let introHtml = `<div class="panel-intro-view">`;
-        introHtml += `<div class="panel-intro-section">
-          <div class="panel-intro-title">Introduction</div>
-          <div class="panel-intro-card">
-            <p class="panel-intro-desc">Help viewers quickly understand what this video covers before they start watching.</p>
-            <button class="pill-btn" id="addIntroBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Add intro</button>
-          </div>
-        </div>`;
-
-        if (isEmpty) {
-          introHtml += `<div class="panel-getstarted">
-            <div class="panel-getstarted-title">Get started</div>
-            <p class="panel-getstarted-desc">Generate chapters with AI, add a chapter, or upload a slide deck to begin editing.</p>
-            <div class="panel-getstarted-actions">
-              <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
-              <div class="panel-getstarted-divider"><span></span><span class="panel-getstarted-divider-text">Or add manually</span><span></span></div>
-              <button class="pill-btn-md" id="panelAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Add chapter</button>
-              <button class="pill-btn-md" id="panelAddSlBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Upload slide deck</button>
+      if (panelFilter === 'intro') {
+        if (data.introduction.text || selectedItem?.type === 'intro') {
+          const charCount = (data.introduction.text || '').length;
+          panel.innerHTML = getPanelTabsHtml() + `<div class="panel-intro-view">
+            <div class="panel-intro-section">
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Introduction</span>
+                  <span class="form-counter" id="introCharCount">${charCount}/500</span>
+                </div>
+                <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+              </div>
             </div>
           </div>`;
-        }
-
-        introHtml += `</div>`;
-        panel.innerHTML = introHtml;
-
-        document.getElementById('addIntroBtn')?.addEventListener('click', () => {
-          selectedItem = { type: 'intro', index: 0 };
-          renderPanel();
-        });
-        if (isEmpty) {
-          document.getElementById('panelAiBtn')?.addEventListener('click', generateWithAI);
-          document.getElementById('panelAddChBtn')?.addEventListener('click', addChapter);
-          document.getElementById('panelAddSlBtn')?.addEventListener('click', addSlide);
-        }
-
-        if (data.introduction.text || selectedItem?.type === 'intro') {
-          panel.innerHTML = `<div class="panel-intro-view">
+          bindPanelTabEvents();
+          bindIntroPanelEvents();
+        } else {
+          panel.innerHTML = getPanelTabsHtml() + `<div class="panel-intro-view">
             <div class="panel-intro-section">
-              <div class="panel-intro-title">Introduction</div>
-              <div class="accordion-form" style="padding:0;">
-                <div class="form-group">
-                  <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+              <div class="panel-intro-title">Get started</div>
+              <p class="panel-intro-desc">Generate chapters with AI, add a chapter, or upload a slide deck to begin editing.</p>
+              <div class="panel-getstarted-actions">
+                <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
+                <div class="panel-getstarted-divider"><span></span><span class="panel-getstarted-divider-text">Or add manually</span><span></span></div>
+                <div class="panel-intro-card">
+                  <p class="panel-intro-card-desc">Provide a brief overview of the video's purpose, topics, or key takeaways before they start watching.</p>
+                  <button class="pill-btn-md" id="addIntroBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add intro</button>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+                  <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add summary & chapter</button>
+                  <button class="pill-btn-md" id="emptyAddSlBtn" title="Upload Slides Deck (PPT, PPTX, PDF)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</button>
                 </div>
               </div>
             </div>
           </div>`;
-          bindIntroPanelEvents();
+          bindPanelTabEvents();
+          document.getElementById('addIntroBtn')?.addEventListener('click', () => {
+            selectedItem = { type: 'intro', index: 0 };
+            renderPanel();
+          });
+          document.getElementById('panelAiBtn')?.addEventListener('click', generateWithAI);
+          document.getElementById('emptyAddChBtn')?.addEventListener('click', addChapter);
+          document.getElementById('emptyAddSlBtn')?.addEventListener('click', addSlide);
         }
         return;
       }
 
-      let html = '';
+      // Empty states for chapters/slides/all tabs
+      const hasChapters = data.chapters.length > 0;
+      const hasSlides = data.slides.length > 0;
+      const showChaptersEmpty = panelFilter === 'chapters' && !hasChapters;
+      const showSlidesEmpty = panelFilter === 'slides' && !hasSlides;
+      const showAllEmpty = panelFilter === 'all' && !hasChapters && !hasSlides;
+
+      if (showChaptersEmpty || showSlidesEmpty || showAllEmpty) {
+        let emptyHtml = getPanelTabsHtml();
+        emptyHtml += `<div class="panel-intro-view">`;
+
+        if (showChaptersEmpty) {
+          emptyHtml += `<div class="panel-intro-section">
+            <div class="panel-intro-title">Chapters</div>
+            <p class="panel-intro-desc">Break your video into chapters to help viewers navigate and find what they need.</p>
+            <div class="panel-getstarted-actions">
+              <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
+              <div class="panel-getstarted-divider"><span></span><span class="panel-getstarted-divider-text">Or add manually</span><span></span></div>
+              <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add summary & chapter</button>
+            </div>
+          </div>`;
+        } else if (showSlidesEmpty) {
+          emptyHtml += `<div class="panel-intro-section">
+            <div class="panel-intro-title">Slides</div>
+            <p class="panel-intro-desc">Upload a slide deck to sync slides with your video timeline.</p>
+            <div class="panel-getstarted-actions">
+              <button class="pill-btn-md" id="emptyAddSlBtn" title="Upload Slides Deck (PPT, PPTX, PDF)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</button>
+            </div>
+          </div>`;
+        } else if (showAllEmpty) {
+          emptyHtml += `<div class="panel-intro-section">
+            <div class="panel-intro-title">Get started</div>
+            <p class="panel-intro-desc">Generate chapters with AI, add a chapter, or upload a slide deck to begin editing.</p>
+            <div class="panel-getstarted-actions">
+              <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
+              <div class="panel-getstarted-divider"><span></span><span class="panel-getstarted-divider-text">Or add manually</span><span></span></div>
+              <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add summary & chapter</button>
+              <button class="pill-btn-md" id="emptyAddSlBtn" title="Upload Slides Deck (PPT, PPTX, PDF)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</button>
+            </div>
+          </div>`;
+        }
+
+        emptyHtml += `</div>`;
+        panel.innerHTML = emptyHtml;
+        bindPanelTabEvents();
+        document.getElementById('emptyAddChBtn')?.addEventListener('click', addChapter);
+        document.getElementById('emptyAddSlBtn')?.addEventListener('click', addSlide);
+        document.getElementById('panelAiBtn')?.addEventListener('click', generateWithAI);
+        return;
+      }
+
+      let html = getPanelTabsHtml();
       const chevronSvg = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.29289 11.7071C5.90237 11.3166 5.90237 10.6834 6.29289 10.2929L8.58579 8L6.29289 5.70711C5.90237 5.31658 5.90237 4.68342 6.29289 4.29289C6.68342 3.90237 7.31658 3.90237 7.70711 4.29289L10.7071 7.29289C11.0976 7.68342 11.0976 8.31658 10.7071 8.70711L7.70711 11.7071C7.31658 12.0976 6.68342 12.0976 6.29289 11.7071Z" fill="white"/></svg>';
       const targetSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3V4.06189C7.38128 4.51314 4.51314 7.38128 4.06189 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H4.06189C4.51314 16.6187 7.38128 19.4869 11 19.9381V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V19.9381C16.6187 19.4869 19.4869 16.6187 19.9381 13H21C21.5523 13 22 12.5523 22 12C22 11.4477 21.5523 11 21 11H19.9381C19.4869 7.38128 16.6187 4.51314 13 4.06189V3ZM6.08296 11C6.50448 8.4875 8.4875 6.50448 11 6.08296V7C11 7.55228 11.4477 8 12 8C12.5523 8 13 7.55228 13 7V6.08296C15.5125 6.50448 17.4955 8.4875 17.917 11H17C16.4477 11 16 11.4477 16 12C16 12.5523 16.4477 13 17 13H17.917C17.4955 15.5125 15.5125 17.4955 13 17.917V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V17.917C8.4875 17.4955 6.50448 15.5125 6.08296 13H7C7.55228 13 8 12.5523 8 12C8 11.4477 7.55228 11 7 11H6.08296ZM12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="white"/></svg>';
       const deleteSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg>';
@@ -3278,7 +3544,7 @@
         html += `<div class="accordion-item ${introExpanded ? 'expanded' : ''}" data-type="intro" data-index="0">
           <div class="accordion-row">
             <div class="accordion-row-holder">
-              <span class="accordion-row-type">Intro</span>
+              <span class="accordion-row-title">Introduction</span>
             </div>
             <span class="accordion-row-chevron">${chevronSvg}</span>
           </div>
@@ -3307,13 +3573,11 @@
 
       allItems.forEach(item => {
         const expanded = isExpanded(item.type, item.index);
-        const typeLabel = item.type === 'chapter' ? 'Chapter' : 'Slide';
 
         html += `<div class="accordion-item ${expanded ? 'expanded' : ''}" data-type="${item.type}" data-index="${item.index}">
           <div class="accordion-row">
             <div class="accordion-row-holder">
               <span class="accordion-row-time">${formatTime(item.time)}</span>
-              <span class="accordion-row-type">${typeLabel}</span>
               <span class="accordion-row-title">${item.title}</span>
             </div>
             <span class="accordion-row-chevron">${chevronSvg}</span>
@@ -3324,19 +3588,29 @@
           const ch = data.chapters[item.index];
           html += `
             <div class="accordion-form">
-              <div class="form-group">
-                <div class="form-label"><span>Title</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(ch.title || '').length}/75</span></div>
-                <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Chapter title" maxlength="75" required>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Chapter name</span>
+                  <span class="form-counter">${(ch.title || '').length}/75</span>
+                </div>
+                <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Untitled chapter" maxlength="75" required>
               </div>
-              <div class="form-group">
-                <div class="form-label"><span>Summary</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(ch.summary || '').length}/500</span></div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Chapter summary</span>
+                  <span class="form-counter">${(ch.summary || '').length}/500</span>
+                </div>
                 <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers" maxlength="500">${ch.summary || ''}</textarea>
               </div>
-              <div class="form-group">
-                <div class="form-label"><span>Timestamp</span></div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Duration</span>
+                </div>
                 <div class="timestamp-input">
-                  <input type="text" class="form-input" id="chapterTimeInput" value="${formatTime(ch.time)}" style="width:94px;">
-                  <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                  <input type="text" class="form-input" id="chapterTimeInput" value="${formatTime(ch.time)}">
+                  <span class="timestamp-separator">—</span>
+                  <input type="text" class="form-input" id="chapterEndTimeInput" value="${formatTime(item.index < data.chapters.length - 1 ? data.chapters[item.index + 1].time : videoDuration)}" readonly>
+                  <button class="use-current-btn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
                 </div>
               </div>
             </div>
@@ -3351,19 +3625,29 @@
                 <img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title}">
                 <button class="slide-thumb-replace" id="replaceSlideBtn">Replace</button>
               </div>` : ''}
-              <div class="form-group">
-                <div class="form-label"><span>Title</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(sl.title || '').length}/75</span></div>
-                <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Slide title" maxlength="75" required>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Title</span>
+                  <span class="form-counter">${(sl.title || '').length}/75</span>
+                </div>
+                <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide title" maxlength="75" required>
               </div>
-              <div class="form-group">
-                <div class="form-label"><span>Description</span><span style="font-weight:400;color:var(--w-100);margin-left:auto;">${(sl.description || '').length}/500</span></div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Description</span>
+                  <span class="form-counter">${(sl.description || '').length}/500</span>
+                </div>
                 <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
               </div>
-              <div class="form-group">
-                <div class="form-label"><span>Timestamp</span></div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Duration</span>
+                </div>
                 <div class="timestamp-input">
-                  <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}" style="width:94px;">
-                  <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                  <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}">
+                  <span class="timestamp-separator">—</span>
+                  <input type="text" class="form-input" id="slideEndTimeInput" value="${formatTime(item.index < data.slides.length - 1 ? data.slides[item.index + 1].time : videoDuration)}" readonly>
+                  <button class="use-current-btn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
                 </div>
               </div>
             </div>
@@ -3378,6 +3662,7 @@
       html += '</div>';
 
       panel.innerHTML = html;
+      bindPanelTabEvents();
       bindPanelEvents();
     }
 
@@ -3399,15 +3684,46 @@
 
     function bindIntroPanelEvents() {
       const introText = document.getElementById('introTextInput');
-      if (introText) introText.addEventListener('input', (e) => { data.introduction.text = e.target.value; triggerSave(); });
+      const charCount = document.getElementById('introCharCount');
+      if (introText) {
+        introText.addEventListener('input', (e) => {
+          data.introduction.text = e.target.value;
+          if (charCount) charCount.textContent = e.target.value.length + '/500';
+          triggerSave();
+        });
+      }
+      const saveBtn = document.getElementById('introSaveBtn');
+      if (saveBtn) saveBtn.addEventListener('click', () => {
+        selectedItem = null;
+        renderPanel();
+        showToast('Introduction saved');
+      });
     }
 
     function bindPanelEvents() {
-      const useCurrentBtn = document.getElementById('useCurrentTimeBtn');
-      if (useCurrentBtn) useCurrentBtn.addEventListener('click', useCurrentTime);
+      document.querySelectorAll('.use-current-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = btn.closest('.accordion-item');
+          if (item) {
+            const type = item.dataset.type;
+            const index = parseInt(item.dataset.index);
+            selectedItem = { type, index };
+          }
+          useCurrentTime();
+        });
+      });
 
-      const deleteBtn = document.getElementById('deleteItemBtn');
-      if (deleteBtn) deleteBtn.addEventListener('click', confirmDelete);
+      document.querySelectorAll('.accordion-delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = btn.closest('.accordion-item');
+          if (item) {
+            const type = item.dataset.type;
+            const index = parseInt(item.dataset.index);
+            selectedItem = { type, index };
+          }
+          confirmDelete();
+        });
+      });
 
       // Form inputs
       const introText = document.getElementById('introTextInput');
@@ -3542,33 +3858,32 @@
     }
 
     function updateSidebarActive() {
-      document.querySelectorAll('.sidebar-nav-item').forEach(b => {
+      document.querySelectorAll('.panel-tab').forEach(b => {
         b.classList.toggle('active', b.dataset.panel === panelFilter);
       });
     }
 
     // ===== ADD CHAPTER =====
     function findAvailableTime(requestedTime, existingTimes) {
-      let time = Math.round(requestedTime);
-      const maxTime = Math.floor(videoDuration);
-      const taken = new Set(existingTimes.map(t => Math.round(t)));
-      if (!taken.has(time)) return time;
-      // Jump forward in 1s increments
-      for (let t = time + 1; t <= maxTime; t++) {
-        if (!taken.has(t)) return t;
-      }
-      // Try backward from requested time
-      for (let t = time - 1; t >= 0; t--) {
-        if (!taken.has(t)) return t;
+      const time = Math.round(requestedTime * 10) / 10;
+      const tooClose = existingTimes.some(t => Math.abs(t - time) < 0.5);
+      if (!tooClose) return time;
+      const maxTime = videoDuration;
+      for (let offset = 1; offset <= Math.ceil(maxTime); offset++) {
+        const forward = Math.round((time + offset) * 10) / 10;
+        if (forward <= maxTime && !existingTimes.some(t => Math.abs(t - forward) < 0.5)) return forward;
+        const backward = Math.round((time - offset) * 10) / 10;
+        if (backward >= 0 && !existingTimes.some(t => Math.abs(t - backward) < 0.5)) return backward;
       }
       return null;
     }
 
     function addChapter() {
-      let time = video.currentTime || 0;
+      let time;
       if (data.chapters.length === 0) {
         time = 0;
       } else {
+        time = video.currentTime || 0;
         const existingTimes = data.chapters.map(c => c.time);
         const available = findAvailableTime(time, existingTimes);
         if (available === null) {
@@ -3592,17 +3907,45 @@
     // ===== ADD SLIDE =====
     function addSlide() {
       let time = video.currentTime || 0;
-      if (data.slides.length === 0) {
-        time = 0;
-      } else {
-        const existingTimes = data.slides.map(s => s.time);
-        const available = findAvailableTime(time, existingTimes);
-        if (available === null) {
-          showToast('No available time — all seconds are taken');
-          return;
+      const existingSlideTimes = data.slides.map(s => Math.round(s.time * 10) / 10);
+      const rounded = Math.round(time * 10) / 10;
+
+      if (existingSlideTimes.includes(rounded)) {
+        // Try to place at the next chapter boundary that doesn't have a slide
+        if (data.chapters.length > 1) {
+          let placed = false;
+          for (let i = 0; i < data.chapters.length; i++) {
+            const chTime = Math.round(data.chapters[i].time * 10) / 10;
+            if (!existingSlideTimes.includes(chTime)) {
+              time = chTime;
+              placed = true;
+              break;
+            }
+          }
+          if (!placed) {
+            // All chapter positions taken — add 1s after last slide
+            const lastSlide = data.slides[data.slides.length - 1];
+            const candidate = Math.round((lastSlide.time + 1) * 10) / 10;
+            if (candidate > videoDuration) {
+              showToast('No more room — timeline is full');
+              return;
+            }
+            time = candidate;
+          }
+        } else {
+          // No chapters to align to — add 1s after last slide
+          const lastSlide = data.slides[data.slides.length - 1];
+          const candidate = Math.round((lastSlide.time + 1) * 10) / 10;
+          if (candidate > videoDuration) {
+            showToast('No more room — timeline is full');
+            return;
+          }
+          time = candidate;
         }
-        time = available;
+      } else {
+        time = rounded;
       }
+
       const image = slideImages[slideImageIndex % slideImages.length];
       slideImageIndex++;
       const newSlide = { time, title: 'Untitled slide', description: '', image };
@@ -3620,17 +3963,7 @@
     document.getElementById('addChapterBtn').addEventListener('click', addChapter);
     document.getElementById('addSlideBtn').addEventListener('click', addSlide);
 
-    // ===== SIDEBAR NAVIGATION =====
-    document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
-      btn.addEventListener('click', () => {
-        if (btn.disabled) return;
-        document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        panelFilter = btn.dataset.panel;
-        selectedItem = null;
-        renderPanel();
-      });
-    });
+    // Panel tab events are bound dynamically in bindPanelTabEvents()
 
     // ===== USE CURRENT TIME =====
     function useCurrentTime() {
@@ -3647,6 +3980,55 @@
       }
       render();
       triggerSave();
+    }
+
+    // ===== TIMELINE CONTEXT MENU =====
+    function showTimelineContextMenu(x, y, type, index) {
+      hideTimelineContextMenu();
+      const menu = document.createElement('div');
+      menu.className = 'timeline-context-menu';
+      menu.id = 'timelineContextMenu';
+      menu.style.left = x + 'px';
+      menu.style.top = y + 'px';
+
+      const snapBtn = document.createElement('button');
+      snapBtn.className = 'timeline-context-menu-item';
+      snapBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>Snap to playhead';
+      snapBtn.addEventListener('click', () => {
+        selectedItem = { type, index };
+        useCurrentTime();
+        hideTimelineContextMenu();
+      });
+      menu.appendChild(snapBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'timeline-context-menu-item destructive';
+      deleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>Delete';
+      deleteBtn.addEventListener('click', () => {
+        selectedItem = { type, index };
+        hideTimelineContextMenu();
+        confirmDelete();
+      });
+      menu.appendChild(deleteBtn);
+
+      document.body.appendChild(menu);
+
+      const menuRect = menu.getBoundingClientRect();
+      if (menuRect.right > window.innerWidth) menu.style.left = (window.innerWidth - menuRect.width - 8) + 'px';
+      if (menuRect.bottom > window.innerHeight) menu.style.top = (window.innerHeight - menuRect.height - 8) + 'px';
+
+      setTimeout(() => document.addEventListener('mousedown', onContextMenuOutside), 0);
+    }
+
+    function hideTimelineContextMenu() {
+      const existing = document.getElementById('timelineContextMenu');
+      if (existing) existing.remove();
+      document.removeEventListener('mousedown', onContextMenuOutside);
+    }
+
+    function onContextMenuOutside(e) {
+      const menu = document.getElementById('timelineContextMenu');
+      if (menu && !menu.contains(e.target)) hideTimelineContextMenu();
     }
 
     // ===== DELETE =====
@@ -3697,7 +4079,7 @@
       setTimeout(() => {
         const dur = videoDuration || 600;
         data.chapters = [
-          { time: 0, title: 'Introduction', summary: 'Welcome and overview of the presentation topic.', ai: true },
+          { time: 0, title: 'Overview', summary: 'Welcome and overview of the presentation topic.', ai: true },
           { time: dur * 0.12, title: 'What is AX?', summary: 'Defining Accessibility Experience as a design discipline.', ai: true },
           { time: dur * 0.28, title: 'AX vs UX Comparison', summary: 'Key differences and overlaps between accessibility and user experience.', ai: true },
           { time: dur * 0.45, title: 'Design Evolution', summary: 'How accessibility is reshaping modern design practices.', ai: true },
@@ -3705,22 +4087,16 @@
           { time: dur * 0.82, title: 'Future of Design', summary: 'Where the industry is heading and how to prepare.', ai: true },
           { time: dur * 0.93, title: 'Q&A', summary: 'Questions from the audience.', ai: true }
         ];
-        data.slides = [
-          { time: 0, title: 'Title Slide', description: 'AX vs UX presentation cover', image: slideImages[0] },
-          { time: dur * 0.12, title: 'AX Definition', description: 'What Accessibility Experience means', image: slideImages[1] },
-          { time: dur * 0.28, title: 'Comparison Chart', description: 'AX and UX side by side', image: slideImages[2] },
-          { time: dur * 0.45, title: 'Evolution Timeline', description: 'How design has evolved', image: slideImages[3] },
-          { time: dur * 0.65, title: 'Case Studies', description: 'Real-world AX examples', image: slideImages[4] }
-        ];
-        slideImageIndex = 5;
         data.introduction = {
           title: 'AX vs. UX: The Next Evolution of Design',
           text: 'Exploring whether accessibility-first design represents the next evolution of the design discipline, presented by Bonterra.'
         };
         selectedItem = { type: 'chapter', index: 0 };
+        panelFilter = 'chapters';
+        updateSidebarActive();
         render();
         triggerSave();
-        showToast('AI generated 7 chapters and 5 slides');
+        showToast('AI generated summary and 7 chapters');
       }, 2500);
     }
 
@@ -4325,7 +4701,7 @@
       if (!dragState) return;
 
       const dx = Math.abs(e.clientX - dragState.startX);
-      if (dx < 5 && !dragState.moved) return;
+      if (dx < 10 && !dragState.moved) return;
 
       if (!dragState.moved) {
         dragState.moved = true;
@@ -4379,29 +4755,58 @@
       if (!dragState.moved) {
         selectItem(dragState.type, dragState.index);
       } else {
-        // Reorder while preserving all durations
         const arr = dragState.type === 'chapter' ? data.chapters : data.slides;
-        const durations = dragState.originalDurations;
-        const fromIdx = dragState.index;
-        const targetIdx = dragState.targetInsertIdx;
+        const item = arr[dragState.index];
+        const originalIndex = dragState.index;
 
-        // Remove item and its duration from their positions
-        const item = arr.splice(fromIdx, 1)[0];
-        const itemDuration = durations.splice(fromIdx, 1)[0];
+        // Calculate target insert position from cursor
+        const trackContent = dragState.type === 'chapter'
+          ? document.getElementById('chapterTrackContent')
+          : document.getElementById('slideTrackContent');
+        const rect = trackContent.getBoundingClientRect();
+        const relX = Math.max(0, Math.min(dragState.lastClientX - rect.left, rect.width));
+        const dropTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
 
-        // Insert at new position
-        const insertAt = targetIdx > fromIdx ? targetIdx - 1 : targetIdx;
-        arr.splice(insertAt, 0, item);
-        durations.splice(insertAt, 0, itemDuration);
+        // Find target index based on drop position
+        let targetIdx = arr.length;
+        for (let i = 0; i < arr.length; i++) {
+          if (i === originalIndex) continue;
+          if (dropTime < arr[i].time) { targetIdx = i; break; }
+        }
 
-        // Rebuild all times from durations (preserves all segment lengths)
-        rebuildTimesFromDurations(dragState.type, durations);
+        // Store original durations before reordering
+        const durations = arr.map((a, i) => {
+          const nextTime = (i < arr.length - 1) ? arr[i + 1].time : videoDuration;
+          return nextTime - a.time;
+        });
+        const itemDuration = durations[originalIndex];
 
-        selectedItem = { type: dragState.type, index: insertAt };
+        // Remove item from original position
+        arr.splice(originalIndex, 1);
+        durations.splice(originalIndex, 1);
+
+        // Adjust target index after removal
+        const insertIdx = targetIdx > originalIndex ? targetIdx - 1 : targetIdx;
+
+        // Insert item at new position
+        arr.splice(insertIdx, 0, item);
+        durations.splice(insertIdx, 0, itemDuration);
+
+        // Recalculate times from durations (preserves all durations)
+        if (dragState.type === 'chapter') {
+          let t = 0;
+          arr.forEach((a, i) => { a.time = Math.round(t * 10) / 10; t += durations[i]; });
+        } else {
+          // For slides: preserve relative spacing — use drop time for the moved item
+          item.time = Math.round(dropTime * 10) / 10;
+          arr.sort((a, b) => a.time - b.time);
+        }
+
+        const newIndex = arr.indexOf(item);
+        selectedItem = { type: dragState.type, index: newIndex };
         render();
         triggerSave();
-        const itemName = item.title;
-        showToast('"' + itemName + '" moved to position ' + (insertAt + 1));
+        showToast('"' + item.title + '" moved to ' + formatTime(item.time));
       }
 
       dragState = null;
@@ -4508,11 +4913,11 @@
         if (!dropOverlay) {
           dropOverlay = document.createElement('div');
           dropOverlay.className = 'drop-zone-overlay visible';
-          dropOverlay.innerHTML = '<span class="drop-zone-overlay-text">Drop image to add slide</span>';
+          dropOverlay.innerHTML = '<span class="drop-zone-overlay-text">Drop slide deck or image to add slides</span>';
           slideTrack.style.position = 'relative';
           slideTrack.appendChild(dropOverlay);
         }
-        announce('Drop zone active. Drop image file to add a slide.');
+        announce('Drop zone active. Drop slide deck or image file to add slides.');
       });
 
       slideTrack.addEventListener('dragover', (e) => {
@@ -4552,8 +4957,15 @@
         if (dropOverlay) { dropOverlay.remove(); dropOverlay = null; }
         if (dropIndicator) { dropIndicator.remove(); dropIndicator = null; }
 
-        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-        if (files.length === 0) { showToast('Only image files can be added as slides'); return; }
+        const allFiles = Array.from(e.dataTransfer.files);
+        const imageFiles = allFiles.filter(f => f.type.startsWith('image/'));
+        const deckExtensions = ['.ppt', '.pptx', '.pdf', '.key'];
+        const deckFiles = allFiles.filter(f => deckExtensions.some(ext => f.name.toLowerCase().endsWith(ext)));
+
+        if (imageFiles.length === 0 && deckFiles.length === 0) {
+          showToast('Drop image files or slide decks (PPT, PPTX, PDF)');
+          return;
+        }
 
         const trackContent = document.getElementById('slideTrackContent');
         const rect = trackContent.getBoundingClientRect();
@@ -4561,18 +4973,66 @@
         const dropTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
 
         pushHistory();
+
+        if (deckFiles.length > 0) {
+          const file = deckFiles[0];
+          const deckName = file.name.replace(/\.[^.]+$/, '');
+
+          // Place slides at chapter boundaries if chapters exist
+          let slideTimes = [];
+          if (data.chapters.length > 0) {
+            slideTimes = data.chapters.map(ch => ch.time);
+          } else {
+            // No chapters — distribute evenly across video
+            const slideCount = 5;
+            const spacing = videoDuration / (slideCount + 1);
+            for (let i = 0; i < slideCount; i++) {
+              slideTimes.push(Math.round((dropTime + i * spacing) * 10) / 10);
+            }
+          }
+
+          // Read file to use as thumbnail source for PDF, or use placeholders
+          const isPdf = file.name.toLowerCase().endsWith('.pdf');
+          if (isPdf && typeof pdfjsLib !== 'undefined') {
+            // PDF.js available — render pages (future enhancement)
+            addDeckSlides(slideTimes, deckName, null);
+          } else {
+            addDeckSlides(slideTimes, deckName, file);
+          }
+          return;
+        }
+
+        function addDeckSlides(times, deckName, file) {
+          const existingSlideTimes = data.slides.map(s => Math.round(s.time * 10) / 10);
+          let added = 0;
+          times.forEach((t, i) => {
+            const rounded = Math.round(t * 10) / 10;
+            if (existingSlideTimes.includes(rounded)) return;
+            const image = slideImages[(slideImageIndex + added) % slideImages.length];
+            data.slides.push({ time: rounded, title: deckName + ' - Slide ' + (i + 1), description: '', image, deckFile: file ? file.name : null });
+            existingSlideTimes.push(rounded);
+            added++;
+          });
+          slideImageIndex += added;
+          data.slides.sort((a, b) => a.time - b.time);
+          panelFilter = 'slides';
+          render();
+          triggerSave();
+          showToast(added + ' slides added from ' + deckName);
+        }
+
         let added = 0;
-        files.forEach((file, i) => {
+        imageFiles.forEach((file, i) => {
           const reader = new FileReader();
           reader.onload = (ev) => {
             const slideTime = Math.min(videoDuration, dropTime + i * 2);
             data.slides.push({ time: slideTime, title: file.name.replace(/\.[^.]+$/, ''), image: ev.target.result });
             added++;
-            if (added === files.length) {
+            if (added === imageFiles.length) {
               data.slides.sort((a, b) => a.time - b.time);
               render();
               triggerSave();
-              showToast(files.length === 1 ? 'Slide added from ' + file.name : files.length + ' slides added');
+              showToast(imageFiles.length === 1 ? 'Slide added from ' + file.name : imageFiles.length + ' slides added');
             }
           };
           reader.readAsDataURL(file);
