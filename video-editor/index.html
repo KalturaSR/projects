@@ -2162,9 +2162,9 @@
 </head>
 <body class="is-loading">
 
-  <!-- Hidden file input for slide upload (must be in DOM for cross-browser .click() support) -->
-  <input type="file" id="slideFileInput" accept="application/pdf" style="position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
-  <input type="file" id="replaceFileInput" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" style="position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
+  <!-- Hidden file inputs for slide upload -->
+  <input type="file" id="slideFileInput" accept="application/pdf" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
+  <input type="file" id="replaceFileInput" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
 
   <!-- Page Loader -->
   <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Loading editor">
@@ -2252,7 +2252,7 @@
         <div class="timeline-toolbar">
           <div class="timeline-actions">
             <button class="btn btn-sm" id="addChapterBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6C4 5.44772 4.44772 5 5 5H16C16.5523 5 17 5.44772 17 6C17 6.55228 16.5523 7 16 7H5C4.44772 7 4 6.55228 4 6Z" fill="currentColor"/><path d="M4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12Z" fill="currentColor"/><path d="M4 18C4 17.4477 4.44772 17 5 17H11C11.5523 17 12 17.4477 12 18C12 18.5523 11.5523 19 11 19H5C4.44772 19 4 18.5523 4 18Z" fill="currentColor"/></svg></span>Add chapter</button>
-            <button class="btn btn-sm" id="addSlideBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></span>Add slides</button>
+            <label class="btn btn-sm" id="addSlideBtn" for="slideFileInput" style="cursor:pointer;"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></span>Add slides</label>
           </div>
           <div class="zoom-controls">
             <button class="zoom-btn" id="zoomFitBtn" aria-label="Fit timeline to view" title="Fit to view (0)">Fit</button>
@@ -2321,14 +2321,6 @@
 
   <script>
     // ===== DATA =====
-    const slideImages = [
-      'Content/slide-1.png',
-      'Content/slide-2.png',
-      'Content/slide-3.png',
-      'Content/slide-4.png',
-      'Content/slide-5.png'
-    ];
-    let slideImageIndex = 0;
 
     let data = {
       introduction: {
@@ -2776,8 +2768,7 @@
       if (data.slides.length === 0) {
         container.removeAttribute('role');
         container.removeAttribute('aria-label');
-        container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptySlideClick">Drag and drop or click to add slides</div></div>';
-        document.getElementById('emptySlideClick').addEventListener('click', addSlide);
+        container.innerHTML = '<div class="track-empty"><label class="track-empty-text" id="emptySlideClick" for="slideFileInput" style="cursor:pointer;">Drag and drop or click to add slides</label></div>';
         return;
       }
 
@@ -2801,7 +2792,7 @@
         el.innerHTML = handles +
           (sl.image ? '<img class="slide-segment-thumb" src="' + sl.image + '" alt="' + sl.title + ' thumbnail" draggable="false">' : '') +
           '<span class="slide-segment-label">' + sl.title + '</span>' +
-          '<button class="slide-segment-replace" data-slide-index="' + i + '">Replace</button>';
+          '<label class="slide-segment-replace" data-slide-index="' + i + '" for="replaceFileInput">Replace</label>';
 
         el.addEventListener('mousedown', (e) => {
           if (e.target.classList.contains('slide-segment-replace')) return;
@@ -2820,10 +2811,9 @@
         el.addEventListener('keydown', (e) => {
           if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); selectItem('slide', i); }
         });
-        el.querySelector('.slide-segment-replace').addEventListener('click', (e) => {
+        el.querySelector('.slide-segment-replace').addEventListener('mousedown', (e) => {
           e.stopPropagation();
           selectedItem = { type: 'slide', index: i };
-          replaceSlide();
         });
         container.appendChild(el);
       });
@@ -2843,13 +2833,12 @@
             <div class="panel-empty-divider">or add manually</div>
             <div class="panel-empty-secondary">
               <button class="btn-secondary-sm" id="panelAddChBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6C4 5.44772 4.44772 5 5 5H16C16.5523 5 17 5.44772 17 6C17 6.55228 16.5523 7 16 7H5C4.44772 7 4 6.55228 4 6Z" fill="currentColor"/><path d="M4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12Z" fill="currentColor"/><path d="M4 18C4 17.4477 4.44772 17 5 17H11C11.5523 17 12 17.4477 12 18C12 18.5523 11.5523 19 11 19H5C4.44772 19 4 18.5523 4 18Z" fill="currentColor"/></svg></span>Add chapter</button>
-              <button class="btn-secondary-sm" id="panelAddSlBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></span>Add slides</button>
+              <label class="btn-secondary-sm" id="panelAddSlBtn" for="slideFileInput" style="cursor:pointer;"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></span>Add slides</label>
             </div>
           </div>
         `;
         document.getElementById('panelAiBtn').addEventListener('click', generateWithAI);
         document.getElementById('panelAddChBtn').addEventListener('click', addChapter);
-        document.getElementById('panelAddSlBtn').addEventListener('click', addSlide);
         return;
       }
 
@@ -2916,7 +2905,7 @@
             <div class="panel-section-title">Slide Properties</div>
             ${sl.image ? `<div class="slide-thumb-container">
               <img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title}">
-              <button class="slide-thumb-replace" id="replaceSlideBtn">Replace slide</button>
+              <label class="slide-thumb-replace" id="replaceSlideBtn" for="replaceFileInput" style="cursor:pointer;">Replace slide</label>
             </div>` : ''}
             <div class="form-group">
               <label class="form-label" for="slideTimeInput">Timestamp</label>
@@ -3066,9 +3055,6 @@
         }
       });
 
-      const replaceBtn = document.getElementById('replaceSlideBtn');
-      if (replaceBtn) replaceBtn.addEventListener('click', replaceSlide);
-
       // Content list items
       document.querySelectorAll('.chapter-list-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -3106,40 +3092,48 @@
     }
 
     // ===== ADD SLIDES (PDF upload from desktop) =====
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
     async function handlePdfUpload(file) {
-      const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const totalPages = pdf.numPages;
-      const dur = videoDuration || 1;
-      const interval = dur / totalPages;
-      const deckName = file.name.replace(/\.[^.]+$/, '');
-
-      showToast('Extracting ' + totalPages + ' slides from PDF...');
-
-      for (let p = 1; p <= totalPages; p++) {
-        const page = await pdf.getPage(p);
-        const viewport = page.getViewport({ scale: 1.5 });
-        const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
-        const ctx = canvas.getContext('2d');
-        await page.render({ canvasContext: ctx, viewport }).promise;
-        const image = canvas.toDataURL('image/png');
-        const time = (data.slides.length === 0 && p === 1) ? 0 : interval * (p - 1);
-        data.slides.push({ time, title: deckName + ' - Slide ' + p, description: '', image });
+      if (typeof pdfjsLib === 'undefined') {
+        showToast('PDF library loading, please try again...');
+        return;
       }
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const totalPages = pdf.numPages;
+        const dur = videoDuration || 1;
+        const interval = dur / totalPages;
+        const deckName = file.name.replace(/\.[^.]+$/, '');
 
-      data.slides.sort((a, b) => a.time - b.time);
-      selectedItem = { type: 'slide', index: 0 };
-      render();
-      triggerSave();
-      showToast(totalPages + ' slides added from ' + file.name);
+        showToast('Extracting ' + totalPages + ' slides from PDF...');
+
+        for (let p = 1; p <= totalPages; p++) {
+          const page = await pdf.getPage(p);
+          const viewport = page.getViewport({ scale: 1.5 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          const image = canvas.toDataURL('image/png');
+          const time = (data.slides.length === 0 && p === 1) ? 0 : interval * (p - 1);
+          data.slides.push({ time, title: deckName + ' - Slide ' + p, description: '', image });
+        }
+
+        data.slides.sort((a, b) => a.time - b.time);
+        selectedItem = { type: 'slide', index: 0 };
+        render();
+        triggerSave();
+        showToast(totalPages + ' slides added from ' + file.name);
+      } catch (err) {
+        showToast('Error reading PDF: ' + err.message);
+      }
     }
 
     function addSlide() {
-      document.getElementById('slideFileInput').click();
+      var el = document.getElementById('slideFileInput');
+      el.showPicker ? el.showPicker() : el.click();
     }
 
     document.getElementById('slideFileInput').addEventListener('change', function() {
@@ -3151,7 +3145,8 @@
 
     // ===== REPLACE SLIDE (image upload from desktop) =====
     function replaceSlide() {
-      document.getElementById('replaceFileInput').click();
+      var el = document.getElementById('replaceFileInput');
+      el.showPicker ? el.showPicker() : el.click();
     }
 
     document.getElementById('replaceFileInput').addEventListener('change', function() {
@@ -3169,7 +3164,6 @@
     });
 
     document.getElementById('addChapterBtn').addEventListener('click', addChapter);
-    document.getElementById('addSlideBtn').addEventListener('click', addSlide);
 
     // ===== USE CURRENT TIME =====
     function useCurrentTime() {
@@ -3245,13 +3239,12 @@
           { time: dur * 0.93, title: 'Q&A', summary: 'Questions from the audience.', ai: true }
         ];
         data.slides = [
-          { time: 0, title: 'Title Slide', description: 'AX vs UX presentation cover', image: slideImages[0] },
-          { time: dur * 0.12, title: 'AX Definition', description: 'What Accessibility Experience means', image: slideImages[1] },
-          { time: dur * 0.28, title: 'Comparison Chart', description: 'AX and UX side by side', image: slideImages[2] },
-          { time: dur * 0.45, title: 'Evolution Timeline', description: 'How design has evolved', image: slideImages[3] },
-          { time: dur * 0.65, title: 'Case Studies', description: 'Real-world AX examples', image: slideImages[4] }
+          { time: 0, title: 'Title Slide', description: 'AX vs UX presentation cover', image: '' },
+          { time: dur * 0.12, title: 'AX Definition', description: 'What Accessibility Experience means', image: '' },
+          { time: dur * 0.28, title: 'Comparison Chart', description: 'AX and UX side by side', image: '' },
+          { time: dur * 0.45, title: 'Evolution Timeline', description: 'How design has evolved', image: '' },
+          { time: dur * 0.65, title: 'Case Studies', description: 'Real-world AX examples', image: '' }
         ];
-        slideImageIndex = 5;
         data.introduction = {
           title: 'AX vs. UX: The Next Evolution of Design',
           text: 'Exploring whether accessibility-first design represents the next evolution of the design discipline, presented by Bonterra.'
@@ -3554,7 +3547,7 @@
 
     document.getElementById('slideTrack').addEventListener('dblclick', (e) => {
       if (data.slides.length > 0) return;
-      addSlide();
+      document.getElementById('slideFileInput').click();
     });
 
     // ===== VIDEO THUMBNAILS =====
