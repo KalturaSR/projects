@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Video Structure</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -1004,6 +1005,33 @@
       text-overflow: ellipsis;
       flex: 1;
       min-width: 0;
+    }
+
+    .slide-segment-replace {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 20px;
+      padding: 0 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--b-60);
+      color: var(--w-100);
+      border: none;
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.15s;
+      z-index: 2;
+    }
+
+    .slide-segment:hover .slide-segment-replace {
+      opacity: 1;
+    }
+
+    .slide-segment-replace:hover {
+      background: rgba(0,0,0,0.85);
     }
 
     /* Slide thumbnail in panel */
@@ -2134,6 +2162,10 @@
 </head>
 <body class="is-loading">
 
+  <!-- Hidden file input for slide upload (must be in DOM for cross-browser .click() support) -->
+  <input type="file" id="slideFileInput" accept="application/pdf" style="position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
+  <input type="file" id="replaceFileInput" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" style="position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none;" aria-hidden="true">
+
   <!-- Page Loader -->
   <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Loading editor">
     <div class="loader-spinner"></div>
@@ -2768,9 +2800,11 @@
         if (i < data.slides.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
         el.innerHTML = handles +
           (sl.image ? '<img class="slide-segment-thumb" src="' + sl.image + '" alt="' + sl.title + ' thumbnail" draggable="false">' : '') +
-          '<span class="slide-segment-label">' + sl.title + '</span>';
+          '<span class="slide-segment-label">' + sl.title + '</span>' +
+          '<button class="slide-segment-replace" data-slide-index="' + i + '">Replace</button>';
 
         el.addEventListener('mousedown', (e) => {
+          if (e.target.classList.contains('slide-segment-replace')) return;
           if (e.target.classList.contains('resize-handle')) {
             initResize(e, 'slide', i, e.target.dataset.side);
           } else {
@@ -2785,6 +2819,11 @@
         });
         el.addEventListener('keydown', (e) => {
           if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); selectItem('slide', i); }
+        });
+        el.querySelector('.slide-segment-replace').addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedItem = { type: 'slide', index: i };
+          replaceSlide();
         });
         container.appendChild(el);
       });
@@ -3028,24 +3067,7 @@
       });
 
       const replaceBtn = document.getElementById('replaceSlideBtn');
-      if (replaceBtn) replaceBtn.addEventListener('click', () => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            data.slides[selectedItem.index].image = ev.target.result;
-            render();
-            triggerSave();
-            showToast('Slide image replaced');
-          };
-          reader.readAsDataURL(file);
-        });
-        input.click();
-      });
+      if (replaceBtn) replaceBtn.addEventListener('click', replaceSlide);
 
       // Content list items
       document.querySelectorAll('.chapter-list-item').forEach(item => {
@@ -3083,22 +3105,68 @@
       showToast('Chapter added at ' + formatTime(time));
     }
 
-    // ===== ADD SLIDE =====
-    function addSlide() {
-      let time = video.currentTime || 0;
-      // First slide always starts at 0:00 to fill timeline from the beginning
-      if (data.slides.length === 0) time = 0;
-      const image = slideImages[slideImageIndex % slideImages.length];
-      slideImageIndex++;
-      const newSlide = { time, title: 'Untitled slide', description: '', image };
-      data.slides.push(newSlide);
+    // ===== ADD SLIDES (PDF upload from desktop) =====
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    async function handlePdfUpload(file) {
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const totalPages = pdf.numPages;
+      const dur = videoDuration || 1;
+      const interval = dur / totalPages;
+      const deckName = file.name.replace(/\.[^.]+$/, '');
+
+      showToast('Extracting ' + totalPages + ' slides from PDF...');
+
+      for (let p = 1; p <= totalPages; p++) {
+        const page = await pdf.getPage(p);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const image = canvas.toDataURL('image/png');
+        const time = (data.slides.length === 0 && p === 1) ? 0 : interval * (p - 1);
+        data.slides.push({ time, title: deckName + ' - Slide ' + p, description: '', image });
+      }
+
       data.slides.sort((a, b) => a.time - b.time);
-      const newIndex = data.slides.indexOf(newSlide);
-      selectedItem = { type: 'slide', index: newIndex };
+      selectedItem = { type: 'slide', index: 0 };
       render();
       triggerSave();
-      showToast('Slide added at ' + formatTime(time));
+      showToast(totalPages + ' slides added from ' + file.name);
     }
+
+    function addSlide() {
+      document.getElementById('slideFileInput').click();
+    }
+
+    document.getElementById('slideFileInput').addEventListener('change', function() {
+      const file = this.files && this.files[0];
+      if (!file) return;
+      handlePdfUpload(file);
+      this.value = '';
+    });
+
+    // ===== REPLACE SLIDE (image upload from desktop) =====
+    function replaceSlide() {
+      document.getElementById('replaceFileInput').click();
+    }
+
+    document.getElementById('replaceFileInput').addEventListener('change', function() {
+      const file = this.files && this.files[0];
+      if (!file || !selectedItem || selectedItem.type !== 'slide') return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        data.slides[selectedItem.index].image = ev.target.result;
+        render();
+        triggerSave();
+        showToast('Slide image replaced');
+      };
+      reader.readAsDataURL(file);
+      this.value = '';
+    });
 
     document.getElementById('addChapterBtn').addEventListener('click', addChapter);
     document.getElementById('addSlideBtn').addEventListener('click', addSlide);
