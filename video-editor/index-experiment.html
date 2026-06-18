@@ -874,7 +874,7 @@
       position: absolute;
       top: 0;
       width: 1px;
-      background: var(--blue);
+      background: #e53935;
       height: 100%;
       z-index: 10;
       cursor: col-resize;
@@ -888,7 +888,7 @@
       left: -7px;
       width: 16px;
       height: 16px;
-      background: var(--blue);
+      background: #e53935;
       border-radius: 3px 3px 50% 50%;
       clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%);
     }
@@ -904,12 +904,12 @@
     }
 
     .playhead-ruler:hover::before {
-      background: #3d8eff;
+      background: #ff5252;
       transform: scale(1.15);
     }
 
     .playhead-ruler.dragging::before {
-      background: #3d8eff;
+      background: #ff5252;
       transform: scale(1.2);
     }
 
@@ -1362,7 +1362,7 @@
       position: absolute;
       top: 0;
       width: 1px;
-      background: var(--blue);
+      background: #e53935;
       height: 100%;
       z-index: 10;
       pointer-events: none;
@@ -1373,7 +1373,7 @@
 
     .tracks-playhead.dragging {
       opacity: 1;
-      box-shadow: 0 0 6px rgba(0, 110, 255, 0.5);
+      box-shadow: 0 0 6px rgba(229, 57, 53, 0.5);
     }
 
     /* Current time tooltip */
@@ -2829,7 +2829,7 @@
           <div class="time-ruler" id="timeRuler">
             <div class="time-marks" id="timeMarks"></div>
             <div class="playhead-ruler" id="playheadRuler">
-              <div class="scrubber-tooltip" id="scrubberTooltip">0:00</div>
+              <div class="scrubber-tooltip" id="scrubberTooltip">00:00</div>
             </div>
           </div>
 
@@ -2916,10 +2916,10 @@
     const tracksPlayhead = document.getElementById('tracksPlayhead');
 
     function formatTime(seconds) {
-      if (isNaN(seconds)) return '0:00';
+      if (isNaN(seconds)) return '00:00';
       const m = Math.floor(seconds / 60);
       const s = Math.floor(seconds % 60);
-      return m + ':' + s.toString().padStart(2, '0');
+      return m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
     }
 
     function formatTimeHMS(seconds) {
@@ -3023,7 +3023,7 @@
       const tracksLeft = trackRect.left - tracksRect.left + px;
       tracksPlayhead.style.left = tracksLeft + 'px';
 
-      document.getElementById('scrubberTooltip').textContent = scrubberDragging ? formatTimeMs(video.currentTime) : (videoDuration >= 3600 ? formatTimeHMS(video.currentTime) : formatTime(video.currentTime));
+      document.getElementById('scrubberTooltip').textContent = formatTime(video.currentTime);
       updatePlayerSlide();
     }
 
@@ -3057,7 +3057,7 @@
       video.currentTime = newTime;
       const posPercent = (newTime / videoDuration) * 100;
       positionPlayhead(posPercent);
-      document.getElementById('scrubberTooltip').textContent = formatTimeMs(newTime);
+      document.getElementById('scrubberTooltip').textContent = formatTime(newTime);
       document.addEventListener('mousemove', onScrubberMove);
       document.addEventListener('mouseup', onScrubberUp);
     });
@@ -3101,7 +3101,7 @@
       timestampEl.textContent = formatTime(newTime) + ' / ' + formatTime(videoDuration);
       progressFill.style.width = actualPct + '%';
       updateProgressChapterFills();
-      document.getElementById('scrubberTooltip').textContent = formatTimeMs(newTime);
+      document.getElementById('scrubberTooltip').textContent = formatTime(newTime);
     }
 
     function onScrubberUp(e) {
@@ -4237,7 +4237,7 @@
       setTimeout(() => {
         const dur = videoDuration || 600;
         data.chapters = [
-          { time: 0, title: 'Introduction', summary: 'Overview of the African and Asian elephant species and their significance in the animal kingdom.', ai: true },
+          { time: 0, title: 'Meet the Elephants', summary: 'Overview of the African and Asian elephant species and their significance in the animal kingdom.', ai: true },
           { time: dur * 0.10, title: 'Physical Characteristics', summary: 'Exploring the size, trunk dexterity, tusks, and unique skin adaptations of elephants.', ai: true },
           { time: dur * 0.25, title: 'Social Structure', summary: 'How matriarchal herds form, communicate, and make collective decisions.', ai: true },
           { time: dur * 0.40, title: 'Intelligence & Memory', summary: 'Evidence of problem-solving, tool use, self-awareness, and long-term memory in elephants.', ai: true },
@@ -4246,16 +4246,12 @@
           { time: dur * 0.85, title: 'Conservation Threats', summary: 'Poaching, habitat loss, and human-wildlife conflict endangering elephant populations worldwide.', ai: true },
           { time: dur * 0.95, title: 'Protection Efforts', summary: 'Global initiatives, wildlife corridors, and anti-poaching programs working to save elephants.', ai: true }
         ];
-        data.introduction = {
-          title: 'Elephants 101',
-          text: 'A comprehensive look at the world\'s largest land animals — their intelligence, social bonds, and the urgent fight to protect them.'
-        };
         selectedItem = { type: 'chapter', index: 0 };
         panelFilter = 'chapters';
         updateSidebarActive();
         render();
         triggerSave();
-        showToast('AI generated summary and 7 chapters');
+        showToast('AI generated 8 chapters');
       }, 2500);
     }
 
@@ -5027,7 +5023,15 @@
       const i = resizeState.index;
 
       // Snap to playhead (same magnet effect as scrubber dragging)
-      const snapTargets = getSnapTargets(resizeState.type);
+      const snapTargets = [0, videoDuration, video.currentTime];
+      data.chapters.forEach((ch, ci) => {
+        if (resizeState.type === 'chapter' && ci === i) return;
+        snapTargets.push(ch.time);
+      });
+      data.slides.forEach((sl, si) => {
+        if (resizeState.type === 'slide' && si === i) return;
+        snapTargets.push(sl.time);
+      });
       const snapResult = applySnap(rawTime, snapTargets);
       let snappedTime = snapResult.snapped ? snapResult.time : rawTime;
 
