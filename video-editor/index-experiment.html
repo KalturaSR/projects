@@ -6,6 +6,7 @@
   <title>Video Structure</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -2717,7 +2718,7 @@
 <body class="is-loading">
 
   <!-- Hidden file inputs for slide upload -->
-  <input type="file" id="slideFileInput" accept="application/pdf" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
+  <input type="file" id="slideFileInput" accept="application/pdf,.pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
   <input type="file" id="replaceFileInput" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
 
   <!-- Page Loader -->
@@ -3580,7 +3581,7 @@
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
                   <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add summary & chapter</button>
-                  <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
+                  <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
                 </div>
               </div>
             </div>
@@ -3622,7 +3623,7 @@
             <div class="panel-intro-title">Slides</div>
             <p class="panel-intro-desc">Upload a slide deck to sync slides with your video timeline.</p>
             <div class="panel-getstarted-actions">
-              <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
+              <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
             </div>
           </div>`;
         } else if (showAllEmpty) {
@@ -3633,7 +3634,7 @@
               <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
               <div class="panel-getstarted-divider"><span></span><span class="panel-getstarted-divider-text">Or add manually</span><span></span></div>
               <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add summary & chapter</button>
-              <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
+              <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
             </div>
           </div>`;
         }
@@ -4082,10 +4083,85 @@
       }
     }
 
+    async function handlePptxUpload(file) {
+      if (typeof JSZip === 'undefined') {
+        showToast('PPTX library loading, please try again...');
+        return;
+      }
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const zip = await JSZip.loadAsync(arrayBuffer);
+
+        // Find slide image thumbnails in ppt/media/
+        const mediaFiles = [];
+        zip.forEach((path, entry) => {
+          if (path.match(/^ppt\/media\/image\d+\.(png|jpg|jpeg|gif|webp)$/i)) {
+            mediaFiles.push({ path, entry });
+          }
+        });
+
+        // Find slides to count them
+        const slideFiles = [];
+        zip.forEach((path, entry) => {
+          if (path.match(/^ppt\/slides\/slide\d+\.xml$/i)) {
+            slideFiles.push(path);
+          }
+        });
+        slideFiles.sort((a, b) => {
+          const numA = parseInt(a.match(/slide(\d+)/)[1]);
+          const numB = parseInt(b.match(/slide(\d+)/)[1]);
+          return numA - numB;
+        });
+
+        const totalSlides = slideFiles.length;
+        if (totalSlides === 0) {
+          showToast('No slides found in PPTX file');
+          return;
+        }
+
+        const dur = videoDuration || 1;
+        const interval = dur / totalSlides;
+        const deckName = file.name.replace(/\.[^.]+$/, '');
+
+        showToast('Extracting ' + totalSlides + ' slides from PPTX...');
+
+        // Extract images sorted by name
+        mediaFiles.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }));
+
+        for (let i = 0; i < totalSlides; i++) {
+          let image = '';
+          if (i < mediaFiles.length) {
+            const blob = await mediaFiles[i].entry.async('blob');
+            image = await new Promise(resolve => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+            });
+          }
+          const time = (data.slides.length === 0 && i === 0) ? 0 : interval * i;
+          data.slides.push({ time, title: deckName + ' - Slide ' + (i + 1), description: '', image });
+        }
+
+        data.slides.sort((a, b) => a.time - b.time);
+        selectedItem = { type: 'slide', index: 0 };
+        panelFilter = 'slides';
+        updateSidebarActive();
+        render();
+        triggerSave();
+        showToast(totalSlides + ' slides added from ' + file.name);
+      } catch (err) {
+        showToast('Error reading PPTX: ' + err.message);
+      }
+    }
+
     document.getElementById('slideFileInput').addEventListener('change', function() {
       const file = this.files && this.files[0];
       if (!file) return;
-      handlePdfUpload(file);
+      if (file.name.toLowerCase().endsWith('.pptx')) {
+        handlePptxUpload(file);
+      } else {
+        handlePdfUpload(file);
+      }
       this.value = '';
     });
 
@@ -5170,11 +5246,13 @@
             }
           }
 
-          // Read file to use as thumbnail source for PDF, or use placeholders
+          // Use proper handlers for PDF and PPTX
           const isPdf = file.name.toLowerCase().endsWith('.pdf');
+          const isPptx = file.name.toLowerCase().endsWith('.pptx');
           if (isPdf && typeof pdfjsLib !== 'undefined') {
-            // PDF.js available — render pages (future enhancement)
-            addDeckSlides(slideTimes, deckName, null);
+            handlePdfUpload(file);
+          } else if (isPptx && typeof JSZip !== 'undefined') {
+            handlePptxUpload(file);
           } else {
             addDeckSlides(slideTimes, deckName, file);
           }
