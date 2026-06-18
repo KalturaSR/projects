@@ -2764,7 +2764,7 @@
       <!-- Video Player -->
       <div class="video-area">
         <video id="videoPlayer" class="video-player" preload="metadata">
-          <source src="Content/AX vs. UX Is This the Next Evolution of Design - Bonterra (1080p, h264).mp4" type="video/mp4">
+          <source src="Content/Elephants 101  Nat Geo Wild - Nat Geo Animals (1080p, h264).mp4" type="video/mp4">
         </video>
         <!-- Video thumbnail CTAs (visible only in slide-main mode) -->
         <div class="video-thumb-ctas" id="videoThumbCtas">
@@ -4237,17 +4237,18 @@
       setTimeout(() => {
         const dur = videoDuration || 600;
         data.chapters = [
-          { time: 0, title: 'Overview', summary: 'Welcome and overview of the presentation topic.', ai: true },
-          { time: dur * 0.12, title: 'What is AX?', summary: 'Defining Accessibility Experience as a design discipline.', ai: true },
-          { time: dur * 0.28, title: 'AX vs UX Comparison', summary: 'Key differences and overlaps between accessibility and user experience.', ai: true },
-          { time: dur * 0.45, title: 'Design Evolution', summary: 'How accessibility is reshaping modern design practices.', ai: true },
-          { time: dur * 0.65, title: 'Practical Applications', summary: 'Real-world examples of AX-first design approaches.', ai: true },
-          { time: dur * 0.82, title: 'Future of Design', summary: 'Where the industry is heading and how to prepare.', ai: true },
-          { time: dur * 0.93, title: 'Q&A', summary: 'Questions from the audience.', ai: true }
+          { time: 0, title: 'Introduction', summary: 'Overview of the African and Asian elephant species and their significance in the animal kingdom.', ai: true },
+          { time: dur * 0.10, title: 'Physical Characteristics', summary: 'Exploring the size, trunk dexterity, tusks, and unique skin adaptations of elephants.', ai: true },
+          { time: dur * 0.25, title: 'Social Structure', summary: 'How matriarchal herds form, communicate, and make collective decisions.', ai: true },
+          { time: dur * 0.40, title: 'Intelligence & Memory', summary: 'Evidence of problem-solving, tool use, self-awareness, and long-term memory in elephants.', ai: true },
+          { time: dur * 0.55, title: 'Diet & Habitat', summary: 'Feeding behaviors, migration patterns, and the ecosystems elephants shape as keystone species.', ai: true },
+          { time: dur * 0.70, title: 'Reproduction & Family', summary: 'Gestation, calf-rearing, and the strong family bonds that define elephant societies.', ai: true },
+          { time: dur * 0.85, title: 'Conservation Threats', summary: 'Poaching, habitat loss, and human-wildlife conflict endangering elephant populations worldwide.', ai: true },
+          { time: dur * 0.95, title: 'Protection Efforts', summary: 'Global initiatives, wildlife corridors, and anti-poaching programs working to save elephants.', ai: true }
         ];
         data.introduction = {
-          title: 'AX vs. UX: The Next Evolution of Design',
-          text: 'Exploring whether accessibility-first design represents the next evolution of the design discipline, presented by Bonterra.'
+          title: 'Elephants 101',
+          text: 'A comprehensive look at the world\'s largest land animals — their intelligence, social bonds, and the urgent fight to protect them.'
         };
         selectedItem = { type: 'chapter', index: 0 };
         panelFilter = 'chapters';
