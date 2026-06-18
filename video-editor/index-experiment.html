@@ -2713,6 +2713,20 @@
       opacity: 1;
       transition: opacity 0.3s ease 0.1s;
     }
+
+    body.is-loading .timeline-actions button,
+    body.is-loading .timeline-actions label,
+    body.is-loading .zoom-controls button,
+    body.is-loading .zoom-controls input,
+    body.is-loading .btn-ai-lg,
+    body.is-loading .panel-getstarted-actions button,
+    body.is-loading .panel-getstarted-actions label,
+    body.is-loading .player-action,
+    body.is-loading #playBtn {
+      pointer-events: none;
+      opacity: 0.4;
+      cursor: default;
+    }
   </style>
 </head>
 <body class="is-loading">
@@ -5316,7 +5330,15 @@
     function revealApp() {
       document.body.classList.remove('is-loading');
       document.getElementById('pageLoader').classList.add('loaded');
+      document.querySelectorAll('.timeline-actions button, .timeline-actions label, .zoom-controls button, .zoom-controls input, .player-action, #playBtn').forEach(el => {
+        el.removeAttribute('disabled');
+      });
     }
+
+    // Disable CTA tools until app is fully loaded
+    document.querySelectorAll('.timeline-actions button, .timeline-actions label, .zoom-controls button, .zoom-controls input, .player-action, #playBtn').forEach(el => {
+      el.setAttribute('disabled', 'true');
+    });
 
     let videoReady = false;
     let fontsReady = false;
