@@ -3547,7 +3547,7 @@
       const isEmpty = data.chapters.length === 0 && data.slides.length === 0;
 
       if (panelFilter === 'intro') {
-        if (data.introduction.text || selectedItem?.type === 'intro') {
+        if (data.introduction.text || selectedItem?.type === 'intro' || data.chapters.length > 0) {
           const charCount = (data.introduction.text || '').length;
           panel.innerHTML = getPanelTabsHtml() + `<div class="panel-intro-form">
             <div class="accordion-section-title">Intro</div>
