@@ -1076,6 +1076,7 @@
 
     /* Video Track */
     .video-track-content {
+      position: relative;
       flex: 1;
       height: 40px;
       margin-right: 0;
@@ -1091,6 +1092,37 @@
       width: 100%;
       border-radius: var(--radius-md);
       image-rendering: auto;
+    }
+
+    .video-track-loader {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(90deg, var(--b-100) 25%, var(--w-10) 50%, var(--b-100) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .video-track-loader span {
+      font-size: 11px;
+      color: var(--w-30);
+      font-weight: 500;
+    }
+
+    .video-track-loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
 
     .track-label-video { color: var(--w-50); opacity: 1; }
@@ -2286,7 +2318,7 @@
             </div>
             <div class="track" role="region" aria-label="Video track">
               <div class="track-label track-label-video" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4V6.5l-4 4z" fill="currentColor"/></svg></div>
-              <div class="track-content"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas></div></div>
+              <div class="track-content"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas><div class="video-track-loader" id="videoTrackLoader"><span>Loading video…</span></div></div></div>
             </div>
           </div>
         </div>
@@ -3555,6 +3587,7 @@
 
     function generateVideoThumbnails() {
       thumbnailsGenerated = true;
+      document.getElementById('videoTrackLoader').classList.remove('hidden');
 
       const canvas = document.getElementById('videoThumbnails');
       const ctx = canvas.getContext('2d');
@@ -3585,6 +3618,7 @@
       function seekNext() {
         if (captured >= thumbCount) {
           thumbVideo.remove();
+          document.getElementById('videoTrackLoader').classList.add('hidden');
           return;
         }
         const t = (videoDuration / thumbCount) * captured + 0.1;

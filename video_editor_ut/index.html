@@ -1,0 +1,5435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Structure</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      /* Kaltura DS - Dark Theme */
+      --b-100: #000000;
+      --b-60: rgba(0, 0, 0, 0.6);
+      --b-30: rgba(0, 0, 0, 0.3);
+      --w-100: #ffffff;
+      --w-80: rgba(255, 255, 255, 0.8);
+      --w-60: rgba(255, 255, 255, 0.6);
+      --w-50: rgba(255, 255, 255, 0.5);
+      --w-40: rgba(255, 255, 255, 0.4);
+      --w-30: rgba(255, 255, 255, 0.3);
+      --w-20: rgba(255, 255, 255, 0.2);
+      --w-10: rgba(255, 255, 255, 0.1);
+      --tone-3: #888888;
+      --tone-4: #bdbdbd;
+      --blue: #006EFA;
+      --blue-hover: #0057cc;
+      --pink: #FF9DFF;
+      --ai-gradient: linear-gradient(68deg, var(--blue) 10.87%, #2485FF 29.96%, var(--pink) 133.89%);
+      --success: #4ecdc4;
+      --warning: #ffa726;
+      --danger: #ff4444;
+      --roundness-1: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 0 0 1px rgba(0,0,0,0.2), 0 8px 60px -16px rgba(0,0,0,0.2);
+      /* Semantic aliases */
+      --bg-primary: var(--b-100);
+      --bg-secondary: var(--b-100);
+      --bg-surface: var(--w-10);
+      --bg-elevated: var(--w-20);
+      --text-primary: var(--w-100);
+      --text-secondary: var(--w-80);
+      --text-tertiary: var(--w-50);
+      --accent-primary: var(--blue);
+      --accent-hover: var(--blue-hover);
+      --accent-subtle: rgba(0, 110, 250, 0.15);
+      --border: var(--w-40);
+      --border-subtle: var(--w-10);
+      --chapter-color: var(--w-100);
+      --chapter-bg: var(--w-10);
+      --slide-color: var(--w-100);
+      --slide-bg: var(--w-10);
+      --radius-sm: var(--roundness-1);
+    }
+
+    body {
+      font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--b-100);
+      color: var(--w-100);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      background: var(--b-100);
+      border-bottom: 1px solid var(--w-30);
+      height: 67px;
+      flex-shrink: 0;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .close-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--roundness-1);
+      border: none;
+      background: transparent;
+      color: var(--w-100);
+      cursor: pointer;
+      font-size: 20px;
+      transition: all 0.15s;
+    }
+
+    .close-btn:hover {
+      background: var(--w-10);
+      color: var(--w-100);
+    }
+
+    .close-btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .editor-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--w-100);
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .save-status {
+      font-size: 12px;
+      color: var(--w-50);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .save-status.saving {
+      color: var(--warning);
+    }
+
+    .save-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--success);
+      transition: background 0.3s;
+    }
+
+    .save-status.saving .save-dot {
+      background: var(--warning);
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border-radius: var(--roundness-1);
+      border: none;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--w-80);
+      border: 1px solid var(--w-20);
+    }
+
+    .btn-ghost:hover {
+      background: var(--w-10);
+      color: var(--w-100);
+      border-color: var(--w-30);
+    }
+
+    .btn-ghost .btn-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: var(--w-100);
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: var(--blue-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary .btn-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-ai {
+      background: var(--ai-gradient);
+      color: var(--w-100);
+      border: none;
+      box-shadow: 0 2px 8px rgba(0, 110, 250, 0.3);
+    }
+
+    .btn-ai:hover {
+      opacity: 0.92;
+      box-shadow: 0 4px 16px rgba(0, 110, 250, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-ai .btn-icon {
+      display: flex;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+    }
+
+    .btn-sm {
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: var(--roundness-1);
+      background: transparent;
+      color: var(--w-80);
+      border: 1px solid var(--w-20);
+    }
+
+    .btn-sm:hover {
+      background: var(--w-10);
+      color: var(--w-100);
+      border-color: var(--w-30);
+    }
+
+    .btn-sm .btn-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-borderless {
+      padding: 4px 8px;
+      font-size: 14px;
+      border-radius: var(--roundness-1);
+      background: transparent;
+      color: var(--w-80);
+      border: none;
+    }
+
+    .btn-borderless:hover {
+      background: var(--w-10);
+      color: var(--w-100);
+    }
+
+    .btn-borderless .btn-icon {
+      display: flex;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+    }
+
+    .btn-danger {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid rgba(255, 68, 68, 0.3);
+      font-size: 14px;
+      padding: 8px 12px;
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 68, 68, 0.1);
+      border-color: var(--danger);
+    }
+
+    .btn-danger .btn-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    /* Editor Body */
+    .editor-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* Main Content: Player + Right Panel row */
+    .main-content {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* Main Canvas */
+    .main-canvas {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    /* Main Area: Player + Sidebar row */
+    .main-area {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* Video Player */
+    .video-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      position: relative;
+      min-height: 300px;
+    }
+
+    .video-player {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #000;
+      cursor: pointer;
+    }
+
+    .player-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 16px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .play-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: white;
+      color: #000;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: transform 0.1s;
+    }
+
+    .play-btn:active {
+      transform: scale(0.9);
+    }
+
+    .play-btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .progress-bar::before {
+      content: '';
+      position: absolute;
+      top: -19px;
+      bottom: -19px;
+      left: 0;
+      right: 0;
+    }
+
+    .progress-bar:hover {
+      height: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--blue);
+      border-radius: 3px;
+      position: relative;
+      transition: width 0.1s linear;
+    }
+
+    .progress-bar.has-chapters {
+      background: transparent;
+      display: flex;
+      gap: 2px;
+      border-radius: 3px;
+    }
+    .progress-bar.has-chapters .progress-fill {
+      display: none;
+    }
+    .progress-bar.has-chapters .progress-handle {
+      display: none;
+    }
+    .progress-chapter-seg {
+      height: 100%;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-chapter-seg-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: var(--blue);
+      border-radius: 100px;
+    }
+
+
+    .progress-handle {
+      position: absolute;
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: var(--shadow-sm);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .progress-bar:hover .progress-handle {
+      opacity: 1;
+    }
+
+    .timestamp {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      font-variant-numeric: tabular-nums;
+      min-width: 100px;
+    }
+
+    .player-action {
+      width: 44px;
+      height: 44px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+
+    .player-action:hover {
+      color: white;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .player-action:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    /* Selected Slide Overlay */
+    .player-slide-overlay {
+      position: absolute;
+      bottom: 61px;
+      right: 16px;
+      width: 223px;
+      z-index: 5;
+      display: none;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .player-slide-overlay.visible {
+      display: flex;
+    }
+
+    .player-slide-toggle {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      justify-content: flex-end;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.6);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      height: 32px;
+      margin-left: auto;
+      transition: background 0.15s;
+    }
+
+    .player-slide-toggle:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .player-slide-toggle svg {
+      transition: transform 0.2s;
+    }
+
+    .player-slide-overlay.collapsed .player-slide-toggle svg {
+      transform: rotate(180deg);
+    }
+
+    .player-slide-image-wrap {
+      margin-top: 5px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 8px 60px -16px rgba(0, 0, 0, 0.2);
+      position: relative;
+      width: 223px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+
+    .player-slide-overlay.collapsed .player-slide-image-wrap {
+      display: none;
+    }
+
+    .player-slide-image-wrap::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .player-switch-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      padding: 0;
+      transition: background 0.15s;
+    }
+
+    .player-switch-btn:hover {
+      background: rgba(0, 0, 0, 0.85);
+    }
+
+    .player-switch-btn svg {
+      opacity: 0.8;
+    }
+
+    /* Slide-main mode: slide is full player area, video is the small thumbnail */
+    .video-area.slide-main .video-player {
+      position: absolute;
+      bottom: 61px;
+      right: 16px;
+      width: 223px;
+      height: auto;
+      aspect-ratio: 16/9;
+      border-radius: 8px;
+      z-index: 6;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 8px 60px -16px rgba(0, 0, 0, 0.2);
+      object-fit: cover;
+      cursor: pointer;
+    }
+
+    .video-area.slide-main .player-slide-overlay {
+      position: absolute;
+      inset: 0;
+      bottom: 46px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      z-index: 1;
+    }
+
+    .video-area.slide-main .player-slide-overlay.visible {
+      display: flex;
+    }
+
+    .video-area.slide-main .player-slide-toggle {
+      display: none;
+    }
+
+    .video-area.slide-main .player-slide-image-wrap {
+      width: 100%;
+      height: 100%;
+      margin-top: 0;
+      border-radius: 0;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+
+    .video-area.slide-main .player-slide-image-wrap::before {
+      display: none;
+    }
+
+    .video-area.slide-main .player-slide-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 0;
+    }
+
+    .video-area.slide-main .player-slide-image-wrap .player-switch-btn {
+      display: none;
+    }
+
+    /* Video thumbnail CTAs: only visible in slide-main mode, positioned over video thumb */
+    .video-thumb-ctas {
+      display: none;
+      position: absolute;
+      bottom: calc(61px + 223px * 9 / 16 + 5px);
+      right: 16px;
+      width: 223px;
+      z-index: 8;
+    }
+
+    .video-thumb-ctas .video-switch-btn {
+      position: absolute;
+      top: calc(100% + 5px + 8px);
+      right: 8px;
+      z-index: 9;
+    }
+
+    .video-area.slide-main .video-thumb-ctas {
+      display: block;
+    }
+
+    .video-area.slide-main.video-thumb-hidden .video-player {
+      display: none;
+    }
+
+    .video-area.slide-main.video-thumb-hidden .video-thumb-ctas .player-slide-toggle svg {
+      transform: rotate(180deg);
+    }
+
+    .video-area.slide-main.video-thumb-hidden .video-thumb-ctas .video-switch-btn {
+      display: none;
+    }
+
+    .player-slide-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      border-radius: 8px;
+    }
+
+    /* Timeline Area */
+    .timeline-area {
+      background: var(--b-100);
+      border-top: none;
+      flex-shrink: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 0;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+    .timeline-area::-webkit-scrollbar {
+      height: 8px;
+    }
+    .timeline-area::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .timeline-area::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 4px;
+    }
+    .timeline-area::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.5);
+    }
+
+    .timeline-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      border-bottom: none;
+      position: sticky;
+      left: 0;
+      background: var(--b-100);
+      z-index: 5;
+    }
+
+    .timeline-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-icon-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--w-50);
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .toolbar-icon-btn:hover {
+      color: var(--w-100);
+      background: var(--w-10);
+    }
+
+    .zoom-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .zoom-btn {
+      min-width: 44px;
+      height: 32px;
+      min-height: 44px;
+      padding: 0 8px;
+      border-radius: var(--roundness-1);
+      border: none;
+      background: transparent;
+      color: var(--w-100);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .zoom-btn:hover {
+      background: var(--w-10);
+      color: var(--w-100);
+    }
+
+    .zoom-btn:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .zoom-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--w-20);
+      outline: none;
+      cursor: pointer;
+      margin: 0 4px;
+    }
+
+    .zoom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--w-100);
+      cursor: pointer;
+      border: 2px solid var(--blue);
+    }
+
+    .zoom-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--w-100);
+      cursor: pointer;
+      border: 2px solid var(--blue);
+    }
+
+    .zoom-slider:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 4px;
+    }
+
+    /* Timeline Tracks */
+    .timeline-tracks {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0 0 24px 24px;
+    }
+
+    .time-ruler {
+      height: 32px;
+      padding: 0 24px 0 64px;
+      position: relative;
+      border-bottom: none;
+      cursor: pointer;
+    }
+
+    .time-marks {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .time-mark {
+      position: absolute;
+      bottom: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--w-50);
+      font-variant-numeric: tabular-nums;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .time-tick {
+      position: absolute;
+      bottom: 0;
+      width: 1px;
+    }
+
+    .time-tick-major {
+      height: 10px;
+      background: var(--w-30);
+    }
+
+    .time-tick-minor {
+      height: 5px;
+      background: var(--w-10);
+    }
+
+    .playhead-ruler {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      background: #e53935;
+      height: 100%;
+      z-index: 10;
+      cursor: col-resize;
+      will-change: left;
+    }
+
+    .playhead-ruler::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -7px;
+      width: 16px;
+      height: 16px;
+      background: #e53935;
+      border-radius: 3px 3px 50% 50%;
+      clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%);
+    }
+
+    .playhead-ruler::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -8px;
+      width: 18px;
+      height: 100%;
+      cursor: col-resize;
+    }
+
+    .playhead-ruler:hover::before {
+      background: #ff5252;
+      transform: scale(1.15);
+    }
+
+    .playhead-ruler.dragging::before {
+      background: #ff5252;
+      transform: scale(1.2);
+    }
+
+    .track {
+      display: flex;
+      align-items: center;
+      height: 40px;
+      border-bottom: none;
+      position: relative;
+      gap: 8px;
+      padding: 0 24px 0 0;
+    }
+    .track-chapters {
+      height: 32px;
+    }
+    .track-slides {
+      height: 48px;
+    }
+    .track-video {
+      height: 32px;
+    }
+
+    .track-label {
+      width: 32px;
+      padding: 0;
+      font-size: 0;
+      color: var(--w-50);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: sticky;
+      left: 0;
+      background: var(--b-100);
+      z-index: 2;
+    }
+
+    .track-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 0;
+      display: block;
+    }
+
+    .track-dot-chapter { background: transparent; }
+    .track-dot-slide { background: transparent; }
+
+    .track-content {
+      flex: 1;
+      height: 100%;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      position: relative;
+    }
+
+    /* Chapter Segments */
+    .chapter-segment {
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border: 2px solid rgba(255,255,255,0.5);
+      background: transparent;
+      backdrop-filter: blur(16px);
+      color: var(--w-100);
+    }
+
+    .chapter-segment:hover {
+      border-color: rgba(255,255,255,0.7);
+      background: var(--w-10);
+    }
+
+    .chapter-segment:hover .resize-handle,
+    .slide-segment:hover .resize-handle,
+    body.is-resizing .resize-handle {
+      opacity: 1;
+    }
+
+    .resize-handle {
+      position: absolute;
+      top: 0;
+      width: 14px;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.15s, background 0.15s;
+      cursor: col-resize;
+      background: var(--w-30);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+    }
+
+    .resize-handle.left {
+      left: -4px;
+      border-radius: 4px 0 0 4px;
+      padding-left: 4px;
+    }
+
+    .resize-handle.right {
+      right: -4px;
+      border-radius: 0 4px 4px 0;
+      padding-right: 4px;
+    }
+
+    .resize-handle::after {
+      content: '';
+      width: 2px;
+      height: calc(100% - 10px);
+      background: var(--w-80);
+      border-radius: 2px;
+    }
+
+    .resize-handle:hover {
+      background: var(--w-50);
+    }
+
+    .chapter-segment.active .resize-handle,
+    .slide-segment.active .resize-handle {
+      background: var(--blue);
+    }
+    .chapter-segment.active .resize-handle::after,
+    .slide-segment.active .resize-handle::after {
+      background: var(--w-100);
+    }
+
+    body.is-resizing {
+      cursor: col-resize !important;
+    }
+    body.is-resizing * {
+      cursor: col-resize !important;
+    }
+
+    .chapter-segment:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    .chapter-segment.active {
+      border-color: var(--blue);
+    }
+
+    /* Slide Segments */
+    .slide-segment {
+      height: 48px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border: 2px solid rgba(255,255,255,0.5);
+      background: transparent;
+      backdrop-filter: blur(16px);
+      color: var(--w-100);
+      gap: 8px;
+    }
+
+    .slide-segment:hover {
+      border-color: rgba(255,255,255,0.7);
+      background: var(--w-10);
+    }
+
+    .slide-segment:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    .slide-segment.active {
+      border-color: var(--blue);
+    }
+
+    .slide-segment-thumb {
+      width: 52px;
+      height: 29px;
+      border-radius: 4px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--bg-surface);
+    }
+
+    .segment-title,
+    .slide-segment-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .segment-duration {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      white-space: nowrap;
+      margin-left: auto;
+      padding-left: 8px;
+      flex-shrink: 0;
+    }
+
+    /* Slide thumbnail in panel */
+    .slide-thumb-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .slide-thumbnail-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .slide-thumb-replace {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      height: 24px;
+      padding: 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+      background: var(--b-60);
+      color: var(--w-100);
+      border: none;
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .slide-thumb-replace:hover {
+      background: rgba(0,0,0,0.8);
+    }
+
+    .slide-thumbnail-placeholder {
+      width: 100%;
+      height: 100%;
+      background: var(--b-30);
+      border: 1px dashed var(--w-40);
+      border-radius: 8px;
+    }
+
+    .slide-form-properties-title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 21px;
+      color: var(--w-100);
+    }
+
+    .slide-thumb-small {
+      width: 154px;
+      aspect-ratio: 154 / 89;
+    }
+
+    .form-input-with-icon {
+      position: relative;
+      width: 100%;
+    }
+
+    .form-input-with-icon .form-input {
+      padding-right: 36px;
+    }
+
+    .form-input-icon-btn {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      color: var(--w-100);
+      padding: 4px;
+      transition: background 0.15s;
+    }
+
+    .form-input-icon-btn:hover {
+      background: var(--w-10);
+    }
+
+    .form-textarea-wrapper {
+      width: 100%;
+      border-radius: var(--roundness-1);
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.3);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .form-textarea-wrapper:hover {
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    .form-textarea-wrapper:focus-within {
+      border-color: #006EFA;
+    }
+
+    .form-textarea-toolbar {
+      display: flex;
+      align-items: center;
+      padding: 4px 4px 0;
+      gap: 0;
+    }
+
+    .form-textarea-toolbar-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      color: var(--w-100);
+      padding: 4px;
+      transition: background 0.15s;
+    }
+
+    .form-textarea-toolbar-btn:hover {
+      background: var(--w-10);
+    }
+
+    .form-textarea-wrapper .form-textarea {
+      border: none;
+      background: transparent;
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .form-textarea-wrapper .form-textarea:hover {
+      border-color: transparent;
+    }
+
+    .form-textarea-wrapper .form-textarea:focus {
+      border-color: transparent;
+    }
+
+    /* Video Track */
+    .video-track-content {
+      flex: 1;
+      height: 40px;
+      margin-right: 0;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      background: var(--b-100);
+    }
+
+    .video-track-content canvas {
+      height: 100%;
+      width: 100%;
+      border-radius: 8px;
+      image-rendering: auto;
+    }
+
+    .track-label-video { color: var(--w-50); opacity: 1; }
+
+    /* Drag styles */
+    .chapter-segment, .slide-segment {
+      cursor: grab;
+      user-select: none;
+    }
+
+    .chapter-segment:active, .slide-segment:active {
+      cursor: grabbing;
+    }
+
+    body.is-dragging,
+    body.is-dragging * {
+      cursor: grabbing !important;
+    }
+
+    .chapter-segment.dragging, .slide-segment.dragging {
+      opacity: 0.4;
+      cursor: grabbing;
+      box-shadow: none;
+      z-index: 20;
+      transform: scale(0.96);
+      width: 0 !important;
+      padding: 0 !important;
+      border-width: 0 !important;
+      overflow: hidden;
+      margin: 0;
+      transition: width 0.2s, opacity 0.2s, transform 0.2s, padding 0.2s;
+    }
+
+    .chapter-segment.gap-after, .slide-segment.gap-after {
+      transition: margin 0.15s ease;
+    }
+    .chapter-segment.gap-before, .slide-segment.gap-before {
+      transition: margin 0.15s ease;
+    }
+
+    .drag-ghost-placeholder {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      z-index: 25;
+      pointer-events: none;
+      opacity: 0.35;
+      border-radius: var(--radius-md);
+      border: 2px dashed #4da6ff;
+      background: rgba(77, 166, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .drag-ghost-placeholder-content {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #4da6ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 8px;
+    }
+
+    /* External file drop indicator line */
+    .drag-indicator {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #4da6ff;
+      border-radius: 2px;
+      z-index: 25;
+      pointer-events: none;
+      box-shadow: 0 0 8px rgba(77, 166, 255, 0.5);
+    }
+
+    .drop-zone-highlight {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      width: 4px;
+      background: var(--blue);
+      border-radius: 2px;
+      z-index: 25;
+      pointer-events: none;
+      opacity: 0.8;
+      transition: left 0.1s ease;
+    }
+
+    /* Drag ghost thumbnail */
+    .drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 0 2px var(--blue);
+      max-width: 200px;
+      max-height: 60px;
+      overflow: hidden;
+      transition: opacity 0.12s;
+    }
+    .drag-ghost.visible { opacity: 0.8; }
+
+    /* Drag indicator timestamp label */
+    .drag-indicator-label {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4da6ff;
+      color: var(--w-100);
+      font-size: 10px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      padding: 2px 6px;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* Track drop target highlight */
+    .track.drop-target-active {
+      background: rgba(0, 110, 250, 0.06);
+      box-shadow: inset 0 0 0 1px rgba(0, 110, 250, 0.25);
+      border-radius: var(--radius-md);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    /* Snap indicator line */
+    .snap-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #ff4081;
+      z-index: 30;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    .snap-line.active {
+      opacity: 1;
+      box-shadow: 0 0 6px #ff4081;
+    }
+
+    /* External file drop zone overlay */
+    .drop-zone-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 110, 250, 0.1);
+      border: 2px dashed var(--blue);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .drop-zone-overlay.visible { opacity: 1; }
+    .drop-zone-overlay-text {
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Playhead on tracks */
+    .tracks-playhead {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      background: #e53935;
+      height: 100%;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0.8;
+      left: 64px;
+      will-change: left;
+    }
+
+    .tracks-playhead.dragging {
+      opacity: 1;
+      box-shadow: 0 0 6px rgba(229, 57, 53, 0.5);
+    }
+
+    /* Current time tooltip */
+    .scrubber-tooltip {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--w-20);
+      backdrop-filter: blur(16px);
+      color: var(--w-100);
+      font-size: 11px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      padding: 3px 8px;
+      border-radius: var(--roundness-1);
+      border: 1px solid var(--w-30);
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .playhead-ruler:hover .scrubber-tooltip,
+    .playhead-ruler.dragging .scrubber-tooltip {
+      opacity: 1;
+    }
+
+    /* Right Panel */
+    .right-panel {
+      width: 392px;
+      background: var(--w-10);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-left: none;
+      min-height: 0;
+    }
+
+    /* Vertical Nav Tabs (between player and right panel) */
+    .nav-tabs {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 54px;
+      padding: 8px 0;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .nav-tab {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--w-100);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .nav-tab:hover {
+      background: var(--w-10);
+    }
+
+    .nav-tab.active {
+      background: var(--blue);
+    }
+
+    .nav-tab svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Legacy panel-tabs hidden (replaced by nav-tabs) */
+    .panel-tabs {
+      display: none;
+    }
+
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffffff;
+      color: #000000;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 16px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .chapter-segment[data-tooltip]:hover::after,
+    .slide-segment[data-tooltip]:hover::after {
+      top: auto;
+      bottom: calc(100% + 6px);
+    }
+
+    .panel-section {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--w-10);
+    }
+
+    .panel-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--w-50);
+      margin-bottom: 16px;
+    }
+
+    .form-group { margin-bottom: 0; }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 16px;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 32px;
+      padding: 0 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.3);
+      color: #ffffff;
+      font-size: 14px;
+      line-height: 16px;
+      font-family: 'Lato', sans-serif;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-input::placeholder { color: rgba(255,255,255,0.4); }
+    .form-input:hover { border-color: rgba(255,255,255,0.6); }
+    .form-input:focus { border-color: #006EFA; }
+
+    .form-textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.3);
+      color: #ffffff;
+      font-size: 14px;
+      line-height: 16px;
+      outline: none;
+      resize: vertical;
+      min-height: 88px;
+      font-family: 'Lato', sans-serif;
+      transition: border-color 0.15s;
+    }
+
+    .form-textarea::placeholder { color: rgba(255,255,255,0.4); }
+    .form-textarea:hover { border-color: rgba(255,255,255,0.6); }
+    .form-textarea:focus { border-color: #006EFA; }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .form-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      line-height: 16px;
+    }
+
+    .form-counter {
+      font-size: 14px;
+      font-weight: 400;
+      color: white;
+      line-height: 16px;
+    }
+
+    .timestamp-input {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .timestamp-input .form-input {
+      width: 64px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timestamp-separator {
+      color: var(--w-50);
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    .use-current-btn {
+      position: relative;
+      width: 32px;
+      height: 32px;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+      transition: background 0.15s;
+    }
+
+    .use-current-btn:hover {
+      background: rgba(0,0,0,0.7);
+    }
+
+    .use-current-btn svg {
+      display: block;
+    }
+
+    .use-current-btn .ds-hint {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 100;
+      top: calc(100% + 6px);
+      left: 50%;
+      translate: -50% 0;
+      display: inline-flex;
+      flex-direction: column-reverse;
+      align-items: center;
+    }
+
+    .use-current-btn:hover .ds-hint {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .use-current-btn .ds-hint-body {
+      background: #ffffff;
+      color: #000000;
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 16px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-family: 'Lato', sans-serif;
+    }
+
+    .use-current-btn .ds-hint-arrow {
+      line-height: 0;
+      margin-bottom: -1px;
+    }
+
+    .use-current-btn .ds-hint-arrow svg path {
+      fill: #ffffff;
+    }
+
+    .panel-actions {
+      padding: 16px 24px;
+      display: flex;
+      gap: 8px;
+      border-top: 1px solid var(--w-10);
+    }
+
+    /* Introduction Section */
+    .intro-section {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--w-10);
+      background: var(--w-10);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .intro-section:hover { background: var(--w-20); }
+    .intro-section.active { background: rgba(0, 110, 250, 0.15); border-left: 3px solid var(--blue); }
+
+    .intro-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--w-50);
+      background: var(--b-60);
+      padding: 3px 8px;
+      border-radius: var(--roundness-1);
+      margin-bottom: 8px;
+    }
+
+    .intro-title-display {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--w-100);
+      margin-bottom: 4px;
+    }
+
+    .intro-text-display {
+      font-size: 13px;
+      color: var(--w-80);
+      line-height: 1.5;
+    }
+
+    /* Accordion List */
+    .accordion-list {
+      list-style: none;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+
+    .accordion-list::-webkit-scrollbar { width: 6px; }
+    .accordion-list::-webkit-scrollbar-track { background: transparent; }
+    .accordion-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+    .accordion-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
+
+    .accordion-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--w-50);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--w-10);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .accordion-item:not(.expanded) {
+      border-bottom: 1px solid var(--w-30);
+      flex-shrink: 0;
+      min-height: 48px;
+    }
+
+    .accordion-item.expanded {
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .accordion-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .accordion-row:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .accordion-item.expanded > .accordion-row {
+      flex-shrink: 0;
+      background: var(--w-10);
+      border-left: 4px solid var(--blue);
+      border-bottom: 1px solid var(--w-10);
+    }
+
+    .accordion-item.expanded > .accordion-row .accordion-row-time,
+    .accordion-item.expanded > .accordion-row .accordion-row-title {
+      color: var(--w-100);
+    }
+
+    .accordion-row-holder {
+      display: flex;
+      flex: 1 0 0;
+      gap: 16px;
+      align-items: center;
+      min-width: 0;
+      font-weight: 700;
+      color: var(--w-100);
+    }
+
+    .accordion-row-time {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--w-100);
+      width: 35px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+
+    .accordion-row-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--w-100);
+      flex: 1 0 0;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 18px;
+    }
+
+    .accordion-row-chevron {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+      color: var(--w-50);
+    }
+
+    .accordion-row-chevron svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .accordion-item.expanded > .accordion-row .accordion-row-chevron {
+      transform: rotate(90deg);
+    }
+
+    .accordion-body {
+      display: none;
+    }
+
+    .accordion-item.expanded > .accordion-body {
+      display: flex;
+      flex-direction: column;
+      border-left: 4px solid var(--blue);
+      background: var(--w-10);
+      overflow: visible;
+    }
+
+    .accordion-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--w-10);
+    }
+
+    .accordion-form .form-group {
+      margin-bottom: 0;
+    }
+
+    .accordion-delete-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 24px;
+      padding-bottom: 24px;
+      flex-shrink: 0;
+    }
+
+    .accordion-delete-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px 12px;
+      cursor: pointer;
+      color: var(--w-100);
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      transition: background 0.15s;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+    }
+
+    .accordion-delete-btn:hover {
+      background: var(--w-10);
+    }
+
+    .accordion-delete-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* AI Badge */
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--ai-gradient);
+      color: var(--w-100);
+      padding: 2px 8px;
+      border-radius: var(--roundness-1);
+    }
+
+    /* Selected Item Indicator */
+    .selected-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: rgba(0, 110, 250, 0.08);
+      border-bottom: 1px solid var(--w-10);
+      border-left: 3px solid var(--blue);
+    }
+
+    .selected-color {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .selected-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--w-100);
+      flex: 1;
+    }
+
+    .selected-time {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--w-50);
+      font-variant-numeric: tabular-nums;
+      margin-left: auto;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Empty State */
+    .track-empty {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .track-empty-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--w-60);
+      border: 2px solid var(--w-30);
+      border-radius: var(--radius-md);
+      padding: 0 16px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      backdrop-filter: blur(16px);
+    }
+
+    .track-empty-text:hover {
+      border-color: var(--w-50);
+      color: var(--w-100);
+      background: var(--w-10);
+    }
+
+    .panel-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .panel-empty-icon {
+      display: none;
+    }
+
+    .panel-empty-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--w-100);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .panel-empty-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--w-100);
+      line-height: 21px;
+      margin-bottom: 24px;
+      max-width: 320px;
+    }
+
+    .panel-empty-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      max-width: 220px;
+      align-items: center;
+    }
+
+    .btn-ai-lg {
+      padding: 0 16px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 4px;
+      background: linear-gradient(70deg, #006EFA 11%, #2485FF 30%, #FF9DFF 134%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 40px;
+      transition: all 0.2s;
+    }
+
+    .btn-ai-lg:hover {
+      opacity: 0.9;
+    }
+
+    .btn-ai-lg:active { transform: scale(0.97); }
+
+    .btn-ai-lg .btn-icon {
+      display: flex;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+    }
+
+    .panel-empty-divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 320px;
+      color: var(--w-50);
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 16px;
+    }
+
+    .panel-empty-divider::before,
+    .panel-empty-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--w-30);
+    }
+
+    .panel-empty-secondary {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 320px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+
+    .btn-secondary-sm {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: var(--roundness-1);
+      background: transparent;
+      color: var(--w-80);
+      border: 1px solid var(--w-20);
+      cursor: pointer;
+      transition: all 0.15s;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-secondary-sm:hover {
+      background: var(--w-10);
+      color: var(--w-100);
+      border-color: var(--w-30);
+    }
+
+    .btn-secondary-sm .btn-icon {
+      display: flex;
+      align-items: center;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Panel Intro View */
+    .panel-intro-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 16px 16px;
+      gap: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .panel-intro-form {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      overflow-y: auto;
+      flex: 1;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+
+    .panel-intro-form::-webkit-scrollbar { width: 6px; }
+    .panel-intro-form::-webkit-scrollbar-track { background: transparent; }
+    .panel-intro-form::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+
+    .panel-intro-form .panel-intro-view {
+      padding: 0;
+    }
+
+    .panel-intro-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .panel-intro-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .panel-intro-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: white;
+      line-height: 21px;
+      text-align: center;
+      margin: 0;
+    }
+
+    .panel-intro-card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .panel-intro-card-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: white;
+      line-height: 1.4;
+      text-align: center;
+      margin: 0;
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      gap: 4px;
+      height: 24px;
+      padding: 0 8px;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .pill-btn:hover {
+      background: rgba(0,0,0,0.8);
+    }
+
+    .pill-btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .pill-btn-md {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .pill-btn-md:hover {
+      background: rgba(0,0,0,0.8);
+    }
+
+    .pill-btn-md svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .panel-getstarted {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 0 16px;
+      text-align: center;
+    }
+
+    .panel-getstarted-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+    }
+
+    .panel-getstarted-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: white;
+      line-height: 21px;
+      margin: 0;
+    }
+
+    .panel-getstarted-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .panel-getstarted-divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .panel-getstarted-divider > span:first-child,
+    .panel-getstarted-divider > span:last-child {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    .panel-getstarted-divider-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(100%) translateX(50vw);
+      background: var(--b-80);
+      backdrop-filter: blur(16px);
+      color: var(--w-100);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      border: 1px solid var(--w-20);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      z-index: 200;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+      max-width: 400px;
+      white-space: nowrap;
+    }
+
+    .toast.visible {
+      transform: translateX(-50%);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* AI Loading */
+    .ai-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .ai-loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--w-20);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .ai-loading-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .ai-loading-sub {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: #1a1a1a;
+      border: 1px solid var(--w-30);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      min-width: 360px;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.95);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.visible .modal {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* Preview overlay */
+    .preview-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .preview-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .preview-badge {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--blue);
+      color: var(--w-100);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .preview-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-close:hover { background: rgba(255,255,255,0.2); }
+
+    .preview-chapters {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 600px;
+    }
+
+    .preview-chip {
+      padding: 8px 16px;
+      background: var(--w-10);
+      border: 1px solid var(--w-30);
+      border-radius: 20px;
+      font-size: 14px;
+      color: var(--w-80);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preview-chip:hover {
+      background: rgba(0, 110, 250, 0.15);
+      border-color: var(--blue);
+      color: var(--w-100);
+    }
+
+    .preview-chip:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .preview-close:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .accordion-row:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: -2px;
+    }
+
+    .intro-section:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: -2px;
+    }
+
+    .btn-ai-lg:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .btn-secondary-sm:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .use-current-btn:focus-visible {
+      outline: 2px solid #006EFA;
+      outline-offset: 2px;
+    }
+
+    .form-input:focus-visible {
+      border-color: #006EFA;
+    }
+
+    .form-textarea:focus-visible {
+      border-color: #006EFA;
+    }
+
+    .track-empty-text:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+    }
+
+    .slide-thumb-replace:focus-visible {
+      outline: 2px solid var(--accent-primary);
+      outline-offset: 2px;
+      opacity: 1;
+    }
+
+    /* Touch target via padding, not min-height (tracks have their own heights) */
+    .chapter-segment, .slide-segment {
+      min-height: 0;
+    }
+
+    /* Playhead scrubber expanded hit area */
+    .playhead-ruler::after {
+      width: 44px;
+      left: -22px;
+    }
+
+    /* Responsive layout - usable at 1024px */
+    @media (max-width: 1279px) {
+      .right-panel {
+        width: 320px;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .main-content {
+        flex-direction: column;
+      }
+
+      .main-area {
+        flex: none;
+        min-height: 200px;
+      }
+
+      .right-panel {
+        width: 100%;
+        max-height: 40vh;
+        border-top: 1px solid var(--border);
+      }
+
+      .video-area {
+        min-height: 200px;
+      }
+
+      .top-bar-right .btn span.btn-label-long {
+        display: none;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .top-bar {
+        padding: 8px 12px;
+      }
+
+      .track-label {
+        width: 80px;
+        padding: 0 8px;
+        font-size: 10px;
+      }
+
+      .time-ruler {
+        padding: 0 8px 0 80px;
+      }
+
+      .panel-empty {
+        padding: 24px 16px;
+      }
+    }
+
+    /* Ensure color is not the only differentiator */
+    .track-dot-chapter::after {
+      content: 'Ch';
+      position: absolute;
+      clip: rect(0,0,0,0);
+      width: 1px;
+      height: 1px;
+    }
+
+    .track-dot-slide::after {
+      content: 'Sl';
+      position: absolute;
+      clip: rect(0,0,0,0);
+      width: 1px;
+      height: 1px;
+    }
+
+    .timeline-context-menu {
+      position: fixed;
+      z-index: 9999;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 4px 0;
+      min-width: 160px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .timeline-context-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .timeline-context-menu-item:hover {
+      background: rgba(0,0,0,0.05);
+    }
+    .timeline-context-menu-item.destructive {
+      color: #e53935;
+    }
+    .timeline-context-menu-item.destructive:hover {
+      background: rgba(229,57,53,0.08);
+    }
+
+    /* Skip link for keyboard users */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: var(--accent-primary);
+      color: white;
+      padding: 8px 16px;
+      z-index: 1000;
+      transition: top 0.2s;
+    }
+
+    .skip-link:focus {
+      top: 0;
+    }
+
+    /* Page Loader */
+    .page-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: var(--b-100);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .page-loader.loaded {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-spinner {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid var(--w-10);
+      border-top-color: var(--blue);
+      animation: spin 0.8s linear infinite;
+    }
+
+    .loader-text {
+      font-size: 14px;
+      color: var(--w-50);
+      font-weight: 400;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    body.is-loading .top-bar,
+    body.is-loading .editor-body {
+      opacity: 0;
+    }
+
+    body:not(.is-loading) .top-bar,
+    body:not(.is-loading) .editor-body {
+      opacity: 1;
+      transition: opacity 0.3s ease 0.1s;
+    }
+
+    body.is-loading .timeline-actions button,
+    body.is-loading .timeline-actions label,
+    body.is-loading .zoom-controls button,
+    body.is-loading .zoom-controls input,
+    body.is-loading .btn-ai-lg,
+    body.is-loading .panel-getstarted-actions button,
+    body.is-loading .panel-getstarted-actions label,
+    body.is-loading .player-action,
+    body.is-loading #playBtn {
+      pointer-events: none;
+      opacity: 0.4;
+      cursor: default;
+    }
+  </style>
+</head>
+<body class="is-loading">
+
+  <!-- Hidden file inputs for slide upload -->
+  <input type="file" id="slideFileInput" accept="application/pdf,.pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
+  <input type="file" id="replaceFileInput" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
+
+  <!-- Page Loader -->
+  <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Loading editor">
+    <div class="loader-spinner"></div>
+    <span class="loader-text">Loading editor…</span>
+  </div>
+
+  <!-- Skip Link -->
+  <a href="#timelineTracks" class="skip-link">Skip to timeline</a>
+
+  <!-- ARIA Live region for status announcements -->
+  <div id="liveAnnouncer" aria-live="polite" aria-atomic="true" class="hidden" role="status"></div>
+
+  <!-- Drag ghost (follows cursor during drag) -->
+  <div id="dragGhost" class="drag-ghost" aria-hidden="true"></div>
+
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <button class="close-btn" id="closeBtn" aria-label="Close editor">&#10005;</button>
+      <span class="save-status" id="saveStatus" aria-live="polite" role="status">
+        <span class="save-dot" aria-hidden="true"></span>
+        <span id="saveText">Draft saved</span>
+      </span>
+    </div>
+    <span class="editor-title">Video structure</span>
+    <div class="top-bar-right">
+      <button class="btn btn-ai" id="aiGenerateBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
+      <button class="btn btn-ghost" id="previewBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3C4.5 3 2 8 2 8s2.5 5 6 5 6-5 6-5-2.5-5-6-5z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></span>Preview</button>
+      <button class="btn btn-primary" id="publishBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Publish</button>
+    </div>
+  </header>
+
+  <!-- Editor Body -->
+  <div class="editor-body">
+
+    <!-- Main Content: Player + Right Panel -->
+    <div class="main-content">
+
+    <!-- Main Canvas (Player) -->
+    <main class="main-canvas">
+
+      <!-- Main Area: Player -->
+      <div class="main-area">
+
+      <!-- Video Player -->
+      <div class="video-area">
+        <video id="videoPlayer" class="video-player" preload="metadata">
+          <source src="Content/Elephants 101  Nat Geo Wild - Nat Geo Animals (1080p, h264).mp4" type="video/mp4">
+        </video>
+        <!-- Video thumbnail CTAs (visible only in slide-main mode) -->
+        <div class="video-thumb-ctas" id="videoThumbCtas">
+          <button class="player-slide-toggle" id="videoThumbToggle">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="videoThumbToggleText">Hide</span>
+          </button>
+          <button class="player-switch-btn video-switch-btn" id="videoSwitchBtn" aria-label="Switch view">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.6744 9.27934L21.7563 13.3632L21.8282 13.4537L21.887 13.5492L21.9333 13.6489L21.9684 13.7556L21.9824 13.8172L21.9974 13.929L22 14L21.9897 14.1405L21.9824 14.1828L21.9535 14.2949L21.9231 14.3759L21.887 14.4508L21.8281 14.5463L21.7763 14.6137L21.7207 14.6744L17.6744 18.7207C17.3019 19.0931 16.6981 19.0931 16.3256 18.7207C15.9818 18.3769 15.9554 17.8359 16.2463 17.4617L16.3256 17.3719L18.7439 14.9536L12.9537 14.9537C12.4675 14.9537 12.0663 14.5899 12.0074 14.1196L12 14C12 13.5109 12.3682 13.1078 12.8425 13.0527L12.9537 13.0463L18.7426 13.0451L16.3256 10.6281C15.9798 10.2823 15.9551 9.73687 16.2515 9.36252L16.3256 9.27934C16.6981 8.90689 17.3019 8.90689 17.6744 9.27934ZM6.32562 5.27934C6.69807 4.90689 7.30193 4.90689 7.67438 5.27934L7.74849 5.36252C8.04493 5.73687 8.02023 6.28225 7.67438 6.6281L5.2574 9.04508L11.0463 9.04628L11.1575 9.0527C11.6318 9.10779 12 9.5109 12 10L11.9926 10.1196C11.9337 10.5899 11.5325 10.9537 11.0463 10.9537L5.25605 10.9536L7.67438 13.3719L7.75372 13.4617C8.04463 13.8359 8.01818 14.3769 7.67438 14.7207C7.30193 15.0931 6.69807 15.0931 6.32562 14.7207L2.25793 10.6523L2.18664 10.5668L2.12413 10.4708L2.07695 10.3759L2.03697 10.2639L2.01028 10.1405L2 10C2 9.95226 2.00351 9.90534 2.01036 9.85937L2.01758 9.81716L2.04651 9.70514L2.08932 9.59642L2.12415 9.52899L2.18631 9.43351L2.24369 9.36325L6.32562 5.27934Z" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <!-- Selected Slide Overlay -->
+        <div class="player-slide-overlay" id="playerSlideOverlay" aria-label="Current slide">
+          <button class="player-slide-toggle" id="playerSlideToggle">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="playerSlideToggleText">Hide</span>
+          </button>
+          <div class="player-slide-image-wrap">
+            <button class="player-switch-btn" id="playerSwitchBtn" aria-label="Switch view">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M17.6744 9.27934L21.7563 13.3632L21.8282 13.4537L21.887 13.5492L21.9333 13.6489L21.9684 13.7556L21.9824 13.8172L21.9974 13.929L22 14L21.9897 14.1405L21.9824 14.1828L21.9535 14.2949L21.9231 14.3759L21.887 14.4508L21.8281 14.5463L21.7763 14.6137L21.7207 14.6744L17.6744 18.7207C17.3019 19.0931 16.6981 19.0931 16.3256 18.7207C15.9818 18.3769 15.9554 17.8359 16.2463 17.4617L16.3256 17.3719L18.7439 14.9536L12.9537 14.9537C12.4675 14.9537 12.0663 14.5899 12.0074 14.1196L12 14C12 13.5109 12.3682 13.1078 12.8425 13.0527L12.9537 13.0463L18.7426 13.0451L16.3256 10.6281C15.9798 10.2823 15.9551 9.73687 16.2515 9.36252L16.3256 9.27934C16.6981 8.90689 17.3019 8.90689 17.6744 9.27934ZM6.32562 5.27934C6.69807 4.90689 7.30193 4.90689 7.67438 5.27934L7.74849 5.36252C8.04493 5.73687 8.02023 6.28225 7.67438 6.6281L5.2574 9.04508L11.0463 9.04628L11.1575 9.0527C11.6318 9.10779 12 9.5109 12 10L11.9926 10.1196C11.9337 10.5899 11.5325 10.9537 11.0463 10.9537L5.25605 10.9536L7.67438 13.3719L7.75372 13.4617C8.04463 13.8359 8.01818 14.3769 7.67438 14.7207C7.30193 15.0931 6.69807 15.0931 6.32562 14.7207L2.25793 10.6523L2.18664 10.5668L2.12413 10.4708L2.07695 10.3759L2.03697 10.2639L2.01028 10.1405L2 10C2 9.95226 2.00351 9.90534 2.01036 9.85937L2.01758 9.81716L2.04651 9.70514L2.08932 9.59642L2.12415 9.52899L2.18631 9.43351L2.24369 9.36325L6.32562 5.27934Z" fill="currentColor"/></svg>
+            </button>
+            <img class="player-slide-image" id="playerSlideImage" src="" alt="Current slide">
+          </div>
+        </div>
+
+        <div class="player-controls">
+          <button class="play-btn" id="playBtn" aria-label="Play">&#9654;</button>
+          <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill">
+              <div class="progress-handle"></div>
+            </div>
+          </div>
+          <span class="timestamp" id="timestamp">0:00 / 0:00</span>
+          <button class="player-action" id="ccBtn" aria-label="Captions">CC</button>
+          <button class="player-action" id="volumeBtn" aria-label="Volume">&#128266;</button>
+          <button class="player-action" id="fullscreenBtn" aria-label="Fullscreen">&#9974;</button>
+        </div>
+      </div>
+
+      </div><!-- /.main-area -->
+
+    </main>
+
+    <!-- Vertical Nav Tabs -->
+    <nav class="nav-tabs" id="navTabs" aria-label="Editor sections">
+      <button class="nav-tab active" data-panel="chapters" aria-label="Chapters" title="Chapters">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg>
+      </button>
+      <button class="nav-tab" data-panel="slides" aria-label="Slides" title="Slides">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg>
+      </button>
+      <button class="nav-tab" data-panel="quiz" aria-label="Quiz" title="Quiz">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" fill="currentColor"/></svg>
+      </button>
+      <button class="nav-tab" data-panel="hotspot" aria-label="Hotspot" title="Hotspot">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/></svg>
+      </button>
+      <button class="nav-tab" data-panel="timeline" aria-label="Timeline" title="Timeline">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M3 4h2v16H3V4zm4 2h2v12H7V6zm4-2h2v16h-2V4zm4 4h2v8h-2V8zm4-2h2v12h-2V6z" fill="currentColor"/></svg>
+      </button>
+    </nav>
+
+    <!-- Right Panel (Form) -->
+    <aside class="right-panel" id="rightPanel" aria-label="Properties panel"></aside>
+
+    </div><!-- /.main-content -->
+
+    <!-- Timeline (full width) -->
+    <div class="timeline-area">
+      <div class="timeline-toolbar">
+        <div class="timeline-actions">
+          <button class="btn btn-borderless" id="addChapterBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add chapter</button>
+          <label class="btn btn-borderless" id="addSlideBtn" for="slideFileInput" style="cursor:pointer;" title="Supports PDF, PPTX"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add slide deck</label>
+          <button class="toolbar-icon-btn" id="undoBtn" data-tooltip="Undo" aria-label="Undo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7.41421 11H17C19.2091 11 21 12.7909 21 15C21 17.2091 19.2091 19 17 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 14L7 11L10 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button class="toolbar-icon-btn" id="redoBtn" data-tooltip="Redo" aria-label="Redo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M16.5858 11H7C4.79086 11 3 12.7909 3 15C3 17.2091 4.79086 19 7 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 14L17 11L14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="zoom-controls">
+          <button class="zoom-btn" id="zoomFitBtn" aria-label="Fit timeline to view" title="Fit to view (0)">Fit</button>
+          <button class="zoom-btn" id="zoomOutBtn" aria-label="Zoom out" title="Zoom out (-)">&#8722;</button>
+          <input type="range" class="zoom-slider" id="zoomSlider" min="0" max="1" step="0.001" value="0" aria-label="Timeline zoom level">
+          <button class="zoom-btn" id="zoomInBtn" aria-label="Zoom in" title="Zoom in (+)">+</button>
+        </div>
+      </div>
+
+      <!-- Scrollable timeline content (zooms together) -->
+      <div id="timelineScrollable">
+        <!-- Time Ruler -->
+        <div class="time-ruler" id="timeRuler">
+          <div class="time-marks" id="timeMarks"></div>
+          <div class="playhead-ruler" id="playheadRuler">
+            <div class="scrubber-tooltip" id="scrubberTooltip">00:00</div>
+          </div>
+        </div>
+
+        <!-- Tracks -->
+        <div class="timeline-tracks" id="timelineTracks">
+          <div class="tracks-playhead" id="tracksPlayhead"></div>
+          <div id="snapLine" class="snap-line" aria-hidden="true"></div>
+          <div class="track track-slides" role="region" aria-label="Slide track" id="slideTrack">
+            <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg></div>
+            <div class="track-content" id="slideTrackContent"></div>
+          </div>
+          <div class="track track-chapters" role="region" aria-label="Chapter track" id="chapterTrack">
+            <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg></div>
+            <div class="track-content" id="chapterTrackContent"></div>
+          </div>
+          <div class="track track-video" role="region" aria-label="Video track">
+            <div class="track-label track-label-video" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4V6.5l-4 4z" fill="currentColor"/></svg></div>
+            <div class="track-content"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="alert" aria-live="assertive"></div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+    <div class="modal">
+      <h2 class="modal-title" id="deleteModalTitle">Delete item?</h2>
+      <p class="modal-desc" id="deleteModalDesc">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="deleteCancelBtn">Keep it</button>
+        <button class="btn btn-danger" id="deleteConfirmBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 4h8M5.5 4V3a1 1 0 011-1h1a1 1 0 011 1v1M4.5 4v7a1 1 0 001 1h3a1 1 0 001-1V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Overlay -->
+  <div class="preview-overlay" id="previewOverlay">
+    <div class="preview-badge">Preview Mode</div>
+    <button class="preview-close" id="previewCloseBtn">&#10005;</button>
+    <div class="preview-chapters" id="previewChapters"></div>
+  </div>
+
+  <script>
+    // ===== DATA =====
+
+    let data = {
+      introduction: {
+        title: '',
+        text: ''
+      },
+      chapters: [],
+      slides: []
+    };
+
+    let selectedItem = null; // { type: 'chapter'|'slide', index: number }
+    let panelFilter = 'chapters'; // 'chapters' | 'slides' | 'quiz' | 'hotspot' | 'timeline'
+    let videoDuration = 0;
+    let deleteTarget = null;
+
+    // ===== ZOOM STATE =====
+    const ZOOM_STEP_FACTOR = 1.25;
+    let pixelsPerSecond = 0;
+    let ppsMin = 1;
+    let ppsMax = 200;
+    let isMouseOverTimeline = false;
+    let lastMouseX = 0;
+    let thumbnailDebounceTimer = null;
+
+    // ===== VIDEO PLAYER =====
+    const video = document.getElementById('videoPlayer');
+    const playBtn = document.getElementById('playBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    const timestampEl = document.getElementById('timestamp');
+    const playheadRuler = document.getElementById('playheadRuler');
+    const tracksPlayhead = document.getElementById('tracksPlayhead');
+
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return '00:00';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+    }
+
+    function formatTimeHMS(seconds) {
+      if (isNaN(seconds)) return '00:00:00';
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = Math.floor(seconds % 60);
+      return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+    }
+
+    function formatTimeMs(seconds) {
+      if (isNaN(seconds)) return '0:00.000';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      const ms = Math.floor((seconds % 1) * 1000);
+      return m + ':' + s.toString().padStart(2, '0') + '.' + ms.toString().padStart(3, '0');
+    }
+
+    playBtn.addEventListener('click', togglePlay);
+    video.addEventListener('click', () => {
+      const videoArea = document.querySelector('.video-area');
+      if (videoArea.classList.contains('slide-main')) {
+        videoArea.classList.remove('slide-main');
+        if (typeof slideIsMainView !== 'undefined') slideIsMainView = false;
+        return;
+      }
+      togglePlay();
+    });
+
+    function togglePlay() {
+      if (video.paused) {
+        video.play();
+        playBtn.innerHTML = '&#9646;&#9646;';
+      } else {
+        video.pause();
+        playBtn.innerHTML = '&#9654;';
+      }
+    }
+
+    video.addEventListener('loadedmetadata', () => {
+      videoDuration = video.duration;
+      timestampEl.textContent = formatTime(0) + ' / ' + formatTime(videoDuration);
+      ppsMin = computePpsMin();
+      pixelsPerSecond = ppsMin;
+      document.getElementById('zoomSlider').value = 0;
+      applyZoom(pixelsPerSecond);
+    });
+
+    let rafId = null;
+    video.addEventListener('timeupdate', () => {
+      if (scrubberDragging) return;
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        if (scrubberDragging) return;
+        const pct = (video.currentTime / videoDuration) * 100;
+        progressFill.style.width = pct + '%';
+        updateProgressChapterFills();
+        timestampEl.textContent = formatTime(video.currentTime) + ' / ' + formatTime(videoDuration);
+        updatePlayhead(pct);
+        updatePlayerSlide();
+      });
+    });
+
+    progressBar.addEventListener('click', (e) => {
+      const rect = progressBar.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      video.currentTime = pct * videoDuration;
+      progressFill.style.width = (pct * 100) + '%';
+      updateProgressChapterFills();
+      positionPlayhead(pct * 100);
+    });
+
+    // Click on time ruler to seek
+    document.getElementById('timeRuler').addEventListener('mousedown', (e) => {
+      // Don't interfere if clicking the playhead handle itself
+      if (e.target === playheadRuler || playheadRuler.contains(e.target)) return;
+      seekFromRulerEvent(e);
+    });
+
+    function seekFromRulerEvent(e) {
+      const trackContent = document.getElementById('chapterTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      video.currentTime = pct * videoDuration;
+      positionPlayhead(pct * 100);
+    }
+
+    function positionPlayhead(pct) {
+      const trackContent = document.getElementById('chapterTrackContent');
+      const trackRect = trackContent.getBoundingClientRect();
+      const px = (pct / 100) * trackRect.width;
+
+      const ruler = document.getElementById('timeRuler');
+      const rulerRect = ruler.getBoundingClientRect();
+      const rulerLeft = trackRect.left - rulerRect.left + px;
+      playheadRuler.style.left = rulerLeft + 'px';
+
+      const tracks = document.getElementById('timelineTracks');
+      const tracksRect = tracks.getBoundingClientRect();
+      const tracksLeft = trackRect.left - tracksRect.left + px;
+      tracksPlayhead.style.left = tracksLeft + 'px';
+
+      document.getElementById('scrubberTooltip').textContent = formatTime(video.currentTime);
+      updatePlayerSlide();
+    }
+
+    function updatePlayhead(pct) {
+      if (scrubberDragging) return;
+      positionPlayhead(pct);
+    }
+
+    function updatePlayheadImmediate(pct) {
+      positionPlayhead(pct);
+    }
+
+    // ===== SCRUBBER DRAG =====
+    let scrubberDragging = false;
+
+    playheadRuler.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      scrubberDragging = true;
+      playheadRuler.classList.add('dragging');
+      tracksPlayhead.classList.add('dragging');
+      video.pause();
+      playBtn.innerHTML = '&#9654;';
+      // Immediately seek to click position
+      const trackContent = document.getElementById('chapterTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      let newTime = pct * videoDuration;
+      const snapped = findSnapTime(newTime, rect.width);
+      if (snapped !== null) newTime = snapped;
+      video.currentTime = newTime;
+      const posPercent = (newTime / videoDuration) * 100;
+      positionPlayhead(posPercent);
+      document.getElementById('scrubberTooltip').textContent = formatTime(newTime);
+      document.addEventListener('mousemove', onScrubberMove);
+      document.addEventListener('mouseup', onScrubberUp);
+    });
+
+    const SNAP_THRESHOLD_PX = 8;
+
+    function getSnapPoints() {
+      const points = [];
+      data.chapters.forEach(ch => points.push(ch.time));
+      data.slides.forEach(sl => points.push(sl.time));
+      return [...new Set(points)].sort((a, b) => a - b);
+    }
+
+    function findSnapTime(time, trackWidth) {
+      const snapPoints = getSnapPoints();
+      const pxPerSec = trackWidth / videoDuration;
+      for (const pt of snapPoints) {
+        if (Math.abs(pt - time) * pxPerSec < SNAP_THRESHOLD_PX) {
+          return pt;
+        }
+      }
+      return null;
+    }
+
+
+    function onScrubberMove(e) {
+      if (!scrubberDragging) return;
+      const trackContent = document.getElementById('chapterTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      let newTime = pct * videoDuration;
+
+      const snappedTime = findSnapTime(newTime, rect.width);
+      if (snappedTime !== null) {
+        newTime = snappedTime;
+      }
+
+      video.currentTime = newTime;
+      const actualPct = (newTime / videoDuration) * 100;
+      positionPlayhead(actualPct);
+      timestampEl.textContent = formatTime(newTime) + ' / ' + formatTime(videoDuration);
+      progressFill.style.width = actualPct + '%';
+      updateProgressChapterFills();
+      document.getElementById('scrubberTooltip').textContent = formatTime(newTime);
+    }
+
+    function onScrubberUp(e) {
+      scrubberDragging = false;
+      playheadRuler.classList.remove('dragging');
+      tracksPlayhead.classList.remove('dragging');
+      document.removeEventListener('mousemove', onScrubberMove);
+      document.removeEventListener('mouseup', onScrubberUp);
+    }
+
+    document.getElementById('fullscreenBtn').addEventListener('click', () => {
+      if (video.requestFullscreen) video.requestFullscreen();
+    });
+
+    // Click on timeline tracks area to position scrubber
+    document.getElementById('timelineTracks').addEventListener('click', (e) => {
+      if (e.target.closest('.chapter-segment') || e.target.closest('.slide-segment') || e.target.closest('.track-empty-text')) return;
+      const trackContent = document.getElementById('chapterTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      if (e.clientX < rect.left || e.clientX > rect.right) return;
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      let newTime = pct * videoDuration;
+      const snapped = findSnapTime(newTime, rect.width);
+      if (snapped !== null) newTime = snapped;
+      video.currentTime = newTime;
+      const posPercent = (newTime / videoDuration) * 100;
+      positionPlayhead(posPercent);
+    });
+
+    document.getElementById('volumeBtn').addEventListener('click', () => {
+      video.muted = !video.muted;
+      document.getElementById('volumeBtn').innerHTML = video.muted ? '&#128263;' : '&#128266;';
+    });
+
+    // ===== TIME MARKS =====
+    const NICE_INTERVALS = [0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600];
+
+    function pickTickInterval() {
+      const targetPx = 100;
+      const idealInterval = targetPx / (pixelsPerSecond || 1);
+      for (const interval of NICE_INTERVALS) {
+        if (interval >= idealInterval * 0.7) return interval;
+      }
+      return NICE_INTERVALS[NICE_INTERVALS.length - 1];
+    }
+
+    function formatTimeMark(seconds) {
+      if (seconds >= 3600) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        const s = Math.floor(seconds % 60);
+        return h + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+      }
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      if (pixelsPerSecond > 80 && seconds < 60) {
+        return seconds.toFixed(1) + 's';
+      }
+      return m + ':' + s.toString().padStart(2, '0');
+    }
+
+    function renderTimeMarks() {
+      const container = document.getElementById('timeMarks');
+      container.innerHTML = '';
+      if (!videoDuration || !pixelsPerSecond) return;
+
+      const interval = pickTickInterval();
+      const subDivisions = 5;
+      const subInterval = interval / subDivisions;
+
+      for (let t = 0; t <= videoDuration + 0.001; t += interval) {
+        const x = t * pixelsPerSecond;
+        const tick = document.createElement('div');
+        tick.className = 'time-tick time-tick-major';
+        tick.style.left = x + 'px';
+        container.appendChild(tick);
+
+        const label = document.createElement('span');
+        label.className = 'time-mark';
+        label.style.left = x + 'px';
+        label.textContent = formatTimeMark(t);
+        container.appendChild(label);
+
+        for (let s = 1; s < subDivisions; s++) {
+          const subT = t + s * subInterval;
+          if (subT > videoDuration) break;
+          const subX = subT * pixelsPerSecond;
+          const subTick = document.createElement('div');
+          subTick.className = 'time-tick time-tick-minor';
+          subTick.style.left = subX + 'px';
+          container.appendChild(subTick);
+        }
+      }
+
+      // Update timeline grid lines
+      const tracks = document.getElementById('timelineTracks');
+      const gridSpacing = interval * pixelsPerSecond;
+      tracks.style.backgroundImage = `repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent ${gridSpacing}px)`;
+      tracks.style.backgroundPositionX = '56px';
+      tracks.style.backgroundSize = `${gridSpacing}px 100%`;
+    }
+
+    // ===== ZOOM ENGINE =====
+    function computePpsMin() {
+      const timelineArea = document.querySelector('.timeline-area');
+      const viewportWidth = timelineArea.clientWidth;
+      const usableWidth = viewportWidth - 64 - 24;
+      return Math.max(0.5, usableWidth / (videoDuration || 1));
+    }
+
+    function sliderToPps(value) {
+      const logMin = Math.log(ppsMin);
+      const logMax = Math.log(ppsMax);
+      return Math.exp(logMin + value * (logMax - logMin));
+    }
+
+    function ppsToSlider(pps) {
+      const logMin = Math.log(ppsMin);
+      const logMax = Math.log(ppsMax);
+      return Math.max(0, Math.min(1, (Math.log(pps) - logMin) / (logMax - logMin)));
+    }
+
+    function getZoomAnchor() {
+      const timelineArea = document.querySelector('.timeline-area');
+      const timelineAreaRect = timelineArea.getBoundingClientRect();
+      if (isMouseOverTimeline && lastMouseX > 0) {
+        const scrollX = timelineArea.scrollLeft;
+        const mouseRelToContent = lastMouseX - timelineAreaRect.left + scrollX - 64;
+        const time = Math.max(0, Math.min(videoDuration, mouseRelToContent / pixelsPerSecond));
+        return { time, screenX: lastMouseX };
+      }
+      const playheadTime = video.currentTime;
+      const pixelPos = playheadTime * pixelsPerSecond + 64;
+      const screenX = pixelPos - timelineArea.scrollLeft + timelineAreaRect.left;
+      return { time: playheadTime, screenX };
+    }
+
+    function applyZoom(newPps, anchorTime, anchorScreenX) {
+      const timelineArea = document.querySelector('.timeline-area');
+      newPps = Math.max(ppsMin, Math.min(ppsMax, newPps));
+      pixelsPerSecond = newPps;
+
+      const totalWidth = videoDuration * pixelsPerSecond;
+      const timelineScrollable = document.getElementById('timelineScrollable');
+      timelineScrollable.style.width = (totalWidth + 64 + 24) + 'px';
+      timelineScrollable.style.minWidth = '100%';
+
+      document.getElementById('zoomSlider').value = ppsToSlider(pixelsPerSecond);
+
+      if (anchorTime !== undefined && anchorScreenX !== undefined) {
+        const timelineAreaRect = timelineArea.getBoundingClientRect();
+        const pixelPositionOfAnchor = anchorTime * pixelsPerSecond + 64;
+        const desiredScrollLeft = pixelPositionOfAnchor - (anchorScreenX - timelineAreaRect.left);
+        timelineArea.scrollLeft = Math.max(0, desiredScrollLeft);
+      }
+
+      renderTimeMarks();
+      render();
+      requestAnimationFrame(() => {
+        const pct = (video.currentTime / (videoDuration || 1)) * 100;
+        positionPlayhead(pct);
+      });
+
+      clearTimeout(thumbnailDebounceTimer);
+      thumbnailDebounceTimer = setTimeout(generateVideoThumbnails, 250);
+    }
+
+    function zoomFit() {
+      ppsMin = computePpsMin();
+      pixelsPerSecond = ppsMin;
+      const timelineArea = document.querySelector('.timeline-area');
+      applyZoom(ppsMin);
+      timelineArea.scrollLeft = 0;
+    }
+
+    function zoomIn(anchorTime, anchorScreenX) {
+      applyZoom(pixelsPerSecond * ZOOM_STEP_FACTOR, anchorTime, anchorScreenX);
+    }
+
+    function zoomOut(anchorTime, anchorScreenX) {
+      applyZoom(pixelsPerSecond / ZOOM_STEP_FACTOR, anchorTime, anchorScreenX);
+    }
+
+    function zoomToTimeRange(startTime, endTime) {
+      const timelineArea = document.querySelector('.timeline-area');
+      const viewportWidth = timelineArea.clientWidth;
+      const usableWidth = viewportWidth - 64 - 24;
+      const duration = Math.max(0.5, endTime - startTime);
+      const targetPps = (usableWidth * 0.7) / duration;
+      const clampedPps = Math.max(ppsMin, Math.min(ppsMax, targetPps));
+      const midTime = (startTime + endTime) / 2;
+      const centerScreenX = timelineArea.getBoundingClientRect().left + viewportWidth / 2;
+      applyZoom(clampedPps, midTime, centerScreenX);
+    }
+
+    // Zoom event handlers
+    document.getElementById('zoomFitBtn').addEventListener('click', zoomFit);
+
+    document.getElementById('zoomInBtn').addEventListener('click', () => {
+      const anchor = getZoomAnchor();
+      zoomIn(anchor.time, anchor.screenX);
+    });
+
+    document.getElementById('zoomOutBtn').addEventListener('click', () => {
+      const anchor = getZoomAnchor();
+      zoomOut(anchor.time, anchor.screenX);
+    });
+
+    document.getElementById('zoomSlider').addEventListener('input', (e) => {
+      const anchor = getZoomAnchor();
+      const newPps = sliderToPps(parseFloat(e.target.value));
+      applyZoom(newPps, anchor.time, anchor.screenX);
+    });
+
+    // Ctrl/Cmd + Mouse Wheel zoom
+    const timelineAreaEl = document.querySelector('.timeline-area');
+    timelineAreaEl.addEventListener('mouseenter', () => { isMouseOverTimeline = true; });
+    timelineAreaEl.addEventListener('mouseleave', () => { isMouseOverTimeline = false; });
+    timelineAreaEl.addEventListener('mousemove', (e) => { lastMouseX = e.clientX; });
+    timelineAreaEl.addEventListener('wheel', (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const factor = Math.pow(1.005, -e.deltaY);
+        const anchor = getZoomAnchor();
+        applyZoom(pixelsPerSecond * factor, anchor.time, anchor.screenX);
+      }
+    }, { passive: false });
+
+    // ===== RENDER =====
+    function render() {
+      renderChapterTrack();
+      renderSlideTrack();
+      renderPanel();
+      renderProgressSplits();
+      updatePlayerSlide();
+      const isEmpty = data.chapters.length === 0 && data.slides.length === 0;
+    }
+
+    function renderProgressSplits() {
+      const bar = document.getElementById('progressBar');
+      bar.querySelectorAll('.progress-chapter-seg').forEach(el => el.remove());
+      if (videoDuration <= 0 || data.chapters.length <= 1) {
+        bar.classList.remove('has-chapters');
+        return;
+      }
+      bar.classList.add('has-chapters');
+      for (let i = 0; i < data.chapters.length; i++) {
+        const startTime = data.chapters[i].time;
+        const endTime = i < data.chapters.length - 1 ? data.chapters[i + 1].time : videoDuration;
+        const widthPct = ((endTime - startTime) / videoDuration) * 100;
+        const seg = document.createElement('div');
+        seg.className = 'progress-chapter-seg';
+        seg.style.flex = '0 0 ' + widthPct + '%';
+        seg.dataset.start = startTime;
+        seg.dataset.end = endTime;
+        seg.innerHTML = '<div class="progress-chapter-seg-fill"></div>';
+        bar.appendChild(seg);
+      }
+      updateProgressChapterFills();
+    }
+
+    function updateProgressChapterFills() {
+      const bar = document.getElementById('progressBar');
+      if (!bar.classList.contains('has-chapters')) return;
+      const currentTime = video.currentTime || 0;
+      bar.querySelectorAll('.progress-chapter-seg').forEach(seg => {
+        const start = parseFloat(seg.dataset.start);
+        const end = parseFloat(seg.dataset.end);
+        const fill = seg.querySelector('.progress-chapter-seg-fill');
+        if (currentTime >= end) {
+          fill.style.width = '100%';
+        } else if (currentTime <= start) {
+          fill.style.width = '0%';
+        } else {
+          const pct = ((currentTime - start) / (end - start)) * 100;
+          fill.style.width = pct + '%';
+        }
+      });
+    }
+
+    function renderChapterTrack() {
+      const container = document.getElementById('chapterTrackContent');
+      container.innerHTML = '';
+      container.setAttribute('role', 'list');
+      container.setAttribute('aria-label', 'Chapter segments');
+
+      if (data.chapters.length === 0) {
+        container.removeAttribute('role');
+        container.removeAttribute('aria-label');
+        container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptyChapterClick">Click to add your first summary & chapter</div></div>';
+        document.getElementById('emptyChapterClick').addEventListener('click', addChapter);
+        return;
+      }
+
+      data.chapters.forEach((ch, i) => {
+        if (i === 0 && ch.time !== 0) { ch.time = 0; }
+        const nextTime = (i < data.chapters.length - 1) ? data.chapters[i + 1].time : videoDuration;
+        const duration = nextTime - ch.time;
+        const widthPx = duration * pixelsPerSecond;
+        const el = document.createElement('div');
+        el.className = 'chapter-segment' + (selectedItem && selectedItem.type === 'chapter' && selectedItem.index === i ? ' active' : '');
+        el.style.width = widthPx + 'px';
+
+        let handles = '';
+        if (i > 0) handles += '<span class="resize-handle left" data-side="left"></span>';
+        if (i < data.chapters.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
+        el.innerHTML = handles + '<span class="segment-title">' + formatTime(ch.time) + ' — ' + ch.title + '</span><span class="segment-duration">' + formatTime(duration) + '</span>';
+
+        el.setAttribute('data-tooltip', 'Chapter: ' + ch.title);
+        el.setAttribute('role', 'listitem');
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('aria-label', 'Chapter: ' + ch.title + ' at ' + formatTime(ch.time));
+        el.setAttribute('aria-roledescription', 'resizable chapter');
+        el.addEventListener('mousedown', (e) => {
+          if (e.target.classList.contains('resize-handle')) {
+            initResize(e, 'chapter', i, e.target.dataset.side);
+          } else {
+            initDrag(e, 'chapter', i);
+          }
+        });
+        el.addEventListener('dblclick', (e) => {
+          e.stopPropagation();
+          const startT = ch.time;
+          const endT = (i < data.chapters.length - 1) ? data.chapters[i + 1].time : videoDuration;
+          zoomToTimeRange(startT, endT);
+        });
+        el.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          showTimelineContextMenu(e.clientX, e.clientY, 'chapter', i);
+        });
+        container.appendChild(el);
+      });
+    }
+
+    function renderSlideTrack() {
+      const container = document.getElementById('slideTrackContent');
+      container.innerHTML = '';
+      container.setAttribute('role', 'list');
+      container.setAttribute('aria-label', 'Slide segments');
+
+      if (data.slides.length === 0) {
+        container.removeAttribute('role');
+        container.removeAttribute('aria-label');
+        container.innerHTML = '<div class="track-empty"><label class="track-empty-text" id="emptySlideClick" for="slideFileInput" style="cursor:pointer;">Drag and drop or click to add slides</label></div>';
+        return;
+      }
+
+      const dur = videoDuration || 1;
+      data.slides.forEach((sl, i) => {
+        const nextTime = (i < data.slides.length - 1) ? data.slides[i + 1].time : dur;
+        const duration = nextTime - sl.time;
+        const widthPx = duration * pixelsPerSecond;
+        const el = document.createElement('div');
+        el.className = 'slide-segment' + (selectedItem && selectedItem.type === 'slide' && selectedItem.index === i ? ' active' : '');
+        el.style.width = widthPx + 'px';
+        if (i === 0 && sl.time > 0) {
+          el.style.marginLeft = (sl.time * pixelsPerSecond) + 'px';
+        }
+        el.setAttribute('data-tooltip', sl.title);
+        el.setAttribute('role', 'listitem');
+        el.setAttribute('tabindex', '0');
+        el.setAttribute('aria-label', 'Slide: ' + sl.title + ' at ' + formatTime(sl.time));
+        el.setAttribute('aria-roledescription', 'resizable slide');
+
+        let handles = '<span class="resize-handle left" data-side="left"></span>';
+        if (i < data.slides.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
+        el.innerHTML = handles +
+          (sl.image ? '<img class="slide-segment-thumb" src="' + sl.image + '" alt="' + sl.title + ' thumbnail" draggable="false">' : '') +
+          '<span class="slide-segment-label">' + formatTime(sl.time) + ' — ' + sl.title + '</span>' +
+          '<span class="segment-duration">' + formatTime(duration) + '</span>';
+
+        el.addEventListener('mousedown', (e) => {
+          if (e.target.classList.contains('resize-handle')) {
+            initResize(e, 'slide', i, e.target.dataset.side);
+          } else {
+            initDrag(e, 'slide', i);
+          }
+        });
+        el.addEventListener('dblclick', (e) => {
+          e.stopPropagation();
+          const startT = sl.time;
+          const endT = (i < data.slides.length - 1) ? data.slides[i + 1].time : videoDuration;
+          zoomToTimeRange(startT, endT);
+        });
+        el.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          showTimelineContextMenu(e.clientX, e.clientY, 'slide', i);
+        });
+        container.appendChild(el);
+      });
+    }
+
+    function updateSidebarTabs() {}
+
+    function bindPanelTabEvents() {}
+
+    function bindNavTabs() {
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const newFilter = btn.dataset.panel;
+          panelFilter = newFilter;
+          document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          if (selectedItem) {
+            const matchesTab =
+              (newFilter === 'chapters' && selectedItem.type === 'chapter') ||
+              (newFilter === 'slides' && selectedItem.type === 'slide');
+            if (!matchesTab) selectedItem = null;
+          }
+          renderPanel();
+        });
+      });
+    }
+
+    function getPanelTabsHtml() {
+      return '';
+    }
+
+    function renderPanel() {
+      const panel = document.getElementById('rightPanel');
+      updateSidebarTabs();
+
+      const isEmpty = data.chapters.length === 0 && data.slides.length === 0;
+
+      // Placeholder panels for new tabs
+      if (panelFilter === 'quiz' || panelFilter === 'hotspot' || panelFilter === 'timeline') {
+        const labels = { quiz: 'Quiz', hotspot: 'Hotspot', timeline: 'Timeline' };
+        panel.innerHTML = `<div class="panel-intro-view"><div class="panel-intro-section">
+          <div class="panel-intro-title">${labels[panelFilter]}</div>
+          <p class="panel-intro-desc">Coming soon.</p>
+        </div></div>`;
+        return;
+      }
+
+      // Empty states for chapters/slides tabs
+      const hasChapters = data.chapters.length > 0;
+      const hasSlides = data.slides.length > 0;
+      const showChaptersEmpty = panelFilter === 'chapters' && !hasChapters;
+      const showSlidesEmpty = panelFilter === 'slides' && !hasSlides;
+
+      if (showChaptersEmpty || showSlidesEmpty) {
+        let emptyHtml = `<div class="panel-intro-view">`;
+
+        if (showChaptersEmpty) {
+          emptyHtml += `<div class="panel-intro-section">
+            <div class="panel-intro-title">Chapters</div>
+            <p class="panel-intro-desc">Break your video into chapters to help viewers navigate and find what they need.</p>
+            <div class="panel-getstarted-actions">
+              <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
+              <div class="panel-getstarted-divider"><span></span><span class="panel-getstarted-divider-text">Or add manually</span><span></span></div>
+              <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add chapter</button>
+            </div>
+          </div>`;
+        } else if (showSlidesEmpty) {
+          emptyHtml += `<div class="panel-intro-section">
+            <div class="panel-intro-title">Slides</div>
+            <p class="panel-intro-desc">Upload a slide deck to sync slides with your video timeline.</p>
+            <div class="panel-getstarted-actions">
+              <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slide deck</label>
+            </div>
+          </div>`;
+        }
+
+        emptyHtml += `</div>`;
+        panel.innerHTML = emptyHtml;
+        document.getElementById('emptyAddChBtn')?.addEventListener('click', addChapter);
+        document.getElementById('panelAiBtn')?.addEventListener('click', generateWithAI);
+        return;
+      }
+
+      let html = getPanelTabsHtml();
+      const chevronSvg = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.29289 11.7071C5.90237 11.3166 5.90237 10.6834 6.29289 10.2929L8.58579 8L6.29289 5.70711C5.90237 5.31658 5.90237 4.68342 6.29289 4.29289C6.68342 3.90237 7.31658 3.90237 7.70711 4.29289L10.7071 7.29289C11.0976 7.68342 11.0976 8.31658 10.7071 8.70711L7.70711 11.7071C7.31658 12.0976 6.68342 12.0976 6.29289 11.7071Z" fill="currentColor"/></svg>';
+      const targetSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3V4.06189C7.38128 4.51314 4.51314 7.38128 4.06189 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H4.06189C4.51314 16.6187 7.38128 19.4869 11 19.9381V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V19.9381C16.6187 19.4869 19.4869 16.6187 19.9381 13H21C21.5523 13 22 12.5523 22 12C22 11.4477 21.5523 11 21 11H19.9381C19.4869 7.38128 16.6187 4.51314 13 4.06189V3ZM6.08296 11C6.50448 8.4875 8.4875 6.50448 11 6.08296V7C11 7.55228 11.4477 8 12 8C12.5523 8 13 7.55228 13 7V6.08296C15.5125 6.50448 17.4955 8.4875 17.917 11H17C16.4477 11 16 11.4477 16 12C16 12.5523 16.4477 13 17 13H17.917C17.4955 15.5125 15.5125 17.4955 13 17.917V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V17.917C8.4875 17.4955 6.50448 15.5125 6.08296 13H7C7.55228 13 8 12.5523 8 12C8 11.4477 7.55228 11 7 11H6.08296ZM12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="white"/></svg>';
+      const deleteSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg>';
+
+      const isExpanded = (type, index) => selectedItem && selectedItem.type === type && selectedItem.index === index;
+
+      html += '<div class="accordion-list">';
+
+      // Section title
+      if (panelFilter === 'chapters') {
+        html += `<div class="accordion-section-title">Chapters</div>`;
+      } else if (panelFilter === 'slides') {
+        html += `<div class="accordion-section-title">Slides</div>`;
+      }
+
+      // Build items list based on filter
+      let allItems = [];
+      if (panelFilter === 'chapters') {
+        allItems = data.chapters.map((c, i) => ({ ...c, type: 'chapter', index: i }));
+      } else if (panelFilter === 'slides') {
+        allItems = data.slides.map((s, i) => ({ ...s, type: 'slide', index: i }));
+      }
+
+      allItems.forEach(item => {
+        const expanded = isExpanded(item.type, item.index);
+
+        html += `<div class="accordion-item ${expanded ? 'expanded' : ''}" data-type="${item.type}" data-index="${item.index}">
+          <div class="accordion-row">
+            <div class="accordion-row-holder">
+              <span class="accordion-row-time">${formatTime(item.time)}</span>
+              <span class="accordion-row-title">${item.title}</span>
+            </div>
+            <span class="accordion-row-chevron">${chevronSvg}</span>
+          </div>
+          <div class="accordion-body">`;
+
+        if (item.type === 'chapter') {
+          const ch = data.chapters[item.index];
+          html += `
+            <div class="accordion-form">
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Chapter name</span>
+                  <span class="form-counter">${(ch.title || '').length}/75</span>
+                </div>
+                <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Untitled chapter" maxlength="75" required>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Chapter summary</span>
+                  <span class="form-counter">${(ch.summary || '').length}/500</span>
+                </div>
+                <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers" maxlength="500">${ch.summary || ''}</textarea>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Duration</span>
+                </div>
+                <div class="timestamp-input">
+                  <input type="text" class="form-input" id="chapterTimeInput" value="${formatTime(ch.time)}">
+                  <span class="timestamp-separator">—</span>
+                  <input type="text" class="form-input" id="chapterEndTimeInput" value="${formatTime(item.index < data.chapters.length - 1 ? data.chapters[item.index + 1].time : videoDuration)}" readonly>
+                  <button class="use-current-btn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-delete-section">
+              <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Delete chapter</button>
+            </div>`;
+        } else {
+          const sl = data.slides[item.index];
+          const slideEndTime = item.index < data.slides.length - 1 ? data.slides[item.index + 1].time : videoDuration;
+          const aiSvg = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12.97 7.33C12.85 7.59 12.48 7.59 12.36 7.33L11.63 5.71L10 4.97C9.74 4.85 9.74 4.48 10 4.36L11.63 3.63L12.36 2C12.48 1.74 12.85 1.74 12.97 2L13.71 3.63L15.33 4.36C15.59 4.48 15.59 4.85 15.33 4.97L13.71 5.71L12.97 7.33Z" fill="currentColor"/><path d="M6.3 13.33C6.18 13.59 5.82 13.59 5.7 13.33L4.33 10.33L1.33 8.97C1.07 8.85 1.07 8.48 1.33 8.36L4.33 7L5.7 4C5.82 3.74 6.18 3.74 6.3 4L7.67 7L10.67 8.36C10.93 8.48 10.93 8.85 10.67 8.97L7.67 10.33L6.3 13.33Z" fill="currentColor"/></svg>';
+          const bulletListSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 7.5C5.33 7.5 6 6.83 6 6C6 5.17 5.33 4.5 4.5 4.5C3.67 4.5 3 5.17 3 6C3 6.83 3.67 7.5 4.5 7.5ZM8 5C7.45 5 7 5.45 7 6C7 6.55 7.45 7 8 7H20C20.55 7 21 6.55 21 6C21 5.45 20.55 5 20 5H8ZM8 11C7.45 11 7 11.45 7 12C7 12.55 7.45 13 8 13H20C20.55 13 21 12.55 21 12C21 11.45 20.55 11 20 11H8ZM7 18C7 17.45 7.45 17 8 17H20C20.55 17 21 17.45 21 18C21 18.55 20.55 19 20 19H8C7.45 19 7 18.55 7 18ZM6 12C6 12.83 5.33 13.5 4.5 13.5C3.67 13.5 3 12.83 3 12C3 11.17 3.67 10.5 4.5 10.5C5.33 10.5 6 11.17 6 12ZM4.5 19.5C5.33 19.5 6 18.83 6 18C6 17.17 5.33 16.5 4.5 16.5C3.67 16.5 3 17.17 3 18C3 18.83 3.67 19.5 4.5 19.5Z" fill="currentColor"/></svg>';
+          const orderedListSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 4C4 3.45 4.45 3 5 3C5.55 3 6 3.45 6 4V8C6 8.55 5.55 9 5 9C4.45 9 4 8.55 4 8V4ZM8 5C7.45 5 7 5.45 7 6C7 6.55 7.45 7 8 7H20C20.55 7 21 6.55 21 6C21 5.45 20.55 5 20 5H8ZM8 11C7.45 11 7 11.45 7 12C7 12.55 7.45 13 8 13H20C20.55 13 21 12.55 21 12C21 11.45 20.55 11 20 11H8ZM7 18C7 17.45 7.45 17 8 17H20C20.55 17 21 17.45 21 18C21 18.55 20.55 19 20 19H8C7.45 19 7 18.55 7 18ZM3.5 14H6.5V14.75H5V15.5H6.5V16.25H5V17H6.5V17.75H3.5V14ZM3.5 19H6.5V19.75H5V20.5H6.5V21.25H3.5V19Z" fill="currentColor"/></svg>';
+          html += `
+            <div class="accordion-form">
+              <div class="slide-form-properties-title">Properties</div>
+              <div class="form-field">
+                <span class="form-label">Slide</span>
+                <div class="slide-thumb-container slide-thumb-small">
+                  ${sl.image ? `<img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title}">` : '<div class="slide-thumbnail-placeholder"></div>'}
+                  <label class="slide-thumb-replace" id="replaceSlideBtn" for="replaceFileInput" style="cursor:pointer;">Replace slide</label>
+                </div>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Slide name</span>
+                  <span class="form-counter">${(sl.title || '').length}/75</span>
+                </div>
+                <div class="form-input-with-icon">
+                  <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide name" maxlength="75" required>
+                  <button class="form-input-icon-btn" aria-label="Generate with AI" title="Generate with AI">${aiSvg}</button>
+                </div>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Slide description</span>
+                  <span class="form-counter">${(sl.description || '').length}/500</span>
+                </div>
+                <div class="form-textarea-wrapper">
+                  <div class="form-textarea-toolbar">
+                    <button class="form-textarea-toolbar-btn" aria-label="Bullet list" title="Bullet list">${bulletListSvg}</button>
+                    <button class="form-textarea-toolbar-btn" aria-label="Ordered list" title="Ordered list">${orderedListSvg}</button>
+                    <button class="form-textarea-toolbar-btn" aria-label="Generate with AI" title="Generate with AI">${aiSvg}</button>
+                  </div>
+                  <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+                </div>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Slide start</span>
+                </div>
+                <div class="timestamp-input">
+                  <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}">
+                  <button class="use-current-btn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                </div>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Slide end</span>
+                </div>
+                <div class="timestamp-input">
+                  <input type="text" class="form-input" id="slideEndTimeInput" value="${formatTime(slideEndTime)}" readonly>
+                  <button class="use-current-btn slide-end-snap-btn" aria-label="Snap end to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-delete-section">
+              <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Remove slide</button>
+            </div>`;
+        }
+
+        html += `</div></div>`;
+      });
+
+      html += '</div>';
+
+      panel.innerHTML = html;
+      bindPanelTabEvents();
+      bindPanelEvents();
+    }
+
+    function parseTime(str) {
+      const parts = str.trim().split(':');
+      if (parts.length === 2) {
+        const m = parseInt(parts[0]) || 0;
+        const s = parseInt(parts[1]) || 0;
+        return m * 60 + s;
+      }
+      if (parts.length === 3) {
+        const h = parseInt(parts[0]) || 0;
+        const m = parseInt(parts[1]) || 0;
+        const s = parseInt(parts[2]) || 0;
+        return h * 3600 + m * 60 + s;
+      }
+      return null;
+    }
+
+    function bindIntroPanelEvents() {
+      const introText = document.getElementById('introTextInput');
+      const charCount = document.getElementById('introCharCount');
+      if (introText) {
+        introText.addEventListener('input', (e) => {
+          data.introduction.text = e.target.value;
+          if (charCount) charCount.textContent = e.target.value.length + '/500';
+          triggerSave();
+        });
+      }
+      const deleteBtn = document.getElementById('introDeleteBtn');
+      if (deleteBtn) deleteBtn.addEventListener('click', () => {
+        data.introduction.text = '';
+        selectedItem = null;
+        render();
+        triggerSave();
+        showToast('Introduction deleted');
+      });
+    }
+
+    function bindPanelEvents() {
+      document.querySelectorAll('.use-current-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = btn.closest('.accordion-item');
+          if (item) {
+            const type = item.dataset.type;
+            const index = parseInt(item.dataset.index);
+            selectedItem = { type, index };
+          }
+          useCurrentTime();
+        });
+      });
+
+      document.querySelectorAll('.accordion-delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = btn.closest('.accordion-item');
+          if (item) {
+            const type = item.dataset.type;
+            const index = parseInt(item.dataset.index);
+            selectedItem = { type, index };
+          }
+          confirmDelete();
+        });
+      });
+
+      // Form inputs
+      const introText = document.getElementById('introTextInput');
+      if (introText) introText.addEventListener('input', (e) => { data.introduction.text = e.target.value; triggerSave(); });
+
+      const chTitle = document.getElementById('chapterTitleInput');
+      if (chTitle) {
+        chTitle.addEventListener('input', (e) => {
+          if (e.target.value.trim()) {
+            data.chapters[selectedItem.index].title = e.target.value;
+            renderChapterTrack();
+            triggerSave();
+          }
+        });
+        chTitle.addEventListener('blur', (e) => {
+          if (!e.target.value.trim()) e.target.value = data.chapters[selectedItem.index].title;
+        });
+      }
+
+      const chSummary = document.getElementById('chapterSummaryInput');
+      if (chSummary) chSummary.addEventListener('input', (e) => { data.chapters[selectedItem.index].summary = e.target.value; triggerSave(); });
+
+      // Chapter timestamp auto-save
+      const chTime = document.getElementById('chapterTimeInput');
+      if (chTime) chTime.addEventListener('change', (e) => {
+        const seconds = parseTime(e.target.value);
+        if (seconds !== null && seconds >= 0 && seconds <= videoDuration) {
+          data.chapters[selectedItem.index].time = seconds;
+          data.chapters.sort((a, b) => a.time - b.time);
+          const item = data.chapters.find(c => c.time === seconds);
+          selectedItem.index = data.chapters.indexOf(item);
+          video.currentTime = seconds;
+          render();
+          triggerSave();
+        } else {
+          e.target.value = formatTime(data.chapters[selectedItem.index].time);
+        }
+      });
+
+      const slTitle = document.getElementById('slideTitleInput');
+      if (slTitle) {
+        slTitle.addEventListener('input', (e) => {
+          if (e.target.value.trim()) {
+            data.slides[selectedItem.index].title = e.target.value;
+            renderSlideTrack();
+            triggerSave();
+          }
+        });
+        slTitle.addEventListener('blur', (e) => {
+          if (!e.target.value.trim()) e.target.value = data.slides[selectedItem.index].title;
+        });
+      }
+
+      const slDesc = document.getElementById('slideDescInput');
+      if (slDesc) slDesc.addEventListener('input', (e) => { data.slides[selectedItem.index].description = e.target.value; triggerSave(); });
+
+      // Slide timestamp auto-save
+      const slTime = document.getElementById('slideTimeInput');
+      if (slTime) slTime.addEventListener('change', (e) => {
+        const seconds = parseTime(e.target.value);
+        if (seconds !== null && seconds >= 0 && seconds <= videoDuration) {
+          data.slides[selectedItem.index].time = seconds;
+          data.slides.sort((a, b) => a.time - b.time);
+          const item = data.slides.find(s => s.time === seconds);
+          selectedItem.index = data.slides.indexOf(item);
+          video.currentTime = seconds;
+          render();
+          triggerSave();
+        } else {
+          e.target.value = formatTime(data.slides[selectedItem.index].time);
+        }
+      });
+
+      // Accordion row clicks — toggle expand, only one at a time
+      document.querySelectorAll('.accordion-item > .accordion-row').forEach(row => {
+        row.addEventListener('click', (e) => {
+          if (e.target.closest('input, textarea, button')) return;
+          const item = row.parentElement;
+          const type = item.dataset.type;
+          const index = parseInt(item.dataset.index);
+          const alreadyExpanded = selectedItem && selectedItem.type === type && selectedItem.index === index;
+          if (alreadyExpanded) {
+            selectedItem = null;
+            render();
+          } else {
+            selectItem(type, index);
+          }
+        });
+      });
+    }
+
+    // ===== SELECTION =====
+    function selectItem(type, index) {
+      selectedItem = { type, index };
+      // Always switch panel filter to show the selected item's type
+      if (type === 'intro') {
+        panelFilter = 'intro';
+      } else if (type === 'chapter') {
+        panelFilter = 'chapters';
+      } else if (type === 'slide') {
+        panelFilter = 'slides';
+      }
+      updateSidebarActive();
+      render();
+      if (type === 'chapter' && data.chapters[index]) {
+        video.currentTime = data.chapters[index].time;
+      } else if (type === 'slide' && data.slides[index]) {
+        video.currentTime = data.slides[index].time;
+      }
+      // Scroll the expanded item into view in the panel
+      const expandedEl = document.querySelector('.accordion-item.expanded');
+      if (expandedEl) {
+        expandedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function updateSidebarActive() {
+      document.querySelectorAll('.panel-tab').forEach(b => {
+        b.classList.toggle('active', b.dataset.panel === panelFilter);
+      });
+    }
+
+    // ===== ADD CHAPTER =====
+    function findAvailableTime(requestedTime, existingTimes) {
+      const time = Math.round(requestedTime * 10) / 10;
+      const tooClose = existingTimes.some(t => Math.abs(t - time) < 0.5);
+      if (!tooClose) return time;
+      const maxTime = videoDuration;
+      for (let offset = 1; offset <= Math.ceil(maxTime); offset++) {
+        const forward = Math.round((time + offset) * 10) / 10;
+        if (forward <= maxTime && !existingTimes.some(t => Math.abs(t - forward) < 0.5)) return forward;
+      }
+      return null;
+    }
+
+    function addChapter() {
+      let time;
+      if (data.chapters.length === 0) {
+        time = 0;
+      } else {
+        time = video.currentTime || 0;
+        const existingChapterTimes = data.chapters.map(c => c.time);
+        const rounded = Math.round(time * 10) / 10;
+        const tooClose = existingChapterTimes.some(t => Math.abs(t - rounded) < 0.5);
+
+        if (!tooClose) {
+          time = rounded;
+        } else {
+          // Snap to slide positions on the other timeline first
+          let placed = false;
+          if (data.slides.length > 0) {
+            const sortedSlides = [...data.slides].sort((a, b) => a.time - b.time);
+            for (const slide of sortedSlides) {
+              const sTime = Math.round(slide.time * 10) / 10;
+              if (sTime >= rounded && !existingChapterTimes.some(t => Math.abs(t - sTime) < 0.5)) {
+                time = sTime;
+                placed = true;
+                break;
+              }
+            }
+          }
+          // Then try 2s gaps forward from current time
+          if (!placed) {
+            let candidate = rounded;
+            while (candidate <= videoDuration) {
+              candidate = Math.round((candidate + 2) * 10) / 10;
+              if (candidate <= videoDuration && !existingChapterTimes.some(t => Math.abs(t - candidate) < 0.5)) {
+                time = candidate;
+                placed = true;
+                break;
+              }
+            }
+          }
+          if (!placed) {
+            showToast('No more room — timeline is full');
+            return;
+          }
+        }
+      }
+      const newChapter = { time, title: 'Untitled chapter', summary: '', ai: false };
+      data.chapters.push(newChapter);
+      data.chapters.sort((a, b) => a.time - b.time);
+      const newIndex = data.chapters.indexOf(newChapter);
+      selectedItem = { type: 'chapter', index: newIndex };
+      panelFilter = 'chapters';
+      updateSidebarActive();
+      render();
+      triggerSave();
+      showToast('Chapter added at ' + formatTime(time));
+    }
+
+    // ===== ADD SLIDES (PDF upload from desktop) =====
+    async function handlePdfUpload(file, startTime) {
+      if (typeof pdfjsLib === 'undefined') {
+        showToast('PDF library loading, please try again...');
+        return;
+      }
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const totalPages = pdf.numPages;
+        const dur = videoDuration || 1;
+        const rangeStart = (startTime !== undefined) ? startTime : video.currentTime;
+        const availableRange = dur - rangeStart;
+        const slideDuration = availableRange / totalPages;
+        const deckName = file.name.replace(/\.[^.]+$/, '');
+
+        showToast('Extracting ' + totalPages + ' slides from PDF...');
+
+        for (let p = 1; p <= totalPages; p++) {
+          const page = await pdf.getPage(p);
+          const viewport = page.getViewport({ scale: 1.5 });
+          const canvas = document.createElement('canvas');
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          const ctx = canvas.getContext('2d');
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          const image = canvas.toDataURL('image/png');
+          const time = rangeStart + (p - 1) * slideDuration;
+          data.slides.push({ time, title: 'Slide ' + p + ' - ' + deckName, description: '', image });
+        }
+
+        data.slides.sort((a, b) => a.time - b.time);
+        selectedItem = { type: 'slide', index: 0 };
+        panelFilter = 'slides';
+        updateSidebarActive();
+        render();
+        triggerSave();
+        showToast(totalPages + ' slides added from ' + file.name);
+      } catch (err) {
+        showToast('Error reading PDF: ' + err.message);
+      }
+    }
+
+    async function handlePptxUpload(file, startTime) {
+      if (typeof JSZip === 'undefined') {
+        showToast('PPTX library loading, please try again...');
+        return;
+      }
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const zip = await JSZip.loadAsync(arrayBuffer);
+
+        // Find slide image thumbnails in ppt/media/
+        const mediaFiles = [];
+        zip.forEach((path, entry) => {
+          if (path.match(/^ppt\/media\/image\d+\.(png|jpg|jpeg|gif|webp)$/i)) {
+            mediaFiles.push({ path, entry });
+          }
+        });
+
+        // Find slides to count them
+        const slideFiles = [];
+        zip.forEach((path, entry) => {
+          if (path.match(/^ppt\/slides\/slide\d+\.xml$/i)) {
+            slideFiles.push(path);
+          }
+        });
+        slideFiles.sort((a, b) => {
+          const numA = parseInt(a.match(/slide(\d+)/)[1]);
+          const numB = parseInt(b.match(/slide(\d+)/)[1]);
+          return numA - numB;
+        });
+
+        const totalSlides = slideFiles.length;
+        if (totalSlides === 0) {
+          showToast('No slides found in PPTX file');
+          return;
+        }
+
+        const dur = videoDuration || 1;
+        const rangeStart = (startTime !== undefined) ? startTime : video.currentTime;
+        const availableRange = dur - rangeStart;
+        const slideDuration = availableRange / totalSlides;
+        const deckName = file.name.replace(/\.[^.]+$/, '');
+
+        showToast('Extracting ' + totalSlides + ' slides from PPTX...');
+
+        // Extract images sorted by name
+        mediaFiles.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }));
+
+        for (let i = 0; i < totalSlides; i++) {
+          let image = '';
+          if (i < mediaFiles.length) {
+            const blob = await mediaFiles[i].entry.async('blob');
+            image = await new Promise(resolve => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+            });
+          }
+          const time = rangeStart + i * slideDuration;
+          data.slides.push({ time, title: 'Slide ' + (i + 1) + ' - ' + deckName, description: '', image });
+        }
+
+        data.slides.sort((a, b) => a.time - b.time);
+        selectedItem = { type: 'slide', index: 0 };
+        panelFilter = 'slides';
+        updateSidebarActive();
+        render();
+        triggerSave();
+        showToast(totalSlides + ' slides added from ' + file.name);
+      } catch (err) {
+        showToast('Error reading PPTX: ' + err.message);
+      }
+    }
+
+    document.getElementById('slideFileInput').addEventListener('change', function() {
+      const file = this.files && this.files[0];
+      if (!file) return;
+      if (file.name.toLowerCase().endsWith('.pptx')) {
+        handlePptxUpload(file);
+      } else {
+        handlePdfUpload(file);
+      }
+      this.value = '';
+    });
+
+    // ===== REPLACE SLIDE (image upload from desktop) =====
+    document.getElementById('replaceFileInput').addEventListener('change', function() {
+      const file = this.files && this.files[0];
+      if (!file || !selectedItem || selectedItem.type !== 'slide') return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        data.slides[selectedItem.index].image = ev.target.result;
+        render();
+        triggerSave();
+        showToast('Slide image replaced');
+      };
+      reader.readAsDataURL(file);
+      this.value = '';
+    });
+
+    document.getElementById('addChapterBtn').addEventListener('click', addChapter);
+    document.getElementById('undoBtn').addEventListener('click', undo);
+    document.getElementById('redoBtn').addEventListener('click', redo);
+
+    // Nav tab events
+    bindNavTabs();
+
+    // ===== USE CURRENT TIME =====
+    function useCurrentTime() {
+      if (!selectedItem) return;
+      const time = video.currentTime;
+      if (selectedItem.type === 'chapter') {
+        data.chapters[selectedItem.index].time = time;
+        data.chapters.sort((a, b) => a.time - b.time);
+        selectedItem.index = data.chapters.findIndex(c => c.time === time);
+      } else if (selectedItem.type === 'slide') {
+        data.slides[selectedItem.index].time = time;
+        data.slides.sort((a, b) => a.time - b.time);
+        selectedItem.index = data.slides.findIndex(s => s.time === time);
+      }
+      render();
+      triggerSave();
+    }
+
+    // ===== TIMELINE CONTEXT MENU =====
+    function showTimelineContextMenu(x, y, type, index) {
+      hideTimelineContextMenu();
+      const menu = document.createElement('div');
+      menu.className = 'timeline-context-menu';
+      menu.id = 'timelineContextMenu';
+      menu.style.left = x + 'px';
+      menu.style.top = y + 'px';
+
+      const snapBtn = document.createElement('button');
+      snapBtn.className = 'timeline-context-menu-item';
+      snapBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>Snap to playhead';
+      snapBtn.addEventListener('click', () => {
+        hideTimelineContextMenu();
+        const time = video.currentTime;
+        if (type === 'chapter' && data.chapters[index]) {
+          data.chapters[index].time = time;
+          data.chapters.sort((a, b) => a.time - b.time);
+          const newIndex = data.chapters.findIndex(c => c.time === time);
+          selectedItem = { type: 'chapter', index: newIndex };
+        } else if (type === 'slide' && data.slides[index]) {
+          data.slides[index].time = time;
+          data.slides.sort((a, b) => a.time - b.time);
+          const newIndex = data.slides.findIndex(s => s.time === time);
+          selectedItem = { type: 'slide', index: newIndex };
+        }
+        render();
+        triggerSave();
+        showToast('Snapped to ' + formatTime(time));
+      });
+      menu.appendChild(snapBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'timeline-context-menu-item destructive';
+      deleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>Delete';
+      deleteBtn.addEventListener('click', () => {
+        selectedItem = { type, index };
+        hideTimelineContextMenu();
+        confirmDelete();
+      });
+      menu.appendChild(deleteBtn);
+
+      document.body.appendChild(menu);
+
+      const menuRect = menu.getBoundingClientRect();
+      if (menuRect.right > window.innerWidth) menu.style.left = (window.innerWidth - menuRect.width - 8) + 'px';
+      if (menuRect.bottom > window.innerHeight) menu.style.top = (window.innerHeight - menuRect.height - 8) + 'px';
+
+      setTimeout(() => document.addEventListener('mousedown', onContextMenuOutside), 0);
+    }
+
+    function hideTimelineContextMenu() {
+      const existing = document.getElementById('timelineContextMenu');
+      if (existing) existing.remove();
+      document.removeEventListener('mousedown', onContextMenuOutside);
+    }
+
+    function onContextMenuOutside(e) {
+      const menu = document.getElementById('timelineContextMenu');
+      if (menu && !menu.contains(e.target)) hideTimelineContextMenu();
+    }
+
+    // ===== DELETE =====
+    function confirmDelete() {
+      deleteTarget = { ...selectedItem };
+      const desc = selectedItem.type === 'chapter'
+        ? `Delete "${data.chapters[selectedItem.index].title}"? This cannot be undone.`
+        : `Remove Slide ${selectedItem.index + 1}? This cannot be undone.`;
+      document.getElementById('deleteModalDesc').textContent = desc;
+      document.getElementById('deleteModal').classList.add('visible');
+      setTimeout(() => document.getElementById('deleteCancelBtn').focus(), 100);
+    }
+
+    document.getElementById('deleteCancelBtn').addEventListener('click', () => {
+      document.getElementById('deleteModal').classList.remove('visible');
+      deleteTarget = null;
+    });
+
+    document.getElementById('deleteConfirmBtn').addEventListener('click', () => {
+      if (deleteTarget) {
+        if (deleteTarget.type === 'chapter') {
+          data.chapters.splice(deleteTarget.index, 1);
+        } else if (deleteTarget.type === 'slide') {
+          data.slides.splice(deleteTarget.index, 1);
+        }
+        selectedItem = null;
+        render();
+        triggerSave();
+        showToast('Item deleted');
+      }
+      document.getElementById('deleteModal').classList.remove('visible');
+      deleteTarget = null;
+    });
+
+    // ===== AI GENERATE =====
+    document.getElementById('aiGenerateBtn').addEventListener('click', generateWithAI);
+
+    function generateWithAI() {
+      const panel = document.getElementById('rightPanel');
+      panel.innerHTML = `
+        <div class="ai-loading">
+          <div class="ai-loading-spinner"></div>
+          <div class="ai-loading-text">Generating chapters...</div>
+          <div class="ai-loading-sub">Analyzing video content with AI</div>
+        </div>
+      `;
+
+      setTimeout(() => {
+        const dur = videoDuration || 600;
+        data.chapters = [
+          { time: 0, title: 'Meet the Elephants', summary: 'Overview of the African and Asian elephant species and their significance in the animal kingdom.', ai: true },
+          { time: dur * 0.10, title: 'Physical Characteristics', summary: 'Exploring the size, trunk dexterity, tusks, and unique skin adaptations of elephants.', ai: true },
+          { time: dur * 0.25, title: 'Social Structure', summary: 'How matriarchal herds form, communicate, and make collective decisions.', ai: true },
+          { time: dur * 0.40, title: 'Intelligence & Memory', summary: 'Evidence of problem-solving, tool use, self-awareness, and long-term memory in elephants.', ai: true },
+          { time: dur * 0.55, title: 'Diet & Habitat', summary: 'Feeding behaviors, migration patterns, and the ecosystems elephants shape as keystone species.', ai: true },
+          { time: dur * 0.70, title: 'Reproduction & Family', summary: 'Gestation, calf-rearing, and the strong family bonds that define elephant societies.', ai: true },
+          { time: dur * 0.85, title: 'Conservation Threats', summary: 'Poaching, habitat loss, and human-wildlife conflict endangering elephant populations worldwide.', ai: true },
+          { time: dur * 0.95, title: 'Protection Efforts', summary: 'Global initiatives, wildlife corridors, and anti-poaching programs working to save elephants.', ai: true }
+        ];
+        selectedItem = { type: 'chapter', index: 0 };
+        panelFilter = 'chapters';
+        updateSidebarActive();
+        render();
+        triggerSave();
+        showToast('AI generated 8 chapters');
+      }, 2500);
+    }
+
+    // ===== PREVIEW =====
+    document.getElementById('previewBtn').addEventListener('click', () => {
+      const overlay = document.getElementById('previewOverlay');
+      const container = document.getElementById('previewChapters');
+      container.innerHTML = '';
+      if (data.chapters.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-tertiary);font-size:13px;">No chapters to preview. Generate or add chapters first.</div>';
+      } else {
+        data.chapters.forEach((ch, i) => {
+          const chip = document.createElement('div');
+          chip.className = 'preview-chip';
+          chip.textContent = formatTime(ch.time) + ' - ' + ch.title;
+          chip.addEventListener('click', () => {
+            video.currentTime = ch.time;
+            selectItem('chapter', i);
+          });
+          container.appendChild(chip);
+        });
+      }
+      overlay.classList.add('visible');
+    });
+
+    document.getElementById('previewCloseBtn').addEventListener('click', () => {
+      document.getElementById('previewOverlay').classList.remove('visible');
+    });
+
+    // ===== PUBLISH =====
+    document.getElementById('publishBtn').addEventListener('click', () => {
+      if (data.chapters.length === 0 && data.slides.length === 0) {
+        showToast('Nothing to publish. Add chapters or slides first.');
+        return;
+      }
+      showToast('Published to media successfully!');
+    });
+
+    // ===== CLOSE =====
+    document.getElementById('closeBtn').addEventListener('click', () => {
+      if (data.chapters.length > 0 || data.slides.length > 0) {
+        if (confirm('You have unsaved changes. Are you sure you want to close?')) {
+          showToast('Editor closed');
+        }
+      } else {
+        showToast('Editor closed');
+      }
+    });
+
+    // ===== UNDO/REDO =====
+    const history = [];
+    let historyIndex = -1;
+    const MAX_HISTORY = 50;
+
+    function pushHistory() {
+      const snapshot = JSON.stringify({ data, selectedItem });
+      if (historyIndex >= 0 && history[historyIndex] === snapshot) return;
+      history.splice(historyIndex + 1);
+      history.push(snapshot);
+      if (history.length > MAX_HISTORY) history.shift();
+      historyIndex = history.length - 1;
+    }
+
+    function undo() {
+      if (historyIndex <= 0) { showToast('Nothing to undo'); return; }
+      historyIndex--;
+      restoreSnapshot(history[historyIndex]);
+      showToast('Undo');
+    }
+
+    function redo() {
+      if (historyIndex >= history.length - 1) { showToast('Nothing to redo'); return; }
+      historyIndex++;
+      restoreSnapshot(history[historyIndex]);
+      showToast('Redo');
+    }
+
+    function restoreSnapshot(snapshot) {
+      const state = JSON.parse(snapshot);
+      data = state.data;
+      selectedItem = state.selectedItem;
+      render();
+      triggerSaveUI();
+    }
+
+    // ===== SAVE =====
+    let saveTimeout;
+    function triggerSave() {
+      pushHistory();
+      triggerSaveUI();
+    }
+
+    function triggerSaveUI() {
+      const status = document.getElementById('saveStatus');
+      const text = document.getElementById('saveText');
+      status.classList.add('saving');
+      text.textContent = 'Saving...';
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        status.classList.remove('saving');
+        text.textContent = 'Draft saved';
+      }, 1000);
+    }
+
+    // ===== PLAYER SLIDE OVERLAY =====
+    let slideOverlayHidden = false;
+
+    function updatePlayerSlide() {
+      const overlay = document.getElementById('playerSlideOverlay');
+      if (data.slides.length === 0) {
+        overlay.classList.remove('visible');
+        return;
+      }
+
+      const currentTime = video.currentTime;
+      let activeSlide = null;
+      for (let i = data.slides.length - 1; i >= 0; i--) {
+        if (currentTime >= data.slides[i].time) {
+          activeSlide = data.slides[i];
+          break;
+        }
+      }
+
+      if (!activeSlide || !activeSlide.image) {
+        overlay.classList.remove('visible');
+        return;
+      }
+
+      overlay.classList.add('visible');
+      const img = document.getElementById('playerSlideImage');
+      if (img.src !== activeSlide.image) {
+        img.src = activeSlide.image;
+        img.alt = activeSlide.title;
+      }
+    }
+
+    document.getElementById('playerSlideToggle').addEventListener('click', () => {
+      const overlay = document.getElementById('playerSlideOverlay');
+      slideOverlayHidden = !slideOverlayHidden;
+      overlay.classList.toggle('collapsed', slideOverlayHidden);
+      document.getElementById('playerSlideToggleText').textContent = slideOverlayHidden ? 'Show' : 'Hide';
+    });
+
+    let slideIsMainView = false;
+    let videoThumbHidden = false;
+    function toggleSwitchView() {
+      const videoArea = document.querySelector('.video-area');
+      slideIsMainView = !slideIsMainView;
+      videoArea.classList.toggle('slide-main', slideIsMainView);
+      if (!slideIsMainView) {
+        videoArea.classList.remove('video-thumb-hidden');
+        videoThumbHidden = false;
+        document.getElementById('videoThumbToggleText').textContent = 'Hide';
+      }
+    }
+    document.getElementById('playerSwitchBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSwitchView();
+    });
+    document.getElementById('videoSwitchBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSwitchView();
+    });
+    document.getElementById('videoThumbToggle').addEventListener('click', () => {
+      const videoArea = document.querySelector('.video-area');
+      videoThumbHidden = !videoThumbHidden;
+      videoArea.classList.toggle('video-thumb-hidden', videoThumbHidden);
+      document.getElementById('videoThumbToggleText').textContent = videoThumbHidden ? 'Show' : 'Hide';
+    });
+
+    // ===== TOAST =====
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('visible');
+      announce(message);
+      setTimeout(() => toast.classList.remove('visible'), 3000);
+    }
+
+    // ===== KEYBOARD =====
+    document.addEventListener('keydown', (e) => {
+      // Undo/Redo works everywhere
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyZ') {
+        e.preventDefault();
+        if (e.shiftKey) { redo(); } else { undo(); }
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyY') {
+        e.preventDefault();
+        redo();
+        return;
+      }
+
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      // Keyboard reorder of selected segment (swap with neighbor, preserve durations)
+      if ((e.code === 'ArrowLeft' || e.code === 'ArrowRight') && selectedItem
+          && (selectedItem.type === 'chapter' || selectedItem.type === 'slide')
+          && document.activeElement
+          && (document.activeElement.classList.contains('chapter-segment') || document.activeElement.classList.contains('slide-segment'))) {
+        e.preventDefault();
+        const direction = e.code === 'ArrowLeft' ? -1 : 1;
+        const arr = selectedItem.type === 'chapter' ? data.chapters : data.slides;
+        const idx = selectedItem.index;
+        const swapIdx = idx + direction;
+        if (swapIdx < 0 || swapIdx >= arr.length) return;
+
+        pushHistory();
+        const durations = getSegmentDurations(selectedItem.type);
+        // Swap item and duration
+        [arr[idx], arr[swapIdx]] = [arr[swapIdx], arr[idx]];
+        [durations[idx], durations[swapIdx]] = [durations[swapIdx], durations[idx]];
+        rebuildTimesFromDurations(selectedItem.type, durations);
+
+        selectedItem.index = swapIdx;
+        render();
+        triggerSaveUI();
+        announce((selectedItem.type === 'chapter' ? 'Chapter' : 'Slide') + ' moved to position ' + (swapIdx + 1));
+        const segments = document.querySelectorAll('.' + selectedItem.type + '-segment');
+        if (segments[swapIdx]) segments[swapIdx].focus();
+        return;
+      }
+
+      if (e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
+      }
+      if (e.code === 'ArrowLeft') {
+        video.currentTime = Math.max(0, video.currentTime - 5);
+      }
+      if (e.code === 'ArrowRight') {
+        video.currentTime = Math.min(videoDuration, video.currentTime + 5);
+      }
+      if (e.code === 'Delete' || e.code === 'Backspace') {
+        if (selectedItem && (selectedItem.type === 'chapter' || selectedItem.type === 'slide')) {
+          confirmDelete();
+        }
+      }
+      if (e.code === 'Escape') {
+        document.getElementById('deleteModal').classList.remove('visible');
+        document.getElementById('previewOverlay').classList.remove('visible');
+      }
+      if (e.key === '=' || e.key === '+') {
+        e.preventDefault();
+        const anchor = getZoomAnchor();
+        zoomIn(anchor.time, anchor.screenX);
+      }
+      if (e.key === '-' || e.key === '_') {
+        e.preventDefault();
+        const anchor = getZoomAnchor();
+        zoomOut(anchor.time, anchor.screenX);
+      }
+      if (e.key === '0') {
+        e.preventDefault();
+        zoomFit();
+      }
+    });
+
+    // ===== LIVE ANNOUNCER =====
+    function announce(message) {
+      const el = document.getElementById('liveAnnouncer');
+      el.textContent = message;
+      setTimeout(() => { el.textContent = ''; }, 1000);
+    }
+
+    // ===== FOCUS TRAP FOR MODAL =====
+    document.getElementById('deleteModal').addEventListener('keydown', (e) => {
+      if (e.code === 'Tab') {
+        const modal = document.getElementById('deleteModal');
+        const focusable = modal.querySelectorAll('button');
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+      if (e.code === 'Escape') {
+        document.getElementById('deleteModal').classList.remove('visible');
+        deleteTarget = null;
+      }
+    });
+
+    // ===== DOUBLE-CLICK ON TRACKS =====
+    document.getElementById('chapterTrack').addEventListener('dblclick', (e) => {
+      if (data.chapters.length > 0) return;
+      addChapter();
+    });
+
+    document.getElementById('slideTrack').addEventListener('dblclick', (e) => {
+      if (data.slides.length > 0) return;
+      document.getElementById('slideFileInput').click();
+    });
+
+    // ===== VIDEO THUMBNAILS =====
+    let thumbnailsGenerated = false;
+
+    function generateVideoThumbnails() {
+      thumbnailsGenerated = true;
+
+      const canvas = document.getElementById('videoThumbnails');
+      const ctx = canvas.getContext('2d');
+      const container = document.getElementById('videoTrackContent');
+      const containerWidth = Math.max(200, container.offsetWidth);
+      const thumbCellWidth = 64;
+      const thumbCount = Math.min(100, Math.max(5, Math.ceil(containerWidth / thumbCellWidth)));
+      const thumbWidth = Math.ceil(containerWidth / thumbCount);
+      const thumbHeight = 40;
+
+      canvas.width = containerWidth;
+      canvas.height = thumbHeight;
+
+      // Create a dedicated offscreen video for thumbnail extraction
+      const thumbVideo = document.createElement('video');
+      thumbVideo.muted = true;
+      thumbVideo.preload = 'auto';
+      thumbVideo.playsInline = true;
+      // Use the same source as main video, no crossOrigin for local files
+      thumbVideo.src = document.querySelector('#videoPlayer source').src;
+
+      let captured = 0;
+
+      thumbVideo.addEventListener('loadeddata', () => {
+        seekNext();
+      });
+
+      function seekNext() {
+        if (captured >= thumbCount) {
+          thumbVideo.remove();
+          return;
+        }
+        const t = (videoDuration / thumbCount) * captured + 0.1;
+        thumbVideo.currentTime = Math.min(t, videoDuration - 0.5);
+      }
+
+      thumbVideo.addEventListener('seeked', () => {
+        try {
+          const x = captured * thumbWidth;
+          ctx.drawImage(thumbVideo, x, 0, thumbWidth, thumbHeight);
+          ctx.fillStyle = 'rgba(0,0,0,0.15)';
+          ctx.fillRect(x, 0, 1, thumbHeight);
+        } catch (e) {
+          // If drawImage fails due to security, draw colored placeholder
+          const x = captured * thumbWidth;
+          const hue = (captured / thumbCount) * 40 + 200;
+          ctx.fillStyle = `hsl(${hue}, 30%, ${15 + (captured % 2) * 5}%)`;
+          ctx.fillRect(x, 0, thumbWidth, thumbHeight);
+        }
+        captured++;
+        setTimeout(seekNext, 50);
+      });
+    }
+
+    // ===== DRAG & DROP (reorder — preserves duration) =====
+    let dragState = null;
+
+    function getSegmentDurations(type) {
+      const arr = type === 'chapter' ? data.chapters : data.slides;
+      const dur = videoDuration || 1;
+      return arr.map((item, i) => {
+        const nextTime = (i < arr.length - 1) ? arr[i + 1].time : dur;
+        return nextTime - item.time;
+      });
+    }
+
+    function rebuildTimesFromDurations(type, durations) {
+      const arr = type === 'chapter' ? data.chapters : data.slides;
+      let t = 0;
+      for (let i = 0; i < arr.length; i++) {
+        arr[i].time = t;
+        t += durations[i];
+      }
+    }
+
+    function initDrag(e, type, index) {
+      if (e.button !== 0) return;
+      e.preventDefault();
+
+      const trackContent = type === 'chapter'
+        ? document.getElementById('chapterTrackContent')
+        : document.getElementById('slideTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      const timelineArea = document.querySelector('.timeline-area');
+
+      const durations = getSegmentDurations(type);
+
+      dragState = {
+        type,
+        index,
+        trackRect: rect,
+        startX: e.clientX,
+        moved: false,
+        indicator: null,
+        indicatorLabel: null,
+        scrollLeft: timelineArea.scrollLeft,
+        lastClientX: e.clientX,
+        lastClientY: e.clientY,
+        element: e.currentTarget,
+        autoScrollRAF: null,
+        originalDurations: durations,
+        targetInsertIdx: index
+      };
+
+      document.addEventListener('mousemove', onDragMove);
+      document.addEventListener('mouseup', onDragEnd);
+    }
+
+    // -- Ghost thumbnail --
+    function createDragGhost(segmentEl) {
+      const ghost = document.getElementById('dragGhost');
+      // Clone content without resize handles
+      const clone = segmentEl.cloneNode(true);
+      clone.querySelectorAll('.resize-handle').forEach(h => h.remove());
+      ghost.innerHTML = clone.innerHTML;
+      ghost.style.width = Math.min(200, segmentEl.offsetWidth) + 'px';
+      ghost.style.height = segmentEl.offsetHeight + 'px';
+      ghost.style.background = getComputedStyle(segmentEl).background;
+      ghost.classList.add('visible');
+    }
+
+    function updateGhostPosition(clientX, clientY) {
+      const ghost = document.getElementById('dragGhost');
+      ghost.style.left = (clientX - ghost.offsetWidth / 2) + 'px';
+      ghost.style.top = (clientY - ghost.offsetHeight - 16) + 'px';
+    }
+
+    function removeDragGhost() {
+      const ghost = document.getElementById('dragGhost');
+      ghost.classList.remove('visible');
+      setTimeout(() => { ghost.innerHTML = ''; }, 150);
+    }
+
+    // -- Snap logic --
+    function getSnapTargets(type) {
+      const targets = [0, videoDuration, video.currentTime];
+      data.chapters.forEach((ch, i) => {
+        if (type === 'chapter' && i === dragState.index) return;
+        targets.push(ch.time);
+      });
+      data.slides.forEach((sl, i) => {
+        if (type === 'slide' && i === dragState.index) return;
+        targets.push(sl.time);
+      });
+      return targets;
+    }
+
+    function applySnap(rawTime, targets) {
+      const threshold = 10 / pixelsPerSecond;
+      let closest = null;
+      let closestDist = Infinity;
+      for (let i = 0; i < targets.length; i++) {
+        const dist = Math.abs(rawTime - targets[i]);
+        if (dist < threshold && dist < closestDist) {
+          closest = targets[i];
+          closestDist = dist;
+        }
+      }
+      return closest !== null ? { time: closest, snapped: true } : { time: rawTime, snapped: false };
+    }
+
+    function showSnapLine(timePx) {
+      const snapLine = document.getElementById('snapLine');
+      snapLine.style.left = timePx + 'px';
+      snapLine.classList.add('active');
+    }
+
+    function hideSnapLine() {
+      document.getElementById('snapLine').classList.remove('active');
+    }
+
+    // -- Auto-scroll --
+    function startAutoScroll() {
+      if (dragState.autoScrollRAF) return;
+      autoScrollFrame();
+    }
+
+    function autoScrollFrame() {
+      if (!dragState || !dragState.moved) return;
+      const timelineArea = document.querySelector('.timeline-area');
+      const areaRect = timelineArea.getBoundingClientRect();
+      const cursorX = dragState.lastClientX;
+      const edgeZone = 60;
+
+      let scrollDelta = 0;
+      if (cursorX < areaRect.left + edgeZone) {
+        scrollDelta = -((areaRect.left + edgeZone - cursorX) / edgeZone) * 8;
+      } else if (cursorX > areaRect.right - edgeZone) {
+        scrollDelta = ((cursorX - (areaRect.right - edgeZone)) / edgeZone) * 8;
+      }
+
+      if (scrollDelta !== 0) {
+        timelineArea.scrollLeft += scrollDelta;
+        updateDragPosition(dragState.lastClientX);
+      }
+
+      dragState.autoScrollRAF = requestAnimationFrame(autoScrollFrame);
+    }
+
+    function stopAutoScroll() {
+      if (dragState && dragState.autoScrollRAF) {
+        cancelAnimationFrame(dragState.autoScrollRAF);
+        dragState.autoScrollRAF = null;
+      }
+    }
+
+    // -- Core position update (used by both mousemove and auto-scroll) --
+    function updateDragPosition(clientX) {
+      if (!dragState || !dragState.moved) return;
+
+      const trackContent = dragState.type === 'chapter'
+        ? document.getElementById('chapterTrackContent')
+        : document.getElementById('slideTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      dragState.trackRect = rect;
+
+      const relX = Math.max(0, Math.min(clientX - rect.left, rect.width));
+      const cursorTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+
+      // Determine target insertion index based on cursor position over segments
+      const arr = dragState.type === 'chapter' ? data.chapters : data.slides;
+      const durations = dragState.originalDurations;
+      let targetIdx = 0;
+
+      // Walk through segment boundaries (excluding dragged) to find where cursor lands
+      let accTime = 0;
+      let otherIdx = 0;
+      for (let i = 0; i < arr.length; i++) {
+        if (i === dragState.index) continue;
+        const segEnd = accTime + durations[i];
+        const midpoint = accTime + durations[i] / 2;
+        if (cursorTime > midpoint) {
+          targetIdx = otherIdx + 1;
+        }
+        accTime = segEnd;
+        otherIdx++;
+      }
+      dragState.targetInsertIdx = targetIdx;
+
+      // Calculate the pixel position of the insertion point
+      let insertPx = 0;
+      let count = 0;
+      for (let i = 0; i < arr.length; i++) {
+        if (i === dragState.index) continue;
+        if (count === targetIdx) break;
+        insertPx += durations[i] * pixelsPerSecond;
+        count++;
+      }
+
+      // Snap indicator
+      const snapTargets = getSnapTargets(dragState.type);
+      const snapResult = applySnap(cursorTime, snapTargets);
+      if (snapResult.snapped) {
+        showSnapLine(snapResult.time * pixelsPerSecond);
+      } else {
+        hideSnapLine();
+      }
+
+      // Apply gap classes to segments
+      const draggedWidth = dragState.originalDurations[dragState.index] * pixelsPerSecond;
+      const segments = trackContent.querySelectorAll('.' + dragState.type + '-segment');
+      segments.forEach((seg, i) => {
+        seg.classList.toggle('dragging', i === dragState.index);
+        seg.classList.remove('gap-before', 'gap-after');
+        seg.style.marginLeft = '';
+        seg.style.marginRight = '';
+      });
+
+      // Open gap at insertion point equal to dragged segment width
+      let segCount = 0;
+      for (let i = 0; i < segments.length; i++) {
+        if (i === dragState.index) continue;
+        if (segCount === targetIdx - 1 && targetIdx > 0) {
+          segments[i].classList.add('gap-after');
+          segments[i].style.marginRight = draggedWidth + 'px';
+        } else if (segCount === targetIdx && targetIdx === 0) {
+          segments[i].classList.add('gap-before');
+          segments[i].style.marginLeft = draggedWidth + 'px';
+        }
+        segCount++;
+      }
+
+      // Position ghost placeholder in the gap — clamp within timeline bounds
+      const maxPx = videoDuration * pixelsPerSecond;
+      const clampedInsertPx = Math.max(0, Math.min(insertPx, maxPx - draggedWidth));
+      const clampedWidth = Math.min(draggedWidth, maxPx - clampedInsertPx);
+
+      if (!dragState.indicator) {
+        dragState.indicator = document.createElement('div');
+        dragState.indicator.className = 'drag-ghost-placeholder';
+        const content = document.createElement('div');
+        content.className = 'drag-ghost-placeholder-content';
+        dragState.indicator.appendChild(content);
+        trackContent.appendChild(dragState.indicator);
+      }
+      dragState.indicator.style.left = clampedInsertPx + 'px';
+      dragState.indicator.style.width = clampedWidth + 'px';
+      const insertTime = clampedInsertPx / pixelsPerSecond;
+      const segName = (dragState.type === 'chapter' ? data.chapters : data.slides)[dragState.index].title;
+      dragState.indicator.querySelector('.drag-ghost-placeholder-content').textContent = formatTime(insertTime) + ' · ' + segName;
+    }
+
+    function onDragMove(e) {
+      if (!dragState) return;
+
+      const dx = Math.abs(e.clientX - dragState.startX);
+      if (dx < 10 && !dragState.moved) return;
+
+      if (!dragState.moved) {
+        dragState.moved = true;
+        document.body.classList.add('is-dragging');
+        pushHistory();
+        createDragGhost(dragState.element);
+        announce('Dragging ' + dragState.type + '. Drop to reposition.');
+
+        const track = dragState.type === 'chapter'
+          ? document.getElementById('chapterTrack')
+          : document.getElementById('slideTrack');
+        track.classList.add('drop-target-active');
+
+        // Collapse the dragged segment visually
+        const segments = track.querySelectorAll('.' + dragState.type + '-segment');
+        if (segments[dragState.index]) {
+          segments[dragState.index].classList.add('dragging');
+        }
+
+        startAutoScroll();
+      }
+
+      dragState.lastClientX = e.clientX;
+      dragState.lastClientY = e.clientY;
+
+      updateGhostPosition(e.clientX, e.clientY);
+      updateDragPosition(e.clientX);
+    }
+
+    function onDragEnd(e) {
+      if (!dragState) return;
+
+      document.body.classList.remove('is-dragging');
+      stopAutoScroll();
+      removeDragGhost();
+      hideSnapLine();
+
+      if (dragState.indicator) {
+        dragState.indicator.remove();
+      }
+
+      // Clean up gap margins
+      document.querySelectorAll('.gap-before, .gap-after').forEach(seg => {
+        seg.classList.remove('gap-before', 'gap-after');
+        seg.style.marginLeft = '';
+        seg.style.marginRight = '';
+      });
+
+      document.querySelectorAll('.track').forEach(t => t.classList.remove('drop-target-active'));
+
+      if (dragState.moved) {
+        const arr = dragState.type === 'chapter' ? data.chapters : data.slides;
+        const item = arr[dragState.index];
+        const originalIndex = dragState.index;
+
+        // Calculate target insert position from cursor
+        const trackContent = dragState.type === 'chapter'
+          ? document.getElementById('chapterTrackContent')
+          : document.getElementById('slideTrackContent');
+        const rect = trackContent.getBoundingClientRect();
+        const relX = Math.max(0, Math.min(dragState.lastClientX - rect.left, rect.width));
+        const dropTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+
+        // Find target index based on drop position
+        let targetIdx = arr.length;
+        for (let i = 0; i < arr.length; i++) {
+          if (i === originalIndex) continue;
+          if (dropTime < arr[i].time) { targetIdx = i; break; }
+        }
+
+        // Store original durations before reordering
+        const durations = arr.map((a, i) => {
+          const nextTime = (i < arr.length - 1) ? arr[i + 1].time : videoDuration;
+          return nextTime - a.time;
+        });
+        const itemDuration = durations[originalIndex];
+
+        // Remove item from original position
+        arr.splice(originalIndex, 1);
+        durations.splice(originalIndex, 1);
+
+        // Adjust target index after removal
+        const insertIdx = targetIdx > originalIndex ? targetIdx - 1 : targetIdx;
+
+        // Insert item at new position
+        arr.splice(insertIdx, 0, item);
+        durations.splice(insertIdx, 0, itemDuration);
+
+        // Recalculate times from durations (preserves all durations)
+        if (dragState.type === 'chapter') {
+          let t = 0;
+          arr.forEach((a, i) => { a.time = Math.round(t * 10) / 10; t += durations[i]; });
+        } else {
+          // For slides: preserve relative spacing — use drop time for the moved item
+          item.time = Math.round(dropTime * 10) / 10;
+          arr.sort((a, b) => a.time - b.time);
+        }
+
+        const newIndex = arr.indexOf(item);
+        selectedItem = { type: dragState.type, index: newIndex };
+        render();
+        triggerSave();
+        showToast('"' + item.title + '" moved to ' + formatTime(item.time));
+      }
+
+      dragState = null;
+      document.removeEventListener('mousemove', onDragMove);
+      document.removeEventListener('mouseup', onDragEnd);
+    }
+
+    // ===== RESIZE HANDLES =====
+    let resizeState = null;
+    const MIN_SEGMENT_DURATION = 1;
+
+    function initResize(e, type, index, side) {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const trackContent = type === 'chapter'
+        ? document.getElementById('chapterTrackContent')
+        : document.getElementById('slideTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+
+      resizeState = {
+        type,
+        index,
+        side,
+        startX: e.clientX,
+        trackRect: rect,
+        moved: false
+      };
+
+      document.addEventListener('mousemove', onResizeMove);
+      document.addEventListener('mouseup', onResizeEnd);
+    }
+
+    function onResizeMove(e) {
+      if (!resizeState) return;
+
+      const dx = Math.abs(e.clientX - resizeState.startX);
+      if (dx < 3 && !resizeState.moved) return;
+
+      if (!resizeState.moved) {
+        resizeState.moved = true;
+        document.body.classList.add('is-resizing');
+        pushHistory();
+      }
+
+      const trackContent = resizeState.type === 'chapter'
+        ? document.getElementById('chapterTrackContent')
+        : document.getElementById('slideTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      const relX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+      const rawTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+
+      const arr = resizeState.type === 'chapter' ? data.chapters : data.slides;
+      const i = resizeState.index;
+
+      // Snap to playhead (same magnet effect as scrubber dragging)
+      const snapTargets = [0, videoDuration, video.currentTime];
+      data.chapters.forEach((ch, ci) => {
+        if (resizeState.type === 'chapter' && ci === i) return;
+        snapTargets.push(ch.time);
+      });
+      data.slides.forEach((sl, si) => {
+        if (resizeState.type === 'slide' && si === i) return;
+        snapTargets.push(sl.time);
+      });
+      const snapResult = applySnap(rawTime, snapTargets);
+      let snappedTime = snapResult.snapped ? snapResult.time : rawTime;
+
+      if (snapResult.snapped) {
+        showSnapLine(snapResult.time * pixelsPerSecond);
+      } else {
+        hideSnapLine();
+      }
+
+      if (resizeState.side === 'left') {
+        const prevTime = (i > 0) ? arr[i - 1].time + MIN_SEGMENT_DURATION : 0;
+        const nextBound = (i < arr.length - 1) ? arr[i + 1].time - MIN_SEGMENT_DURATION : videoDuration - MIN_SEGMENT_DURATION;
+        const maxTime = Math.min(nextBound, videoDuration - MIN_SEGMENT_DURATION);
+        arr[i].time = Math.max(prevTime, Math.min(maxTime, snappedTime));
+      } else {
+        const thisStart = arr[i].time + MIN_SEGMENT_DURATION;
+        const nextEnd = (i + 2 < arr.length) ? arr[i + 2].time - MIN_SEGMENT_DURATION : videoDuration - MIN_SEGMENT_DURATION;
+        arr[i + 1].time = Math.max(thisStart, Math.min(nextEnd, snappedTime));
+      }
+
+      renderChapterTrack();
+      renderSlideTrack();
+    }
+
+    function onResizeEnd(e) {
+      if (!resizeState) return;
+
+      document.body.classList.remove('is-resizing');
+      hideSnapLine();
+
+      if (resizeState.moved) {
+        render();
+        triggerSave();
+        showToast('Segment boundary adjusted');
+      }
+
+      resizeState = null;
+      document.removeEventListener('mousemove', onResizeMove);
+      document.removeEventListener('mouseup', onResizeEnd);
+    }
+
+    // ===== EXTERNAL FILE DROP =====
+    function initExternalDrop() {
+      const slideTrack = document.getElementById('slideTrack');
+      let dropOverlay = null;
+      let dropIndicator = null;
+      let enterCount = 0;
+
+      document.addEventListener('dragover', (e) => e.preventDefault());
+      document.addEventListener('drop', (e) => {
+        if (!e.target.closest('#slideTrack')) e.preventDefault();
+      });
+
+      slideTrack.addEventListener('dragenter', (e) => {
+        if (!e.dataTransfer.types.includes('Files')) return;
+        enterCount++;
+        e.preventDefault();
+        if (!dropOverlay) {
+          dropOverlay = document.createElement('div');
+          dropOverlay.className = 'drop-zone-overlay visible';
+          dropOverlay.innerHTML = '<span class="drop-zone-overlay-text">Drop slide deck or image to add slides</span>';
+          slideTrack.style.position = 'relative';
+          slideTrack.appendChild(dropOverlay);
+        }
+        announce('Drop zone active. Drop slide deck or image file to add slides.');
+      });
+
+      slideTrack.addEventListener('dragover', (e) => {
+        if (!e.dataTransfer.types.includes('Files')) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+
+        if (!dropIndicator) {
+          dropIndicator = document.createElement('div');
+          dropIndicator.className = 'drag-indicator';
+          const label = document.createElement('span');
+          label.className = 'drag-indicator-label';
+          dropIndicator.appendChild(label);
+          const trackContent = document.getElementById('slideTrackContent');
+          trackContent.appendChild(dropIndicator);
+        }
+        const trackContent = document.getElementById('slideTrackContent');
+        const rect = trackContent.getBoundingClientRect();
+        const relX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+        const time = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+        dropIndicator.style.left = (time * pixelsPerSecond) + 'px';
+        dropIndicator.querySelector('.drag-indicator-label').textContent = formatTime(time);
+      });
+
+      slideTrack.addEventListener('dragleave', (e) => {
+        enterCount--;
+        if (enterCount <= 0) {
+          enterCount = 0;
+          if (dropOverlay) { dropOverlay.remove(); dropOverlay = null; }
+          if (dropIndicator) { dropIndicator.remove(); dropIndicator = null; }
+        }
+      });
+
+      slideTrack.addEventListener('drop', (e) => {
+        e.preventDefault();
+        enterCount = 0;
+        if (dropOverlay) { dropOverlay.remove(); dropOverlay = null; }
+        if (dropIndicator) { dropIndicator.remove(); dropIndicator = null; }
+
+        const allFiles = Array.from(e.dataTransfer.files);
+        const imageFiles = allFiles.filter(f => f.type.startsWith('image/'));
+        const deckExtensions = ['.ppt', '.pptx', '.pdf', '.key'];
+        const deckFiles = allFiles.filter(f => deckExtensions.some(ext => f.name.toLowerCase().endsWith(ext)));
+
+        if (imageFiles.length === 0 && deckFiles.length === 0) {
+          showToast('Drop image files or slide decks (PPT, PPTX, PDF)');
+          return;
+        }
+
+        const trackContent = document.getElementById('slideTrackContent');
+        const rect = trackContent.getBoundingClientRect();
+        const relX = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+        const dropTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
+
+        pushHistory();
+
+        if (deckFiles.length > 0) {
+          const file = deckFiles[0];
+          const deckName = file.name.replace(/\.[^.]+$/, '');
+
+          // Place slides at chapter boundaries if chapters exist
+          let slideTimes = [];
+          if (data.chapters.length > 0) {
+            slideTimes = data.chapters.map(ch => ch.time);
+          } else {
+            // No chapters — distribute evenly across video
+            const slideCount = 5;
+            const spacing = videoDuration / (slideCount + 1);
+            for (let i = 0; i < slideCount; i++) {
+              slideTimes.push(Math.round((dropTime + i * spacing) * 10) / 10);
+            }
+          }
+
+          // Use proper handlers for PDF and PPTX — drag & drop starts from 00:00
+          const isPdf = file.name.toLowerCase().endsWith('.pdf');
+          const isPptx = file.name.toLowerCase().endsWith('.pptx');
+          if (isPdf && typeof pdfjsLib !== 'undefined') {
+            handlePdfUpload(file, 0);
+          } else if (isPptx && typeof JSZip !== 'undefined') {
+            handlePptxUpload(file, 0);
+          } else {
+            addDeckSlides(slideTimes, deckName, file);
+          }
+          return;
+        }
+
+        function addDeckSlides(times, deckName, file) {
+          const existingSlideTimes = data.slides.map(s => Math.round(s.time * 10) / 10);
+          let added = 0;
+          times.forEach((t, i) => {
+            const rounded = Math.round(t * 10) / 10;
+            if (existingSlideTimes.includes(rounded)) return;
+            data.slides.push({ time: rounded, title: 'Slide ' + (i + 1) + ' - ' + deckName, description: '', image: '', deckFile: file ? file.name : null });
+            existingSlideTimes.push(rounded);
+            added++;
+          });
+          data.slides.sort((a, b) => a.time - b.time);
+          panelFilter = 'slides';
+          render();
+          triggerSave();
+          showToast(added + ' slides added from ' + deckName);
+        }
+
+        let added = 0;
+        imageFiles.forEach((file, i) => {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            const slideTime = Math.min(videoDuration, dropTime + i * 2);
+            data.slides.push({ time: slideTime, title: file.name.replace(/\.[^.]+$/, ''), image: ev.target.result });
+            added++;
+            if (added === imageFiles.length) {
+              data.slides.sort((a, b) => a.time - b.time);
+              render();
+              triggerSave();
+              showToast(imageFiles.length === 1 ? 'Slide added from ' + file.name : imageFiles.length + ' slides added');
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    }
+
+    // ===== RESIZE SYNC =====
+    window.addEventListener('resize', () => {
+      if (videoDuration > 0) {
+        const oldPpsMin = ppsMin;
+        ppsMin = computePpsMin();
+        if (pixelsPerSecond <= oldPpsMin * 1.05) {
+          zoomFit();
+        } else {
+          applyZoom(pixelsPerSecond);
+        }
+      }
+    });
+
+    // ===== INIT =====
+    pushHistory();
+    render();
+    initExternalDrop();
+
+    function revealApp() {
+      document.body.classList.remove('is-loading');
+      document.getElementById('pageLoader').classList.add('loaded');
+      document.querySelectorAll('.timeline-actions button, .timeline-actions label, .zoom-controls button, .zoom-controls input, .player-action, #playBtn').forEach(el => {
+        el.removeAttribute('disabled');
+      });
+    }
+
+    // Disable CTA tools until app is fully loaded
+    document.querySelectorAll('.timeline-actions button, .timeline-actions label, .zoom-controls button, .zoom-controls input, .player-action, #playBtn').forEach(el => {
+      el.setAttribute('disabled', 'true');
+    });
+
+    let videoReady = false;
+    let fontsReady = false;
+
+    function checkAllReady() {
+      if (videoReady && fontsReady) revealApp();
+    }
+
+    if (video.readyState >= 4) {
+      videoReady = true;
+    } else {
+      video.addEventListener('canplaythrough', () => { videoReady = true; checkAllReady(); }, { once: true });
+    }
+
+    document.fonts.ready.then(() => { fontsReady = true; checkAllReady(); });
+
+    checkAllReady();
+
+    // Failsafe — reveal after 10s regardless
+    setTimeout(revealApp, 10000);
+  </script>
+</body>
+</html>
