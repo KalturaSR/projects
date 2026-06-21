@@ -1166,6 +1166,115 @@
       background: rgba(0,0,0,0.8);
     }
 
+    .slide-thumbnail-placeholder {
+      width: 100%;
+      height: 100%;
+      background: var(--b-30);
+      border: 1px dashed var(--w-40);
+      border-radius: 8px;
+    }
+
+    .slide-form-properties-title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 21px;
+      color: var(--w-100);
+    }
+
+    .slide-thumb-small {
+      width: 154px;
+      aspect-ratio: 154 / 89;
+    }
+
+    .form-input-with-icon {
+      position: relative;
+      width: 100%;
+    }
+
+    .form-input-with-icon .form-input {
+      padding-right: 36px;
+    }
+
+    .form-input-icon-btn {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      color: var(--w-100);
+      padding: 4px;
+      transition: background 0.15s;
+    }
+
+    .form-input-icon-btn:hover {
+      background: var(--w-10);
+    }
+
+    .form-textarea-wrapper {
+      width: 100%;
+      border-radius: var(--roundness-1);
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.3);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .form-textarea-wrapper:hover {
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    .form-textarea-wrapper:focus-within {
+      border-color: #006EFA;
+    }
+
+    .form-textarea-toolbar {
+      display: flex;
+      align-items: center;
+      padding: 4px 4px 0;
+      gap: 0;
+    }
+
+    .form-textarea-toolbar-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      color: var(--w-100);
+      padding: 4px;
+      transition: background 0.15s;
+    }
+
+    .form-textarea-toolbar-btn:hover {
+      background: var(--w-10);
+    }
+
+    .form-textarea-wrapper .form-textarea {
+      border: none;
+      background: transparent;
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .form-textarea-wrapper .form-textarea:hover {
+      border-color: transparent;
+    }
+
+    .form-textarea-wrapper .form-textarea:focus {
+      border-color: transparent;
+    }
+
     /* Video Track */
     .video-track-content {
       flex: 1;
@@ -1412,6 +1521,7 @@
       flex-shrink: 0;
       overflow: hidden;
       border-left: 1px solid var(--w-10);
+      min-height: 0;
     }
 
     /* Panel Tabs (inside right panel) */
@@ -1751,7 +1861,7 @@
     .accordion-item.expanded {
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow: visible;
       background: rgba(255,255,255,0.04);
     }
 
@@ -1842,6 +1952,7 @@
       flex-direction: column;
       border-left: 4px solid var(--blue);
       background: var(--w-10);
+      overflow: visible;
     }
 
     .accordion-form {
@@ -2825,8 +2936,8 @@
       <div class="timeline-area">
         <div class="timeline-toolbar">
           <div class="timeline-actions">
-            <button class="btn btn-borderless" id="addChapterBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add summary & chapter</button>
-            <label class="btn btn-borderless" id="addSlideBtn" for="slideFileInput" style="cursor:pointer;"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add slides</label>
+            <button class="btn btn-borderless" id="addChapterBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add chapter</button>
+            <label class="btn btn-borderless" id="addSlideBtn" for="slideFileInput" style="cursor:pointer;" title="Supports PDF, PPTX"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add slide deck</label>
             <button class="toolbar-icon-btn" id="undoBtn" data-tooltip="Undo" aria-label="Undo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7.41421 11H17C19.2091 11 21 12.7909 21 15C21 17.2091 19.2091 19 17 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 14L7 11L10 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <button class="toolbar-icon-btn" id="redoBtn" data-tooltip="Redo" aria-label="Redo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M16.5858 11H7C4.79086 11 3 12.7909 3 15C3 17.2091 4.79086 19 7 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 14L17 11L14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
@@ -2907,8 +3018,8 @@
       slides: []
     };
 
-    let selectedItem = null; // { type: 'chapter'|'slide'|'intro', index: number }
-    let panelFilter = 'intro'; // 'all' | 'intro' | 'chapters' | 'slides'
+    let selectedItem = { type: 'slide', index: 0 }; // { type: 'chapter'|'slide'|'intro', index: number }
+    let panelFilter = 'slides'; // 'all' | 'intro' | 'chapters' | 'slides'
     let videoDuration = 0;
     let deleteTarget = null;
 
@@ -3479,7 +3590,7 @@
         if (i === 0 && sl.time > 0) {
           el.style.marginLeft = (sl.time * pixelsPerSecond) + 'px';
         }
-        el.setAttribute('data-tooltip', 'Slide: ' + sl.title);
+        el.setAttribute('data-tooltip', sl.title);
         el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
         el.setAttribute('aria-label', 'Slide: ' + sl.title + ' at ' + formatTime(sl.time));
@@ -3594,8 +3705,8 @@
                   <button class="pill-btn-md" id="addIntroBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add intro</button>
                 </div>
                 <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
-                  <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add summary & chapter</button>
-                  <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
+                  <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add chapter</button>
+                  <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slide deck</label>
                 </div>
               </div>
             </div>
@@ -3629,7 +3740,7 @@
             <div class="panel-getstarted-actions">
               <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
               <div class="panel-getstarted-divider"><span></span><span class="panel-getstarted-divider-text">Or add manually</span><span></span></div>
-              <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add summary & chapter</button>
+              <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add chapter</button>
             </div>
           </div>`;
         } else if (showSlidesEmpty) {
@@ -3637,7 +3748,7 @@
             <div class="panel-intro-title">Slides</div>
             <p class="panel-intro-desc">Upload a slide deck to sync slides with your video timeline.</p>
             <div class="panel-getstarted-actions">
-              <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
+              <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slide deck</label>
             </div>
           </div>`;
         } else if (showAllEmpty) {
@@ -3647,8 +3758,8 @@
             <div class="panel-getstarted-actions">
               <button class="btn-ai-lg" id="panelAiBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
               <div class="panel-getstarted-divider"><span></span><span class="panel-getstarted-divider-text">Or add manually</span><span></span></div>
-              <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add summary & chapter</button>
-              <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
+              <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add chapter</button>
+              <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slide deck</label>
             </div>
           </div>`;
         }
@@ -3760,40 +3871,65 @@
             </div>`;
         } else {
           const sl = data.slides[item.index];
+          const slideEndTime = item.index < data.slides.length - 1 ? data.slides[item.index + 1].time : videoDuration;
+          const aiSvg = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M12.97 7.33C12.85 7.59 12.48 7.59 12.36 7.33L11.63 5.71L10 4.97C9.74 4.85 9.74 4.48 10 4.36L11.63 3.63L12.36 2C12.48 1.74 12.85 1.74 12.97 2L13.71 3.63L15.33 4.36C15.59 4.48 15.59 4.85 15.33 4.97L13.71 5.71L12.97 7.33Z" fill="currentColor"/><path d="M6.3 13.33C6.18 13.59 5.82 13.59 5.7 13.33L4.33 10.33L1.33 8.97C1.07 8.85 1.07 8.48 1.33 8.36L4.33 7L5.7 4C5.82 3.74 6.18 3.74 6.3 4L7.67 7L10.67 8.36C10.93 8.48 10.93 8.85 10.67 8.97L7.67 10.33L6.3 13.33Z" fill="currentColor"/></svg>';
+          const bulletListSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 7.5C5.33 7.5 6 6.83 6 6C6 5.17 5.33 4.5 4.5 4.5C3.67 4.5 3 5.17 3 6C3 6.83 3.67 7.5 4.5 7.5ZM8 5C7.45 5 7 5.45 7 6C7 6.55 7.45 7 8 7H20C20.55 7 21 6.55 21 6C21 5.45 20.55 5 20 5H8ZM8 11C7.45 11 7 11.45 7 12C7 12.55 7.45 13 8 13H20C20.55 13 21 12.55 21 12C21 11.45 20.55 11 20 11H8ZM7 18C7 17.45 7.45 17 8 17H20C20.55 17 21 17.45 21 18C21 18.55 20.55 19 20 19H8C7.45 19 7 18.55 7 18ZM6 12C6 12.83 5.33 13.5 4.5 13.5C3.67 13.5 3 12.83 3 12C3 11.17 3.67 10.5 4.5 10.5C5.33 10.5 6 11.17 6 12ZM4.5 19.5C5.33 19.5 6 18.83 6 18C6 17.17 5.33 16.5 4.5 16.5C3.67 16.5 3 17.17 3 18C3 18.83 3.67 19.5 4.5 19.5Z" fill="currentColor"/></svg>';
+          const orderedListSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 4C4 3.45 4.45 3 5 3C5.55 3 6 3.45 6 4V8C6 8.55 5.55 9 5 9C4.45 9 4 8.55 4 8V4ZM8 5C7.45 5 7 5.45 7 6C7 6.55 7.45 7 8 7H20C20.55 7 21 6.55 21 6C21 5.45 20.55 5 20 5H8ZM8 11C7.45 11 7 11.45 7 12C7 12.55 7.45 13 8 13H20C20.55 13 21 12.55 21 12C21 11.45 20.55 11 20 11H8ZM7 18C7 17.45 7.45 17 8 17H20C20.55 17 21 17.45 21 18C21 18.55 20.55 19 20 19H8C7.45 19 7 18.55 7 18ZM3.5 14H6.5V14.75H5V15.5H6.5V16.25H5V17H6.5V17.75H3.5V14ZM3.5 19H6.5V19.75H5V20.5H6.5V21.25H3.5V19Z" fill="currentColor"/></svg>';
           html += `
             <div class="accordion-form">
-              ${sl.image ? `<div class="slide-thumb-container" style="margin-bottom:8px;">
-                <img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title}">
-                <label class="slide-thumb-replace" id="replaceSlideBtn" for="replaceFileInput" style="cursor:pointer;">Replace</label>
-              </div>` : ''}
+              <div class="slide-form-properties-title">Properties</div>
+              <div class="form-field">
+                <span class="form-label">Slide</span>
+                <div class="slide-thumb-container slide-thumb-small">
+                  ${sl.image ? `<img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title}">` : '<div class="slide-thumbnail-placeholder"></div>'}
+                  <label class="slide-thumb-replace" id="replaceSlideBtn" for="replaceFileInput" style="cursor:pointer;">Replace slide</label>
+                </div>
+              </div>
               <div class="form-field">
                 <div class="form-label-row">
-                  <span class="form-label">Title</span>
+                  <span class="form-label">Slide name</span>
                   <span class="form-counter">${(sl.title || '').length}/75</span>
                 </div>
-                <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide title" maxlength="75" required>
+                <div class="form-input-with-icon">
+                  <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide name" maxlength="75" required>
+                  <button class="form-input-icon-btn" aria-label="Generate with AI" title="Generate with AI">${aiSvg}</button>
+                </div>
               </div>
               <div class="form-field">
                 <div class="form-label-row">
-                  <span class="form-label">Description</span>
+                  <span class="form-label">Slide description</span>
                   <span class="form-counter">${(sl.description || '').length}/500</span>
                 </div>
-                <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+                <div class="form-textarea-wrapper">
+                  <div class="form-textarea-toolbar">
+                    <button class="form-textarea-toolbar-btn" aria-label="Bullet list" title="Bullet list">${bulletListSvg}</button>
+                    <button class="form-textarea-toolbar-btn" aria-label="Ordered list" title="Ordered list">${orderedListSvg}</button>
+                    <button class="form-textarea-toolbar-btn" aria-label="Generate with AI" title="Generate with AI">${aiSvg}</button>
+                  </div>
+                  <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+                </div>
               </div>
               <div class="form-field">
                 <div class="form-label-row">
-                  <span class="form-label">Duration</span>
+                  <span class="form-label">Slide start</span>
                 </div>
                 <div class="timestamp-input">
                   <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}">
-                  <span class="timestamp-separator">—</span>
-                  <input type="text" class="form-input" id="slideEndTimeInput" value="${formatTime(item.index < data.slides.length - 1 ? data.slides[item.index + 1].time : videoDuration)}" readonly>
                   <button class="use-current-btn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                </div>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Slide end</span>
+                </div>
+                <div class="timestamp-input">
+                  <input type="text" class="form-input" id="slideEndTimeInput" value="${formatTime(slideEndTime)}" readonly>
+                  <button class="use-current-btn slide-end-snap-btn" aria-label="Snap end to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
                 </div>
               </div>
             </div>
             <div class="accordion-delete-section">
-              <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Delete slide</button>
+              <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Remove slide</button>
             </div>`;
         }
 
@@ -3961,22 +4097,25 @@
     // ===== SELECTION =====
     function selectItem(type, index) {
       selectedItem = { type, index };
-      // Switch panel filter to show the selected item's type
-      if (type === 'intro' && panelFilter !== 'all' && panelFilter !== 'intro') {
+      // Always switch panel filter to show the selected item's type
+      if (type === 'intro') {
         panelFilter = 'intro';
-        updateSidebarActive();
-      } else if (type === 'chapter' && panelFilter !== 'all' && panelFilter !== 'chapters') {
+      } else if (type === 'chapter') {
         panelFilter = 'chapters';
-        updateSidebarActive();
-      } else if (type === 'slide' && panelFilter !== 'all' && panelFilter !== 'slides') {
+      } else if (type === 'slide') {
         panelFilter = 'slides';
-        updateSidebarActive();
       }
+      updateSidebarActive();
       render();
       if (type === 'chapter' && data.chapters[index]) {
         video.currentTime = data.chapters[index].time;
       } else if (type === 'slide' && data.slides[index]) {
         video.currentTime = data.slides[index].time;
+      }
+      // Scroll the expanded item into view in the panel
+      const expandedEl = document.querySelector('.accordion-item.expanded');
+      if (expandedEl) {
+        expandedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }
     }
 
@@ -4056,7 +4195,7 @@
     }
 
     // ===== ADD SLIDES (PDF upload from desktop) =====
-    async function handlePdfUpload(file) {
+    async function handlePdfUpload(file, startTime) {
       if (typeof pdfjsLib === 'undefined') {
         showToast('PDF library loading, please try again...');
         return;
@@ -4067,7 +4206,9 @@
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         const totalPages = pdf.numPages;
         const dur = videoDuration || 1;
-        const interval = dur / totalPages;
+        const rangeStart = (startTime !== undefined) ? startTime : video.currentTime;
+        const availableRange = dur - rangeStart;
+        const slideDuration = availableRange / totalPages;
         const deckName = file.name.replace(/\.[^.]+$/, '');
 
         showToast('Extracting ' + totalPages + ' slides from PDF...');
@@ -4081,8 +4222,8 @@
           const ctx = canvas.getContext('2d');
           await page.render({ canvasContext: ctx, viewport }).promise;
           const image = canvas.toDataURL('image/png');
-          const time = (data.slides.length === 0 && p === 1) ? 0 : interval * (p - 1);
-          data.slides.push({ time, title: deckName + ' - Slide ' + p, description: '', image });
+          const time = rangeStart + (p - 1) * slideDuration;
+          data.slides.push({ time, title: 'Slide ' + p + ' - ' + deckName, description: '', image });
         }
 
         data.slides.sort((a, b) => a.time - b.time);
@@ -4097,7 +4238,7 @@
       }
     }
 
-    async function handlePptxUpload(file) {
+    async function handlePptxUpload(file, startTime) {
       if (typeof JSZip === 'undefined') {
         showToast('PPTX library loading, please try again...');
         return;
@@ -4134,7 +4275,9 @@
         }
 
         const dur = videoDuration || 1;
-        const interval = dur / totalSlides;
+        const rangeStart = (startTime !== undefined) ? startTime : video.currentTime;
+        const availableRange = dur - rangeStart;
+        const slideDuration = availableRange / totalSlides;
         const deckName = file.name.replace(/\.[^.]+$/, '');
 
         showToast('Extracting ' + totalSlides + ' slides from PPTX...');
@@ -4152,8 +4295,8 @@
               reader.readAsDataURL(blob);
             });
           }
-          const time = (data.slides.length === 0 && i === 0) ? 0 : interval * i;
-          data.slides.push({ time, title: deckName + ' - Slide ' + (i + 1), description: '', image });
+          const time = rangeStart + i * slideDuration;
+          data.slides.push({ time, title: 'Slide ' + (i + 1) + ' - ' + deckName, description: '', image });
         }
 
         data.slides.sort((a, b) => a.time - b.time);
@@ -5260,13 +5403,13 @@
             }
           }
 
-          // Use proper handlers for PDF and PPTX
+          // Use proper handlers for PDF and PPTX — drag & drop starts from 00:00
           const isPdf = file.name.toLowerCase().endsWith('.pdf');
           const isPptx = file.name.toLowerCase().endsWith('.pptx');
           if (isPdf && typeof pdfjsLib !== 'undefined') {
-            handlePdfUpload(file);
+            handlePdfUpload(file, 0);
           } else if (isPptx && typeof JSZip !== 'undefined') {
-            handlePptxUpload(file);
+            handlePptxUpload(file, 0);
           } else {
             addDeckSlides(slideTimes, deckName, file);
           }
@@ -5279,7 +5422,7 @@
           times.forEach((t, i) => {
             const rounded = Math.round(t * 10) / 10;
             if (existingSlideTimes.includes(rounded)) return;
-            data.slides.push({ time: rounded, title: deckName + ' - Slide ' + (i + 1), description: '', image: '', deckFile: file ? file.name : null });
+            data.slides.push({ time: rounded, title: 'Slide ' + (i + 1) + ' - ' + deckName, description: '', image: '', deckFile: file ? file.name : null });
             existingSlideTimes.push(rounded);
             added++;
           });
@@ -5347,18 +5490,18 @@
       if (videoReady && fontsReady) revealApp();
     }
 
-    if (video.readyState >= 1) {
+    if (video.readyState >= 4) {
       videoReady = true;
     } else {
-      video.addEventListener('loadedmetadata', () => { videoReady = true; checkAllReady(); }, { once: true });
+      video.addEventListener('canplaythrough', () => { videoReady = true; checkAllReady(); }, { once: true });
     }
 
     document.fonts.ready.then(() => { fontsReady = true; checkAllReady(); });
 
     checkAllReady();
 
-    // Failsafe — reveal after 5s regardless
-    setTimeout(revealApp, 5000);
+    // Failsafe — reveal after 10s regardless
+    setTimeout(revealApp, 10000);
   </script>
 </body>
 </html>
