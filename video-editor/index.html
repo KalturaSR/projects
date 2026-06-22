@@ -3484,7 +3484,6 @@
     // Click on timeline tracks area to position scrubber
     let lastDragWasMoved = false;
     document.getElementById('timelineTracks').addEventListener('click', (e) => {
-      if (e.target.closest('.track-empty-text')) return;
       if (lastDragWasMoved) { lastDragWasMoved = false; return; }
       const trackContent = document.getElementById('chapterTrackContent');
       const rect = trackContent.getBoundingClientRect();
@@ -3493,6 +3492,17 @@
       let newTime = pct * videoDuration;
       const snapped = findSnapTime(newTime, rect.width);
       if (snapped !== null) newTime = snapped;
+
+      // Slide empty state: first click moves scrubber, second click (scrubber already here) opens file selector
+      if (e.target.closest('.track-empty-text') && e.target.closest('#slideTrack')) {
+        const scrubberTime = video.currentTime;
+        const threshold = Math.max(0.5, videoDuration * 0.005);
+        if (Math.abs(scrubberTime - newTime) < threshold) {
+          document.getElementById('slideFileInput').click();
+          return;
+        }
+      }
+
       video.currentTime = newTime;
       const posPercent = (newTime / videoDuration) * 100;
       positionPlayhead(posPercent);
@@ -3846,7 +3856,7 @@
       if (data.slides.length === 0) {
         container.removeAttribute('role');
         container.removeAttribute('aria-label');
-        container.innerHTML = '<div class="track-empty"><label class="track-empty-text" id="emptySlideClick" for="slideFileInput" style="cursor:pointer;">Drag and drop or click to add slides</label></div>';
+        container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptySlideClick" style="cursor:pointer;">Drag and drop or click to add slides</div></div>';
         return;
       }
 
