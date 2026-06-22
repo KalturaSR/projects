@@ -3225,7 +3225,7 @@
       slides: []
     };
 
-    let selectedItem = { type: 'slide', index: 0 }; // { type: 'chapter'|'slide'|'intro', index: number }
+    let selectedItem = null; // { type: 'chapter'|'slide'|'intro', index: number }
     let focusedItem = null; // { type, index } — highlight without opening form
     let timelineSelectMode = 'open'; // always open on timeline click
     let panelViewMode = 'list'; // 'list' = show all items, 'focus' = show only selected item
