@@ -444,6 +444,29 @@
       transition: opacity 0.15s;
     }
 
+    .progress-tooltip {
+      position: absolute;
+      bottom: 100%;
+      margin-bottom: 10px;
+      left: 0;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      font-size: 11px;
+      line-height: 1.3;
+      padding: 5px 8px;
+      border-radius: 4px;
+      white-space: pre;
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.12s;
+      z-index: 10;
+    }
+    .progress-bar:hover .progress-tooltip {
+      opacity: 1;
+    }
+
     .progress-bar:hover .progress-handle {
       opacity: 1;
     }
@@ -932,6 +955,7 @@
     }
     .track-slides {
       height: 40px;
+      margin-top: 4px;
     }
     .track-video {
       height: 40px;
@@ -972,6 +996,37 @@
       position: relative;
       background: rgba(255, 255, 255, 0.1);
       border-radius: 8px;
+    }
+
+    @keyframes trackShimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .track-content.is-loading {
+      background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.05) 75%);
+      background-size: 200% 100%;
+      animation: trackShimmer 1.8s ease infinite;
+    }
+    .track-content.is-loading > * {
+      display: none;
+    }
+
+    @keyframes spinLoader {
+      to { transform: rotate(360deg); }
+    }
+    .timeline-loading-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 5;
+      pointer-events: none;
+    }
+    .timeline-loading-indicator svg {
+      animation: spinLoader 0.8s linear infinite;
+    }
+    .timeline-loading-indicator.hidden {
+      display: none;
     }
 
     /* Chapter Segments */
@@ -3148,6 +3203,7 @@
             <div class="progress-fill" id="progressFill">
               <div class="progress-handle"></div>
             </div>
+            <div class="progress-tooltip" id="progressTooltip"></div>
           </div>
           <span class="timestamp" id="timestamp">0:00 / 0:00</span>
           <button class="player-action" id="ccBtn" aria-label="Captions">CC</button>
@@ -3188,19 +3244,20 @@
           <!-- Tracks -->
           <div class="tracks-hover-scrubber" id="tracksHoverScrubber"><div class="hover-scrubber-tooltip" id="hoverScrubberTooltip">00:00</div></div>
           <div class="timeline-tracks" id="timelineTracks">
+            <div class="timeline-loading-indicator" id="timelineLoadingIndicator"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg></div>
             <div class="tracks-playhead" id="tracksPlayhead"></div>
             <div id="snapLine" class="snap-line" aria-hidden="true"></div>
             <div class="track track-slides" role="region" aria-label="Slide track" id="slideTrack">
               <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg></div>
-              <div class="track-content" id="slideTrackContent"></div>
+              <div class="track-content is-loading" id="slideTrackContent"></div>
             </div>
             <div class="track track-chapters" role="region" aria-label="Chapter track" id="chapterTrack">
               <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg></div>
-              <div class="track-content" id="chapterTrackContent"></div>
+              <div class="track-content is-loading" id="chapterTrackContent"></div>
             </div>
             <div class="track track-video" role="region" aria-label="Video track">
               <div class="track-label track-label-video" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4V6.5l-4 4z" fill="currentColor"/></svg></div>
-              <div class="track-content"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas></div></div>
+              <div class="track-content is-loading"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas></div></div>
             </div>
           </div>
         </div>
@@ -3340,6 +3397,21 @@
         updatePlayhead(pct);
         updatePlayerSlide();
       });
+    });
+
+    const progressTooltip = document.getElementById('progressTooltip');
+
+    progressBar.addEventListener('mousemove', (e) => {
+      const rect = progressBar.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const hoverTime = pct * videoDuration;
+      const ch = getChapterAtTime(hoverTime);
+      progressTooltip.textContent = ch ? ch.title + '\n' + formatTime(hoverTime) : formatTime(hoverTime);
+      progressTooltip.style.left = (pct * 100) + '%';
+    });
+
+    progressBar.addEventListener('mouseleave', () => {
+      progressTooltip.style.removeProperty('opacity');
     });
 
     progressBar.addEventListener('click', (e) => {
@@ -3572,8 +3644,11 @@
         return;
       }
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      const hoverTime = pct * videoDuration;
-      const leftPx = rect.left - scrollableRect.left + pct * rect.width;
+      let hoverTime = pct * videoDuration;
+      const snapped = findSnapTime(hoverTime, rect.width);
+      if (snapped !== null) hoverTime = snapped;
+      const snappedPct = hoverTime / videoDuration;
+      const leftPx = rect.left - scrollableRect.left + snappedPct * rect.width;
       hoverScrubber.style.left = leftPx + 'px';
       hoverScrubber.style.opacity = '1';
       hoverTooltip.textContent = formatTime(hoverTime);
@@ -3783,7 +3858,10 @@
     }, { passive: false });
 
     // ===== RENDER =====
+    let appReady = false;
+
     function render() {
+      if (!appReady) return;
       renderChapterTrack();
       renderSlideTrack();
       renderPanel();
@@ -5977,9 +6055,23 @@
       document.querySelectorAll('.timeline-actions button, .timeline-actions label, .zoom-controls button, .zoom-controls input, .player-action, #playBtn').forEach(el => {
         el.removeAttribute('disabled');
       });
+      // Set zoom before enabling render so it only renders once
       if (videoDuration > 0) {
         zoomFit();
       }
+      // Select first chapter at 00:00 on load
+      if (data.chapters.length > 0 && data.chapters[0].time === 0) {
+        selectedItem = { type: 'chapter', index: 0 };
+        panelFilter = 'chapters';
+        updateSidebarActive();
+      }
+      // Enable rendering and reveal all assets once
+      appReady = true;
+      document.querySelectorAll('.track-content.is-loading').forEach(el => {
+        el.classList.remove('is-loading');
+      });
+      document.getElementById('timelineLoadingIndicator').classList.add('hidden');
+      render();
     }
 
     // Disable CTA tools until app is fully loaded
