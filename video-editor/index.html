@@ -970,6 +970,8 @@
       align-items: center;
       gap: 0;
       position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
     }
 
     /* Chapter Segments */
@@ -1317,7 +1319,7 @@
     }
 
     .video-track-content.loaded {
-      background: var(--b-100);
+      background: transparent;
       animation: none;
     }
 
@@ -2977,6 +2979,11 @@
     .timeline-context-menu-item.destructive:hover {
       background: rgba(229,57,53,0.08);
     }
+    .timeline-context-menu-item.disabled {
+      opacity: 0.4;
+      cursor: default;
+      pointer-events: none;
+    }
 
     /* Skip link for keyboard users */
     .skip-link {
@@ -3342,6 +3349,7 @@
       progressFill.style.width = (pct * 100) + '%';
       updateProgressChapterFills();
       positionPlayhead(pct * 100);
+      checkScrubberAssetMatch(pct * videoDuration);
     });
 
     // Click on time ruler to seek
@@ -3357,6 +3365,7 @@
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       video.currentTime = pct * videoDuration;
       positionPlayhead(pct * 100);
+      checkScrubberAssetMatch(pct * videoDuration);
     }
 
     function positionPlayhead(pct) {
@@ -3385,6 +3394,31 @@
 
     function updatePlayheadImmediate(pct) {
       positionPlayhead(pct);
+    }
+
+    // ===== SCRUBBER SNAP-SELECT =====
+    function checkScrubberAssetMatch(time) {
+      const threshold = 0.15;
+      for (let i = 0; i < data.chapters.length; i++) {
+        if (Math.abs(data.chapters[i].time - time) < threshold) {
+          if (!selectedItem || selectedItem.type !== 'chapter' || selectedItem.index !== i) {
+            focusedItem = { type: 'chapter', index: i };
+            selectedItem = null;
+            render();
+          }
+          return;
+        }
+      }
+      for (let i = 0; i < data.slides.length; i++) {
+        if (Math.abs(data.slides[i].time - time) < threshold) {
+          if (!selectedItem || selectedItem.type !== 'slide' || selectedItem.index !== i) {
+            focusedItem = { type: 'slide', index: i };
+            selectedItem = null;
+            render();
+          }
+          return;
+        }
+      }
     }
 
     // ===== SCRUBBER DRAG =====
@@ -3475,6 +3509,7 @@
       tracksPlayhead.classList.remove('dragging');
       document.removeEventListener('mousemove', onScrubberMove);
       document.removeEventListener('mouseup', onScrubberUp);
+      checkScrubberAssetMatch(video.currentTime);
     }
 
     document.getElementById('fullscreenBtn').addEventListener('click', () => {
@@ -3493,25 +3528,36 @@
       const snapped = findSnapTime(newTime, rect.width);
       if (snapped !== null) newTime = snapped;
 
-      // Slide empty state: first click moves scrubber, second click (scrubber already here) opens file selector
-      if (e.target.closest('.track-empty-text') && e.target.closest('#slideTrack')) {
-        const scrubberTime = video.currentTime;
-        const threshold = Math.max(0.5, videoDuration * 0.005);
-        if (Math.abs(scrubberTime - newTime) < threshold) {
-          document.getElementById('slideFileInput').click();
-          return;
-        }
+      // Slide empty state: single click moves scrubber and opens file browser
+      if (e.target.closest('#emptySlideClick')) {
+        video.currentTime = newTime;
+        const posPercent = (newTime / videoDuration) * 100;
+        positionPlayhead(posPercent);
+        positionHoverScrubberAt(e.clientX, rect);
+        document.getElementById('slideFileInput').click();
+        return;
       }
 
       video.currentTime = newTime;
       const posPercent = (newTime / videoDuration) * 100;
       positionPlayhead(posPercent);
+      positionHoverScrubberAt(e.clientX, rect);
+      checkScrubberAssetMatch(newTime);
     });
 
     // ===== HOVER SCRUBBER =====
     const hoverScrubber = document.getElementById('tracksHoverScrubber');
     const hoverTooltip = document.getElementById('hoverScrubberTooltip');
     const timelineScrollableEl = document.getElementById('timelineScrollable');
+
+    function positionHoverScrubberAt(clientX, trackRect) {
+      const scrollableRect = timelineScrollableEl.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (clientX - trackRect.left) / trackRect.width));
+      const leftPx = trackRect.left - scrollableRect.left + pct * trackRect.width;
+      hoverScrubber.style.left = leftPx + 'px';
+      hoverScrubber.style.opacity = '1';
+      hoverTooltip.textContent = formatTime(pct * videoDuration);
+    }
 
     timelineScrollableEl.addEventListener('mousemove', (e) => {
       if (scrubberDragging) {
@@ -4464,8 +4510,8 @@
     }
 
     // ===== SELECTION =====
-    function timelineSelect(type, index) {
-      selectItem(type, index);
+    function timelineSelect(type, index, skipSeek) {
+      selectItem(type, index, skipSeek);
     }
 
     function focusItem(type, index) {
@@ -4489,7 +4535,7 @@
       }
     }
 
-    function selectItem(type, index) {
+    function selectItem(type, index, skipSeek) {
       selectedItem = { type, index };
       focusedItem = null;
       // Always switch panel filter to show the selected item's type
@@ -4502,10 +4548,12 @@
       }
       updateSidebarActive();
       render();
-      if (type === 'chapter' && data.chapters[index]) {
-        video.currentTime = data.chapters[index].time;
-      } else if (type === 'slide' && data.slides[index]) {
-        video.currentTime = data.slides[index].time;
+      if (!skipSeek) {
+        if (type === 'chapter' && data.chapters[index]) {
+          video.currentTime = data.chapters[index].time;
+        } else if (type === 'slide' && data.slides[index]) {
+          video.currentTime = data.slides[index].time;
+        }
       }
       // Scroll the expanded item into view in the panel
       const expandedEl = document.querySelector('.accordion-item.expanded');
@@ -4796,27 +4844,32 @@
       menu.style.left = x + 'px';
       menu.style.top = y + 'px';
 
+      const assetTime = type === 'chapter' ? data.chapters[index]?.time : data.slides[index]?.time;
+      const alreadySnapped = assetTime !== undefined && Math.abs(assetTime - video.currentTime) < 0.15;
+
       const snapBtn = document.createElement('button');
-      snapBtn.className = 'timeline-context-menu-item';
+      snapBtn.className = 'timeline-context-menu-item' + (alreadySnapped ? ' disabled' : '');
       snapBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>Snap to playhead';
-      snapBtn.addEventListener('click', () => {
-        hideTimelineContextMenu();
-        const time = video.currentTime;
-        if (type === 'chapter' && data.chapters[index]) {
-          data.chapters[index].time = time;
-          data.chapters.sort((a, b) => a.time - b.time);
-          const newIndex = data.chapters.findIndex(c => c.time === time);
-          selectedItem = { type: 'chapter', index: newIndex };
-        } else if (type === 'slide' && data.slides[index]) {
-          data.slides[index].time = time;
-          data.slides.sort((a, b) => a.time - b.time);
-          const newIndex = data.slides.findIndex(s => s.time === time);
-          selectedItem = { type: 'slide', index: newIndex };
-        }
-        render();
-        triggerSave();
-        showToast('Snapped to ' + formatTime(time));
-      });
+      if (!alreadySnapped) {
+        snapBtn.addEventListener('click', () => {
+          hideTimelineContextMenu();
+          const time = video.currentTime;
+          if (type === 'chapter' && data.chapters[index]) {
+            data.chapters[index].time = time;
+            data.chapters.sort((a, b) => a.time - b.time);
+            const newIndex = data.chapters.findIndex(c => c.time === time);
+            selectedItem = { type: 'chapter', index: newIndex };
+          } else if (type === 'slide' && data.slides[index]) {
+            data.slides[index].time = time;
+            data.slides.sort((a, b) => a.time - b.time);
+            const newIndex = data.slides.findIndex(s => s.time === time);
+            selectedItem = { type: 'slide', index: newIndex };
+          }
+          render();
+          triggerSave();
+          showToast('Snapped to ' + formatTime(time));
+        });
+      }
       menu.appendChild(snapBtn);
 
       const deleteBtn = document.createElement('button');
@@ -5577,7 +5630,20 @@
       document.querySelectorAll('.track').forEach(t => t.classList.remove('drop-target-active'));
 
       if (!dragState.moved) {
-        timelineSelect(dragState.type, dragState.index);
+        // Select asset in panel
+        timelineSelect(dragState.type, dragState.index, true);
+        // Move both scrubbers to mouse click position
+        const clickTrackContent = document.getElementById('chapterTrackContent');
+        const clickRect = clickTrackContent.getBoundingClientRect();
+        const clickPct = Math.max(0, Math.min(1, (dragState.lastClientX - clickRect.left) / clickRect.width));
+        let clickTime = clickPct * videoDuration;
+        const clickSnapped = findSnapTime(clickTime, clickRect.width);
+        if (clickSnapped !== null) clickTime = clickSnapped;
+        video.currentTime = clickTime;
+        const clickPosPercent = (clickTime / videoDuration) * 100;
+        positionPlayhead(clickPosPercent);
+        positionHoverScrubberAt(dragState.lastClientX, clickRect);
+        lastDragWasMoved = true;
       } else {
         lastDragWasMoved = true;
         const arr = dragState.type === 'chapter' ? data.chapters : data.slides;
