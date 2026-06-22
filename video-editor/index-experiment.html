@@ -3045,7 +3045,7 @@
   <!-- Page Loader -->
   <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Loading editor">
     <div class="loader-spinner"></div>
-    <span class="loader-text">Loading editor…</span>
+    <span class="loader-text" id="loaderText">Processing video…</span>
   </div>
 
   <!-- Skip Link -->
@@ -3292,6 +3292,8 @@
       pixelsPerSecond = ppsMin;
       document.getElementById('zoomSlider').value = 0;
       applyZoom(pixelsPerSecond);
+      const loaderText = document.getElementById('loaderText');
+      if (loaderText) loaderText.textContent = 'Generating timeline…';
     });
 
     let rafId = null;
@@ -5204,6 +5206,10 @@
       function seekNext() {
         if (captured >= thumbCount) {
           thumbVideo.remove();
+          if (!thumbnailsReady) {
+            thumbnailsReady = true;
+            checkAllReady();
+          }
           return;
         }
         const t = (videoDuration / thumbCount) * captured + 0.1;
@@ -5876,25 +5882,26 @@
       el.setAttribute('disabled', 'true');
     });
 
-    let videoReady = false;
+    let videoCanPlay = false;
     let fontsReady = false;
+    let thumbnailsReady = false;
 
     function checkAllReady() {
-      if (videoReady && fontsReady) revealApp();
+      if (videoCanPlay && fontsReady && thumbnailsReady) revealApp();
     }
 
     if (video.readyState >= 4) {
-      videoReady = true;
+      videoCanPlay = true;
     } else {
-      video.addEventListener('canplaythrough', () => { videoReady = true; checkAllReady(); }, { once: true });
+      video.addEventListener('canplaythrough', () => { videoCanPlay = true; checkAllReady(); }, { once: true });
     }
 
     document.fonts.ready.then(() => { fontsReady = true; checkAllReady(); });
 
     checkAllReady();
 
-    // Failsafe — reveal after 10s regardless
-    setTimeout(revealApp, 10000);
+    // Failsafe — reveal after 15s regardless
+    setTimeout(revealApp, 15000);
   </script>
 </body>
 </html>
