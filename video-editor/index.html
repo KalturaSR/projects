@@ -6,6 +6,7 @@
   <title>Video Structure</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -17,12 +18,16 @@
       /* Kaltura DS - Dark Theme */
       --b-100: #000000;
       --b-60: rgba(0, 0, 0, 0.6);
+      --b-30: rgba(0, 0, 0, 0.3);
       --w-100: #ffffff;
       --w-80: rgba(255, 255, 255, 0.8);
+      --w-60: rgba(255, 255, 255, 0.6);
       --w-50: rgba(255, 255, 255, 0.5);
+      --w-40: rgba(255, 255, 255, 0.4);
       --w-30: rgba(255, 255, 255, 0.3);
       --w-20: rgba(255, 255, 255, 0.2);
       --w-10: rgba(255, 255, 255, 0.1);
+      --tone-3: #888888;
       --tone-4: #bdbdbd;
       --blue: #006EFA;
       --blue-hover: #0057cc;
@@ -48,7 +53,7 @@
       --accent-primary: var(--blue);
       --accent-hover: var(--blue-hover);
       --accent-subtle: rgba(0, 110, 250, 0.15);
-      --border: var(--w-30);
+      --border: var(--w-40);
       --border-subtle: var(--w-10);
       --chapter-color: var(--w-100);
       --chapter-bg: var(--w-10);
@@ -222,6 +227,8 @@
     .btn-ai .btn-icon {
       display: flex;
       align-items: center;
+      width: 24px;
+      height: 24px;
     }
 
     .btn-sm {
@@ -242,6 +249,27 @@
     .btn-sm .btn-icon {
       display: flex;
       align-items: center;
+    }
+
+    .btn-borderless {
+      padding: 4px 8px;
+      font-size: 14px;
+      border-radius: var(--roundness-1);
+      background: transparent;
+      color: var(--w-80);
+      border: none;
+    }
+
+    .btn-borderless:hover {
+      background: var(--w-10);
+      color: var(--w-100);
+    }
+
+    .btn-borderless .btn-icon {
+      display: flex;
+      align-items: center;
+      width: 24px;
+      height: 24px;
     }
 
     .btn-danger {
@@ -271,10 +299,19 @@
 
     /* Main Canvas */
     .main-canvas {
-      flex: 1;
+      flex: 1 1 0;
       display: flex;
       flex-direction: column;
       min-width: 0;
+      overflow: hidden;
+    }
+
+    /* Main Area: Player + Sidebar row */
+    .main-area {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
     }
 
     /* Video Player */
@@ -364,6 +401,35 @@
       transition: width 0.1s linear;
     }
 
+    .progress-bar.has-chapters {
+      background: transparent;
+      display: flex;
+      gap: 2px;
+      border-radius: 3px;
+    }
+    .progress-bar.has-chapters .progress-fill {
+      display: none;
+    }
+    .progress-bar.has-chapters .progress-handle {
+      display: none;
+    }
+    .progress-chapter-seg {
+      height: 100%;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-chapter-seg-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: var(--blue);
+      border-radius: 100px;
+    }
+
+
     .progress-handle {
       position: absolute;
       right: -6px;
@@ -419,7 +485,7 @@
       position: absolute;
       bottom: 61px;
       right: 16px;
-      width: 223px;
+      width: 268px;
       z-index: 5;
       display: none;
       flex-direction: column;
@@ -467,7 +533,7 @@
       overflow: hidden;
       box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 8px 60px -16px rgba(0, 0, 0, 0.2);
       position: relative;
-      width: 223px;
+      width: 268px;
       aspect-ratio: 16 / 9;
       background: #000;
     }
@@ -613,7 +679,7 @@
     .player-slide-image {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
       border-radius: 8px;
     }
@@ -629,6 +695,25 @@
       width: 100%;
       min-width: 0;
       max-width: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+
+    #timelineScrollable {
+      position: relative;
+    }
+    .timeline-area::-webkit-scrollbar {
+      height: 8px;
+    }
+    .timeline-area::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .timeline-area::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 4px;
+    }
+    .timeline-area::-webkit-scrollbar-thumb:hover {
+      background: rgba(255,255,255,0.5);
     }
 
     .timeline-toolbar {
@@ -647,6 +732,26 @@
       display: flex;
       align-items: center;
       gap: 8px;
+    }
+
+    .toolbar-icon-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--w-50);
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+    }
+
+    .toolbar-icon-btn:hover {
+      color: var(--w-100);
+      background: var(--w-10);
     }
 
     .zoom-controls {
@@ -724,8 +829,8 @@
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 0 0 24px 24px;
+      gap: 10px;
+      padding: 0 0 10px 24px;
     }
 
     .time-ruler {
@@ -773,8 +878,8 @@
     .playhead-ruler {
       position: absolute;
       top: 0;
-      width: 2px;
-      background: var(--blue);
+      width: 1px;
+      background: #e53935;
       height: 100%;
       z-index: 10;
       cursor: col-resize;
@@ -788,7 +893,7 @@
       left: -7px;
       width: 16px;
       height: 16px;
-      background: var(--blue);
+      background: #e53935;
       border-radius: 3px 3px 50% 50%;
       clip-path: polygon(0 0, 100% 0, 100% 60%, 50% 100%, 0 60%);
     }
@@ -804,12 +909,12 @@
     }
 
     .playhead-ruler:hover::before {
-      background: #3d8eff;
+      background: #ff5252;
       transform: scale(1.15);
     }
 
     .playhead-ruler.dragging::before {
-      background: #3d8eff;
+      background: #ff5252;
       transform: scale(1.2);
     }
 
@@ -821,6 +926,15 @@
       position: relative;
       gap: 8px;
       padding: 0 24px 0 0;
+    }
+    .track-chapters {
+      height: 40px;
+    }
+    .track-slides {
+      height: 40px;
+    }
+    .track-video {
+      height: 40px;
     }
 
     .track-label {
@@ -859,12 +973,17 @@
     }
 
     /* Chapter Segments */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .chapter-segment {
-      height: 30px;
-      border-radius: var(--radius-md);
+      height: 40px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      padding: 0 12px;
+      padding: 0 8px;
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
@@ -873,14 +992,15 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      border: 2px solid var(--w-30);
+      border: 2px solid rgba(255,255,255,0.5);
       background: transparent;
       backdrop-filter: blur(16px);
       color: var(--w-100);
+      animation: fadeSlideIn 0.25s ease both;
     }
 
     .chapter-segment:hover {
-      border-color: var(--w-50);
+      border-color: rgba(255,255,255,0.7);
       background: var(--w-10);
     }
 
@@ -893,7 +1013,7 @@
     .resize-handle {
       position: absolute;
       top: 0;
-      width: 8px;
+      width: 14px;
       height: 100%;
       opacity: 0;
       transition: opacity 0.15s, background 0.15s;
@@ -906,13 +1026,15 @@
     }
 
     .resize-handle.left {
-      left: 0;
+      left: -4px;
       border-radius: 4px 0 0 4px;
+      padding-left: 4px;
     }
 
     .resize-handle.right {
-      right: 0;
+      right: -4px;
       border-radius: 0 4px 4px 0;
+      padding-right: 4px;
     }
 
     .resize-handle::after {
@@ -950,16 +1072,15 @@
 
     .chapter-segment.active {
       border-color: var(--blue);
-      box-shadow: 0 0 0 1px var(--blue);
     }
 
     /* Slide Segments */
     .slide-segment {
       height: 40px;
-      border-radius: var(--radius-md);
+      border-radius: 8px;
       display: flex;
       align-items: center;
-      padding: 0 8px;
+      padding: 6px;
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
@@ -968,15 +1089,16 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      border: 2px solid var(--w-30);
+      border: 2px solid rgba(255,255,255,0.5);
       background: transparent;
       backdrop-filter: blur(16px);
       color: var(--w-100);
       gap: 8px;
+      animation: fadeSlideIn 0.25s ease both;
     }
 
     .slide-segment:hover {
-      border-color: var(--w-50);
+      border-color: rgba(255,255,255,0.7);
       background: var(--w-10);
     }
 
@@ -987,59 +1109,56 @@
 
     .slide-segment.active {
       border-color: var(--blue);
-      box-shadow: 0 0 0 1px var(--blue);
     }
 
     .slide-segment-thumb {
-      width: 44px;
-      height: 28px;
-      border-radius: 3px;
-      object-fit: cover;
+      width: 52px;
+      height: 29px;
+      border-radius: 4px;
+      object-fit: contain;
       flex-shrink: 0;
       background: var(--bg-surface);
     }
 
     .segment-title,
     .slide-segment-label {
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: none;
+    }
+
+    .segment-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
       flex: 1;
       min-width: 0;
+      padding: 0 8px;
+      justify-content: center;
     }
 
-    .slide-segment-replace {
-      position: absolute;
-      right: 4px;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 20px;
-      padding: 0 6px;
-      font-size: 11px;
-      font-weight: 600;
-      background: var(--b-60);
-      color: var(--w-100);
-      border: none;
-      border-radius: var(--roundness-1);
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.15s;
-      z-index: 2;
+    .segment-time-row {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.45);
+      white-space: nowrap;
+      line-height: 12px;
     }
 
-    .slide-segment:hover .slide-segment-replace {
-      opacity: 1;
-    }
-
-    .slide-segment-replace:hover {
-      background: rgba(0,0,0,0.85);
+    .segment-title-row {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: normal;
     }
 
     /* Slide thumbnail in panel */
     .slide-thumb-container {
       position: relative;
-      width: 174px;
-      height: 100px;
-      border-radius: var(--radius-md);
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 8px;
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -1074,9 +1193,117 @@
       background: rgba(0,0,0,0.8);
     }
 
+    .slide-thumbnail-placeholder {
+      width: 100%;
+      height: 100%;
+      background: var(--b-30);
+      border: 1px dashed var(--w-40);
+      border-radius: 8px;
+    }
+
+    .slide-form-properties-title {
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 21px;
+      color: var(--w-100);
+    }
+
+    .slide-thumb-small {
+      width: 154px;
+      aspect-ratio: 154 / 89;
+    }
+
+    .form-input-with-icon {
+      position: relative;
+      width: 100%;
+    }
+
+    .form-input-with-icon .form-input {
+      padding-right: 36px;
+    }
+
+    .form-input-icon-btn {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      color: var(--w-100);
+      padding: 4px;
+      transition: background 0.15s;
+    }
+
+    .form-input-icon-btn:hover {
+      background: var(--w-10);
+    }
+
+    .form-textarea-wrapper {
+      width: 100%;
+      border-radius: var(--roundness-1);
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.3);
+      overflow: hidden;
+      transition: border-color 0.15s;
+    }
+
+    .form-textarea-wrapper:hover {
+      border-color: rgba(255,255,255,0.6);
+    }
+
+    .form-textarea-wrapper:focus-within {
+      border-color: #006EFA;
+    }
+
+    .form-textarea-toolbar {
+      display: flex;
+      align-items: center;
+      padding: 4px 4px 0;
+      gap: 0;
+    }
+
+    .form-textarea-toolbar-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: var(--roundness-1);
+      cursor: pointer;
+      color: var(--w-100);
+      padding: 4px;
+      transition: background 0.15s;
+    }
+
+    .form-textarea-toolbar-btn:hover {
+      background: var(--w-10);
+    }
+
+    .form-textarea-wrapper .form-textarea {
+      border: none;
+      background: transparent;
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .form-textarea-wrapper .form-textarea:hover {
+      border-color: transparent;
+    }
+
+    .form-textarea-wrapper .form-textarea:focus {
+      border-color: transparent;
+    }
+
     /* Video Track */
     .video-track-content {
-      position: relative;
       flex: 1;
       height: 40px;
       margin-right: 0;
@@ -1090,39 +1317,8 @@
     .video-track-content canvas {
       height: 100%;
       width: 100%;
-      border-radius: var(--radius-md);
+      border-radius: 8px;
       image-rendering: auto;
-    }
-
-    .video-track-loader {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-radius: var(--radius-md);
-      background: linear-gradient(90deg, var(--b-100) 25%, var(--w-10) 50%, var(--b-100) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-    }
-
-    .video-track-loader span {
-      font-size: 11px;
-      color: var(--w-30);
-      font-weight: 500;
-    }
-
-    .video-track-loader.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
     }
 
     .track-label-video { color: var(--w-50); opacity: 1; }
@@ -1302,8 +1498,8 @@
     .tracks-playhead {
       position: absolute;
       top: 0;
-      width: 2px;
-      background: var(--blue);
+      width: 1px;
+      background: #e53935;
       height: 100%;
       z-index: 10;
       pointer-events: none;
@@ -1314,7 +1510,39 @@
 
     .tracks-playhead.dragging {
       opacity: 1;
-      box-shadow: 0 0 6px rgba(0, 110, 255, 0.5);
+      box-shadow: 0 0 6px rgba(229, 57, 53, 0.5);
+    }
+
+    .tracks-hover-scrubber {
+      position: absolute;
+      top: 0;
+      width: 1px;
+      background: rgba(255,255,255,0.4);
+      height: 100%;
+      z-index: 9;
+      pointer-events: none;
+      opacity: 0;
+      left: 64px;
+      will-change: left;
+      transition: opacity 0.1s;
+    }
+
+    .hover-scrubber-tooltip {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--w-20);
+      backdrop-filter: blur(16px);
+      color: var(--w-100);
+      font-size: 11px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      padding: 3px 8px;
+      border-radius: var(--roundness-1);
+      border: 1px solid var(--w-30);
+      white-space: nowrap;
+      pointer-events: none;
     }
 
     /* Current time tooltip */
@@ -1332,10 +1560,15 @@
       padding: 3px 8px;
       border-radius: var(--roundness-1);
       border: 1px solid var(--w-30);
-      white-space: nowrap;
+      white-space: pre;
+      text-align: center;
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.15s;
+    }
+
+    .playhead-ruler.dragging .scrubber-tooltip {
+      top: -42px;
     }
 
     .playhead-ruler:hover .scrubber-tooltip,
@@ -1345,13 +1578,132 @@
 
     /* Right Panel */
     .right-panel {
-      width: 401px;
-      background: var(--w-10);
-      border-left: 1px solid var(--w-10);
+      width: 360px;
+      background: var(--b-100);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-      overflow-y: auto;
+      overflow: hidden;
+      border-left: 1px solid var(--w-10);
+      min-height: 0;
+    }
+
+    /* Panel Tabs (inside right panel) */
+    .panel-tabs {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      height: 48px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--w-10);
+      flex-shrink: 0;
+    }
+
+    .mode-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--w-10);
+      flex-shrink: 0;
+    }
+    .mode-toggle-label {
+      font-size: 11px;
+      color: var(--w-60);
+      white-space: nowrap;
+    }
+    .mode-toggle-switch {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      background: var(--w-30);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .mode-toggle-switch.active {
+      background: var(--blue);
+    }
+    .mode-toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: white;
+      transition: transform 0.2s;
+    }
+    .mode-toggle-switch.active::after {
+      transform: translateX(16px);
+    }
+
+    .panel-tab {
+      flex: 1 0 0;
+      height: 47px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 0;
+      border: none;
+      border-bottom: 3px solid transparent;
+      background: transparent;
+      color: var(--w-100);
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .panel-tab:hover:not(:disabled) {
+      color: var(--w-100);
+    }
+
+    .panel-tab.active {
+      color: var(--w-100);
+      border-bottom-color: var(--blue);
+    }
+
+    .panel-tab:disabled {
+      color: var(--w-20);
+      cursor: not-allowed;
+    }
+
+    .panel-tab svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .panel-tab {
+      position: relative;
+    }
+
+    [data-tooltip] {
+      position: relative;
+    }
+
+    [data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffffff;
+      color: #000000;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 16px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .chapter-segment[data-tooltip]:hover::after,
+    .slide-segment[data-tooltip]:hover::after {
+      top: auto;
+      bottom: calc(100% + 6px);
     }
 
     .panel-section {
@@ -1368,7 +1720,7 @@
       margin-bottom: 16px;
     }
 
-    .form-group { margin-bottom: 20px; }
+    .form-group { margin-bottom: 0; }
 
     .form-label {
       display: flex;
@@ -1376,65 +1728,102 @@
       gap: 6px;
       font-size: 14px;
       font-weight: 700;
-      color: var(--w-100);
-      margin-bottom: 4px;
+      line-height: 16px;
+      color: #ffffff;
+      margin-bottom: 8px;
     }
 
     .form-input {
       width: 100%;
       height: 32px;
       padding: 0 10px;
-      border-radius: var(--roundness-1);
-      border: 1px solid var(--w-30);
-      background: var(--b-100);
-      color: var(--w-100);
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.3);
+      color: #ffffff;
       font-size: 14px;
-      font-family: inherit;
+      line-height: 16px;
+      font-family: 'Lato', sans-serif;
       outline: none;
-      transition: all 0.15s;
+      transition: border-color 0.15s;
     }
 
-    .form-input::placeholder { color: var(--w-30); }
-    .form-input:hover { border-color: var(--w-50); }
-    .form-input:focus { border-color: var(--blue); }
+    .form-input::placeholder { color: rgba(255,255,255,0.4); }
+    .form-input:hover { border-color: rgba(255,255,255,0.6); }
+    .form-input:focus { border-color: #006EFA; }
 
     .form-textarea {
       width: 100%;
       padding: 8px 10px;
-      border-radius: var(--roundness-1);
-      border: 1px solid var(--w-30);
-      background: var(--b-100);
-      color: var(--w-100);
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: rgba(0,0,0,0.3);
+      color: #ffffff;
       font-size: 14px;
+      line-height: 16px;
       outline: none;
       resize: vertical;
       min-height: 88px;
-      font-family: inherit;
-      transition: all 0.15s;
+      font-family: 'Lato', sans-serif;
+      transition: border-color 0.15s;
     }
 
-    .form-textarea::placeholder { color: var(--w-30); }
-    .form-textarea:hover { border-color: var(--w-50); }
-    .form-textarea:focus { border-color: var(--blue); }
+    .form-textarea::placeholder { color: rgba(255,255,255,0.4); }
+    .form-textarea:hover { border-color: rgba(255,255,255,0.6); }
+    .form-textarea:focus { border-color: #006EFA; }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .form-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .form-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      line-height: 16px;
+    }
+
+    .form-counter {
+      font-size: 14px;
+      font-weight: 400;
+      color: white;
+      line-height: 16px;
+    }
 
     .timestamp-input {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
     }
 
     .timestamp-input .form-input {
-      width: 100px;
+      width: 64px;
       font-variant-numeric: tabular-nums;
+    }
+
+    .timestamp-separator {
+      color: var(--w-50);
+      font-size: 13px;
+      font-weight: 400;
     }
 
     .use-current-btn {
       position: relative;
       width: 32px;
       height: 32px;
-      background: var(--b-60);
+      background: rgba(0,0,0,0.6);
       border: none;
-      border-radius: var(--roundness-1);
+      border-radius: 4px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -1444,7 +1833,7 @@
     }
 
     .use-current-btn:hover {
-      background: var(--w-20);
+      background: rgba(0,0,0,0.7);
     }
 
     .use-current-btn svg {
@@ -1472,14 +1861,15 @@
     }
 
     .use-current-btn .ds-hint-body {
-      background: var(--w-100);
-      color: var(--b-100);
+      background: #ffffff;
+      color: #000000;
       font-weight: 700;
       font-size: 12px;
       line-height: 16px;
       padding: 6px 8px;
       border-radius: 4px;
       white-space: nowrap;
+      font-family: 'Lato', sans-serif;
     }
 
     .use-current-btn .ds-hint-arrow {
@@ -1488,7 +1878,7 @@
     }
 
     .use-current-btn .ds-hint-arrow svg path {
-      fill: var(--w-100);
+      fill: #ffffff;
     }
 
     .panel-actions {
@@ -1538,57 +1928,252 @@
       line-height: 1.5;
     }
 
-    /* Content List */
-    .chapter-list { list-style: none; }
-
-    .chapter-list-item {
+    /* Accordion List */
+    .accordion-list {
+      list-style: none;
+      flex: 1;
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 24px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border-left: 3px solid transparent;
-      border-radius: 0;
+      flex-direction: column;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
     }
 
-    .chapter-list-item:hover {
+    .accordion-list::-webkit-scrollbar { width: 6px; }
+    .accordion-list::-webkit-scrollbar-track { background: transparent; }
+    .accordion-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+    .accordion-list::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.5); }
+
+    .accordion-section-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--w-50);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--w-10);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .accordion-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 16px;
+      border-bottom: 1px solid var(--w-10);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .accordion-section-header .accordion-section-title {
+      padding: 0;
+      border-bottom: none;
+      background: none;
+    }
+
+    .accordion-section-header .mode-toggle {
+      padding: 0;
+      border-bottom: none;
+    }
+
+    .accordion-item:not(.expanded) {
+      border-bottom: 1px solid var(--w-30);
+      flex-shrink: 0;
+      min-height: 48px;
+      animation: fadeSlideIn 0.2s ease both;
+    }
+
+    .accordion-item.focused:not(.expanded) {
+      background: rgba(99, 147, 242, 0.08);
+      border-left: 3px solid var(--blue);
+    }
+    .accordion-item.focused:not(.expanded) .accordion-row-time,
+    .accordion-item.focused:not(.expanded) .accordion-row-title {
+      color: var(--w-100);
+    }
+
+    .accordion-item.expanded {
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .accordion-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .accordion-item:not(.expanded) > .accordion-row:hover {
       background: var(--w-10);
     }
 
-    .chapter-list-item.active {
-      background: rgba(0, 110, 250, 0.1);
-      border-left-color: var(--blue);
+    .accordion-item:not(.expanded) > .accordion-row:hover .accordion-row-time,
+    .accordion-item:not(.expanded) > .accordion-row:hover .accordion-row-title {
+      color: var(--w-100);
     }
 
-    .chapter-list-time {
+    .accordion-item.expanded > .accordion-row {
+      flex-shrink: 0;
+      background: var(--w-10);
+      border-left: 4px solid var(--blue);
+      border-bottom: 1px solid var(--w-10);
+    }
+
+    .accordion-item.expanded > .accordion-row .accordion-row-time,
+    .accordion-item.expanded > .accordion-row .accordion-row-title {
+      color: var(--w-100);
+    }
+
+    .accordion-row-holder {
+      display: flex;
+      flex: 1 0 0;
+      gap: 16px;
+      align-items: center;
+      min-width: 0;
+      font-weight: 700;
+      color: var(--w-100);
+    }
+
+    .accordion-row-time {
       font-size: 12px;
       font-weight: 700;
-      color: var(--w-50);
-      font-variant-numeric: tabular-nums;
-      min-width: 44px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--w-100);
+      width: 35px;
+      flex-shrink: 0;
+      text-align: center;
     }
 
-    .chapter-list-title {
+    .accordion-row-title {
       font-size: 14px;
-      font-weight: 400;
+      font-weight: 700;
       color: var(--w-100);
-      flex: 1;
+      flex: 1 0 0;
+      min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      line-height: 18px;
     }
 
-    .chapter-list-type {
+    .accordion-row-chevron {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+      color: var(--w-50);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .accordion-row-chevron:hover {
+      color: var(--w-100);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .accordion-row-chevron svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .accordion-item.expanded > .accordion-row .accordion-row-chevron {
+      transform: rotate(90deg);
+    }
+
+    .accordion-row-badge {
       font-size: 11px;
-      padding: 2px 6px;
-      border-radius: var(--roundness-1);
       font-weight: 700;
-      line-height: 16px;
+      padding: 1px 4px 2px;
+      border-radius: 4px;
+      line-height: normal;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    .type-chapter { background: var(--w-10); color: var(--w-50); }
-    .type-slide { background: var(--w-10); color: var(--w-50); }
+    .accordion-row-badge-ch {
+      color: var(--blue);
+      background: rgba(0, 110, 250, 0.3);
+      border: 1px solid var(--blue);
+    }
+
+    .accordion-row-badge-sl {
+      color: var(--w-80);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--w-50);
+    }
+
+    .accordion-body {
+      display: flex;
+      flex-direction: column;
+      background: var(--w-10);
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.25s ease, opacity 0.2s ease;
+    }
+
+    .accordion-item.expanded > .accordion-body {
+      max-height: 600px;
+      opacity: 1;
+      overflow: visible;
+      transition: max-height 0.3s ease, opacity 0.25s ease 0.05s;
+    }
+
+    .accordion-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--w-10);
+    }
+
+    .accordion-form .form-group {
+      margin-bottom: 0;
+    }
+
+    .accordion-delete-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 24px;
+      padding-bottom: 24px;
+      flex-shrink: 0;
+    }
+
+    .accordion-delete-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px 12px;
+      cursor: pointer;
+      color: var(--w-100);
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Lato', sans-serif;
+      transition: background 0.15s;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+    }
+
+    .accordion-delete-btn:hover {
+      background: var(--w-10);
+    }
+
+    .accordion-delete-btn svg {
+      width: 24px;
+      height: 24px;
+    }
 
     /* AI Badge */
     .ai-badge {
@@ -1650,7 +2235,7 @@
     .track-empty-text {
       font-size: 14px;
       font-weight: 700;
-      color: var(--w-100);
+      color: var(--w-60);
       border: 2px solid var(--w-30);
       border-radius: var(--radius-md);
       padding: 0 16px;
@@ -1712,29 +2297,24 @@
     }
 
     .btn-ai-lg {
-      padding: 12px 24px;
-      font-size: 15px;
+      padding: 0 16px;
+      font-size: 16px;
       font-weight: 700;
-      border-radius: var(--radius-md);
-      background: var(--ai-gradient);
-      color: var(--w-100);
+      border-radius: 4px;
+      background: linear-gradient(70deg, #006EFA 11%, #2485FF 30%, #FF9DFF 134%);
+      color: white;
       border: none;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      height: 44px;
+      gap: 4px;
+      height: 40px;
       transition: all 0.2s;
-      box-shadow: 0 4px 16px rgba(0, 110, 250, 0.3);
-      width: 100%;
-      max-width: 280px;
     }
 
     .btn-ai-lg:hover {
-      opacity: 0.92;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 24px rgba(0, 110, 250, 0.45);
+      opacity: 0.9;
     }
 
     .btn-ai-lg:active { transform: scale(0.97); }
@@ -1742,6 +2322,8 @@
     .btn-ai-lg .btn-icon {
       display: flex;
       align-items: center;
+      width: 24px;
+      height: 24px;
     }
 
     .panel-empty-divider {
@@ -1802,29 +2384,240 @@
 
     .hidden { display: none !important; }
 
+    /* Panel Intro View */
+    .panel-intro-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 16px 16px;
+      gap: 16px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .panel-intro-form {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      overflow-y: auto;
+      flex: 1;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+
+    .panel-intro-form::-webkit-scrollbar { width: 6px; }
+    .panel-intro-form::-webkit-scrollbar-track { background: transparent; }
+    .panel-intro-form::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
+
+    .panel-intro-form .panel-intro-view {
+      padding: 0;
+    }
+
+    .panel-intro-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .panel-intro-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .panel-intro-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: white;
+      line-height: 21px;
+      text-align: center;
+      margin: 0;
+    }
+
+    .panel-intro-card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .panel-intro-card-desc {
+      font-size: 14px;
+      font-weight: 400;
+      color: white;
+      line-height: 1.4;
+      text-align: center;
+      margin: 0;
+    }
+
+    .panel-empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 32px 24px;
+      text-align: center;
+    }
+
+    .panel-empty-state-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--w-100);
+    }
+
+    .panel-empty-state-desc {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--w-50);
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      gap: 4px;
+      height: 24px;
+      padding: 0 8px;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .pill-btn:hover {
+      background: rgba(0,0,0,0.8);
+    }
+
+    .pill-btn svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .pill-btn-md {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 32px;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.6);
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .pill-btn-md:hover {
+      background: rgba(0,0,0,0.8);
+    }
+
+    .pill-btn-md svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .panel-getstarted {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 0 16px;
+      text-align: center;
+    }
+
+    .panel-getstarted-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+    }
+
+    .panel-getstarted-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: white;
+      line-height: 21px;
+      margin: 0;
+    }
+
+    .panel-getstarted-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .panel-getstarted-divider {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .panel-getstarted-divider > span:first-child,
+    .panel-getstarted-divider > span:last-child {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.3);
+    }
+
+    .panel-getstarted-divider-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
     /* Toast */
     .toast {
       position: fixed;
-      bottom: 24px;
+      top: 24px;
       left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--w-20);
+      transform: translateX(100%) translateX(50vw);
+      background: var(--b-80);
       backdrop-filter: blur(16px);
       color: var(--w-100);
       padding: 12px 24px;
-      border-radius: var(--roundness-1);
+      border-radius: 8px;
       font-size: 14px;
       font-weight: 700;
-      border: 1px solid var(--w-30);
-      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--w-20);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
       z-index: 200;
-      transition: transform 0.3s ease, opacity 0.3s ease;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
       opacity: 0;
+      pointer-events: none;
+      max-width: 400px;
+      white-space: nowrap;
     }
 
     .toast.visible {
-      transform: translateX(-50%) translateY(0);
+      transform: translateX(-50%);
       opacity: 1;
+      pointer-events: auto;
     }
 
     /* AI Loading */
@@ -2003,7 +2796,7 @@
       outline-offset: 2px;
     }
 
-    .chapter-list-item:focus-visible {
+    .accordion-row:focus-visible {
       outline: 2px solid var(--accent-primary);
       outline-offset: -2px;
     }
@@ -2024,18 +2817,16 @@
     }
 
     .use-current-btn:focus-visible {
-      outline: 2px solid var(--accent-primary);
+      outline: 2px solid #006EFA;
       outline-offset: 2px;
     }
 
     .form-input:focus-visible {
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 0 1px var(--accent-primary);
+      border-color: #006EFA;
     }
 
     .form-textarea:focus-visible {
-      border-color: var(--accent-primary);
-      box-shadow: 0 0 0 1px var(--accent-primary);
+      border-color: #006EFA;
     }
 
     .track-empty-text:focus-visible {
@@ -2049,9 +2840,9 @@
       opacity: 1;
     }
 
-    /* Minimum height for chapter/slide segments - 44px touch target */
+    /* Touch target via padding, not min-height (tracks have their own heights) */
     .chapter-segment, .slide-segment {
-      min-height: 44px;
+      min-height: 0;
     }
 
     /* Playhead scrubber expanded hit area */
@@ -2063,13 +2854,18 @@
     /* Responsive layout - usable at 1024px */
     @media (max-width: 1279px) {
       .right-panel {
-        width: 340px;
+        width: 320px;
       }
     }
 
     @media (max-width: 1023px) {
       .editor-body {
         flex-direction: column;
+      }
+
+      .main-area {
+        flex: none;
+        min-height: 200px;
       }
 
       .right-panel {
@@ -2123,6 +2919,40 @@
       clip: rect(0,0,0,0);
       width: 1px;
       height: 1px;
+    }
+
+    .timeline-context-menu {
+      position: fixed;
+      z-index: 9999;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 4px 0;
+      min-width: 160px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .timeline-context-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .timeline-context-menu-item:hover {
+      background: rgba(0,0,0,0.05);
+    }
+    .timeline-context-menu-item.destructive {
+      color: #e53935;
+    }
+    .timeline-context-menu-item.destructive:hover {
+      background: rgba(229,57,53,0.08);
     }
 
     /* Skip link for keyboard users */
@@ -2190,18 +3020,32 @@
       opacity: 1;
       transition: opacity 0.3s ease 0.1s;
     }
+
+    body.is-loading .timeline-actions button,
+    body.is-loading .timeline-actions label,
+    body.is-loading .zoom-controls button,
+    body.is-loading .zoom-controls input,
+    body.is-loading .btn-ai-lg,
+    body.is-loading .panel-getstarted-actions button,
+    body.is-loading .panel-getstarted-actions label,
+    body.is-loading .player-action,
+    body.is-loading #playBtn {
+      pointer-events: none;
+      opacity: 0.4;
+      cursor: default;
+    }
   </style>
 </head>
 <body class="is-loading">
 
   <!-- Hidden file inputs for slide upload -->
-  <input type="file" id="slideFileInput" accept="application/pdf" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
+  <input type="file" id="slideFileInput" accept="application/pdf,.pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
   <input type="file" id="replaceFileInput" accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;" aria-hidden="true">
 
   <!-- Page Loader -->
   <div class="page-loader" id="pageLoader" aria-live="polite" aria-label="Loading editor">
     <div class="loader-spinner"></div>
-    <span class="loader-text">Loading editor…</span>
+    <span class="loader-text" id="loaderText">Processing video…</span>
   </div>
 
   <!-- Skip Link -->
@@ -2224,7 +3068,7 @@
     </div>
     <span class="editor-title">Video structure</span>
     <div class="top-bar-right">
-      <button class="btn btn-ai" id="aiGenerateBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2l1.5 3.5L13 7l-3.5 1.5L8 12l-1.5-3.5L3 7l3.5-1.5L8 2z" fill="currentColor"/><path d="M12 1l.75 1.75L14.5 3.5l-1.75.75L12 6l-.75-1.75L9.5 3.5l1.75-.75L12 1z" fill="currentColor" opacity="0.6"/></svg></span>Generate with AI</button>
+      <button class="btn btn-ai" id="aiGenerateBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
       <button class="btn btn-ghost" id="previewBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3C4.5 3 2 8 2 8s2.5 5 6 5 6-5 6-5-2.5-5-6-5z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></span>Preview</button>
       <button class="btn btn-primary" id="publishBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Publish</button>
     </div>
@@ -2236,10 +3080,13 @@
     <!-- Main Canvas -->
     <main class="main-canvas">
 
+      <!-- Main Area: Player + Sidebar -->
+      <div class="main-area">
+
       <!-- Video Player -->
       <div class="video-area">
         <video id="videoPlayer" class="video-player" preload="metadata">
-          <source src="Content/AX vs. UX Is This the Next Evolution of Design - Bonterra (1080p, h264).mp4" type="video/mp4">
+          <source src="Content/Elephants 101  Nat Geo Wild - Nat Geo Animals (1080p, h264).mp4" type="video/mp4">
         </video>
         <!-- Video thumbnail CTAs (visible only in slide-main mode) -->
         <div class="video-thumb-ctas" id="videoThumbCtas">
@@ -2279,12 +3126,16 @@
         </div>
       </div>
 
+      </div><!-- /.main-area -->
+
       <!-- Timeline -->
       <div class="timeline-area">
         <div class="timeline-toolbar">
           <div class="timeline-actions">
-            <button class="btn btn-sm" id="addChapterBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 6C4 5.44772 4.44772 5 5 5H16C16.5523 5 17 5.44772 17 6C17 6.55228 16.5523 7 16 7H5C4.44772 7 4 6.55228 4 6Z" fill="currentColor"/><path d="M4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12Z" fill="currentColor"/><path d="M4 18C4 17.4477 4.44772 17 5 17H11C11.5523 17 12 17.4477 12 18C12 18.5523 11.5523 19 11 19H5C4.44772 19 4 18.5523 4 18Z" fill="currentColor"/></svg></span>Add chapter</button>
-            <label class="btn btn-sm" id="addSlideBtn" for="slideFileInput" style="cursor:pointer;"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></span>Add slides</label>
+            <button class="btn btn-borderless" id="addChapterBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add chapter</button>
+            <label class="btn btn-borderless" id="addSlideBtn" for="slideFileInput" style="cursor:pointer;" title="Supports PDF, PPTX"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg></span>Add slide deck</label>
+            <button class="toolbar-icon-btn" id="undoBtn" data-tooltip="Undo" aria-label="Undo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7.41421 11H17C19.2091 11 21 12.7909 21 15C21 17.2091 19.2091 19 17 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M10 14L7 11L10 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="toolbar-icon-btn" id="redoBtn" data-tooltip="Redo" aria-label="Redo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M16.5858 11H7C4.79086 11 3 12.7909 3 15C3 17.2091 4.79086 19 7 19H12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 14L17 11L14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
           <div class="zoom-controls">
             <button class="zoom-btn" id="zoomFitBtn" aria-label="Fit timeline to view" title="Fit to view (0)">Fit</button>
@@ -2300,32 +3151,33 @@
           <div class="time-ruler" id="timeRuler">
             <div class="time-marks" id="timeMarks"></div>
             <div class="playhead-ruler" id="playheadRuler">
-              <div class="scrubber-tooltip" id="scrubberTooltip">0:00</div>
+              <div class="scrubber-tooltip" id="scrubberTooltip">00:00</div>
             </div>
           </div>
 
           <!-- Tracks -->
+          <div class="tracks-hover-scrubber" id="tracksHoverScrubber"><div class="hover-scrubber-tooltip" id="hoverScrubberTooltip">00:00</div></div>
           <div class="timeline-tracks" id="timelineTracks">
             <div class="tracks-playhead" id="tracksPlayhead"></div>
             <div id="snapLine" class="snap-line" aria-hidden="true"></div>
-            <div class="track" role="region" aria-label="Chapter track" id="chapterTrack">
-              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h12v2H3v-2z" fill="currentColor"/></svg></div>
-              <div class="track-content" id="chapterTrackContent"></div>
-            </div>
-            <div class="track" role="region" aria-label="Slide track" id="slideTrack">
-              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 4C4.34315 4 3 5.34315 3 7V17C3 18.6569 4.34315 20 6 20H18C19.6569 20 21 18.6569 21 17V7C21 5.34315 19.6569 4 18 4H6ZM18 8H6V16H18V8Z" fill="currentColor"/></svg></div>
+            <div class="track track-slides" role="region" aria-label="Slide track" id="slideTrack">
+              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg></div>
               <div class="track-content" id="slideTrackContent"></div>
             </div>
-            <div class="track" role="region" aria-label="Video track">
+            <div class="track track-chapters" role="region" aria-label="Chapter track" id="chapterTrack">
+              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg></div>
+              <div class="track-content" id="chapterTrackContent"></div>
+            </div>
+            <div class="track track-video" role="region" aria-label="Video track">
               <div class="track-label track-label-video" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4V6.5l-4 4z" fill="currentColor"/></svg></div>
-              <div class="track-content"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas><div class="video-track-loader" id="videoTrackLoader"><span>Loading video…</span></div></div></div>
+              <div class="track-content"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas></div></div>
             </div>
           </div>
         </div>
       </div>
     </main>
 
-    <!-- Right Panel -->
+    <!-- Right Panel (Form) -->
     <aside class="right-panel" id="rightPanel" aria-label="Properties panel"></aside>
   </div>
 
@@ -2364,6 +3216,10 @@
     };
 
     let selectedItem = null; // { type: 'chapter'|'slide'|'intro', index: number }
+    let focusedItem = null; // { type, index } — highlight without opening form
+    let timelineSelectMode = 'open'; // always open on timeline click
+    let panelViewMode = 'list'; // 'list' = show all items, 'focus' = show only selected item
+    let panelFilter = 'chapters'; // 'all' | 'intro' | 'chapters' | 'slides'
     let videoDuration = 0;
     let deleteTarget = null;
 
@@ -2386,10 +3242,10 @@
     const tracksPlayhead = document.getElementById('tracksPlayhead');
 
     function formatTime(seconds) {
-      if (isNaN(seconds)) return '0:00';
+      if (isNaN(seconds)) return '00:00';
       const m = Math.floor(seconds / 60);
       const s = Math.floor(seconds % 60);
-      return m + ':' + s.toString().padStart(2, '0');
+      return m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
     }
 
     function formatTimeHMS(seconds) {
@@ -2398,6 +3254,14 @@
       const m = Math.floor((seconds % 3600) / 60);
       const s = Math.floor(seconds % 60);
       return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+    }
+
+    function formatTimeMs(seconds) {
+      if (isNaN(seconds)) return '0:00.000';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      const ms = Math.floor((seconds % 1) * 1000);
+      return m + ':' + s.toString().padStart(2, '0') + '.' + ms.toString().padStart(3, '0');
     }
 
     playBtn.addEventListener('click', togglePlay);
@@ -2428,6 +3292,8 @@
       pixelsPerSecond = ppsMin;
       document.getElementById('zoomSlider').value = 0;
       applyZoom(pixelsPerSecond);
+      const loaderText = document.getElementById('loaderText');
+      if (loaderText) loaderText.textContent = 'Generating timeline…';
     });
 
     let rafId = null;
@@ -2439,6 +3305,7 @@
         if (scrubberDragging) return;
         const pct = (video.currentTime / videoDuration) * 100;
         progressFill.style.width = pct + '%';
+        updateProgressChapterFills();
         timestampEl.textContent = formatTime(video.currentTime) + ' / ' + formatTime(videoDuration);
         updatePlayhead(pct);
         updatePlayerSlide();
@@ -2450,6 +3317,7 @@
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       video.currentTime = pct * videoDuration;
       progressFill.style.width = (pct * 100) + '%';
+      updateProgressChapterFills();
       positionPlayhead(pct * 100);
     });
 
@@ -2483,7 +3351,7 @@
       const tracksLeft = trackRect.left - tracksRect.left + px;
       tracksPlayhead.style.left = tracksLeft + 'px';
 
-      document.getElementById('scrubberTooltip').textContent = videoDuration >= 3600 ? formatTimeHMS(video.currentTime) : formatTime(video.currentTime);
+      document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(video.currentTime);
       updatePlayerSlide();
     }
 
@@ -2497,6 +3365,19 @@
     }
 
     // ===== SCRUBBER DRAG =====
+    function getChapterAtTime(time) {
+      for (let i = data.chapters.length - 1; i >= 0; i--) {
+        if (time >= data.chapters[i].time) return data.chapters[i];
+      }
+      return null;
+    }
+
+    function getScrubberTooltipText(time) {
+      const ch = getChapterAtTime(time);
+      if (ch) return ch.title + '\n' + formatTime(time);
+      return formatTime(time);
+    }
+
     let scrubberDragging = false;
 
     playheadRuler.addEventListener('mousedown', (e) => {
@@ -2505,23 +3386,64 @@
       scrubberDragging = true;
       playheadRuler.classList.add('dragging');
       tracksPlayhead.classList.add('dragging');
+      document.getElementById('tracksHoverScrubber').style.opacity = '0';
       video.pause();
       playBtn.innerHTML = '&#9654;';
+      // Immediately seek to click position
+      const trackContent = document.getElementById('chapterTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      let newTime = pct * videoDuration;
+      const snapped = findSnapTime(newTime, rect.width);
+      if (snapped !== null) newTime = snapped;
+      video.currentTime = newTime;
+      const posPercent = (newTime / videoDuration) * 100;
+      positionPlayhead(posPercent);
+      document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(newTime);
       document.addEventListener('mousemove', onScrubberMove);
       document.addEventListener('mouseup', onScrubberUp);
     });
+
+    const SNAP_THRESHOLD_PX = 8;
+
+    function getSnapPoints() {
+      const points = [];
+      data.chapters.forEach(ch => points.push(ch.time));
+      data.slides.forEach(sl => points.push(sl.time));
+      return [...new Set(points)].sort((a, b) => a - b);
+    }
+
+    function findSnapTime(time, trackWidth) {
+      const snapPoints = getSnapPoints();
+      const pxPerSec = trackWidth / videoDuration;
+      for (const pt of snapPoints) {
+        if (Math.abs(pt - time) * pxPerSec < SNAP_THRESHOLD_PX) {
+          return pt;
+        }
+      }
+      return null;
+    }
+
 
     function onScrubberMove(e) {
       if (!scrubberDragging) return;
       const trackContent = document.getElementById('chapterTrackContent');
       const rect = trackContent.getBoundingClientRect();
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      const newTime = pct * videoDuration;
+      let newTime = pct * videoDuration;
+
+      const snappedTime = findSnapTime(newTime, rect.width);
+      if (snappedTime !== null) {
+        newTime = snappedTime;
+      }
 
       video.currentTime = newTime;
-      positionPlayhead(pct * 100);
+      const actualPct = (newTime / videoDuration) * 100;
+      positionPlayhead(actualPct);
       timestampEl.textContent = formatTime(newTime) + ' / ' + formatTime(videoDuration);
-      progressFill.style.width = (pct * 100) + '%';
+      progressFill.style.width = actualPct + '%';
+      updateProgressChapterFills();
+      document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(newTime);
     }
 
     function onScrubberUp(e) {
@@ -2534,6 +3456,52 @@
 
     document.getElementById('fullscreenBtn').addEventListener('click', () => {
       if (video.requestFullscreen) video.requestFullscreen();
+    });
+
+    // Click on timeline tracks area to position scrubber
+    let lastDragWasMoved = false;
+    document.getElementById('timelineTracks').addEventListener('click', (e) => {
+      if (e.target.closest('.track-empty-text')) return;
+      if (lastDragWasMoved) { lastDragWasMoved = false; return; }
+      const trackContent = document.getElementById('chapterTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      if (e.clientX < rect.left || e.clientX > rect.right) return;
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      let newTime = pct * videoDuration;
+      const snapped = findSnapTime(newTime, rect.width);
+      if (snapped !== null) newTime = snapped;
+      video.currentTime = newTime;
+      const posPercent = (newTime / videoDuration) * 100;
+      positionPlayhead(posPercent);
+    });
+
+    // ===== HOVER SCRUBBER =====
+    const hoverScrubber = document.getElementById('tracksHoverScrubber');
+    const hoverTooltip = document.getElementById('hoverScrubberTooltip');
+    const timelineScrollableEl = document.getElementById('timelineScrollable');
+
+    timelineScrollableEl.addEventListener('mousemove', (e) => {
+      if (scrubberDragging) {
+        hoverScrubber.style.opacity = '0';
+        return;
+      }
+      const trackContent = document.getElementById('chapterTrackContent');
+      const rect = trackContent.getBoundingClientRect();
+      const scrollableRect = timelineScrollableEl.getBoundingClientRect();
+      if (e.clientX < rect.left || e.clientX > rect.right) {
+        hoverScrubber.style.opacity = '0';
+        return;
+      }
+      const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const hoverTime = pct * videoDuration;
+      const leftPx = rect.left - scrollableRect.left + pct * rect.width;
+      hoverScrubber.style.left = leftPx + 'px';
+      hoverScrubber.style.opacity = '1';
+      hoverTooltip.textContent = formatTime(hoverTime);
+    });
+
+    timelineScrollableEl.addEventListener('mouseleave', () => {
+      hoverScrubber.style.opacity = '0';
     });
 
     document.getElementById('volumeBtn').addEventListener('click', () => {
@@ -2600,6 +3568,13 @@
           container.appendChild(subTick);
         }
       }
+
+      // Update timeline grid lines
+      const tracks = document.getElementById('timelineTracks');
+      const gridSpacing = interval * pixelsPerSecond;
+      tracks.style.backgroundImage = `repeating-linear-gradient(90deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent ${gridSpacing}px)`;
+      tracks.style.backgroundPositionX = '56px';
+      tracks.style.backgroundSize = `${gridSpacing}px 100%`;
     }
 
     // ===== ZOOM ENGINE =====
@@ -2733,10 +3708,51 @@
       renderChapterTrack();
       renderSlideTrack();
       renderPanel();
+      renderProgressSplits();
       updatePlayerSlide();
       const isEmpty = data.chapters.length === 0 && data.slides.length === 0;
-      document.getElementById('playheadRuler').style.display = isEmpty ? 'none' : '';
-      document.getElementById('tracksPlayhead').style.display = isEmpty ? 'none' : '';
+    }
+
+    function renderProgressSplits() {
+      const bar = document.getElementById('progressBar');
+      bar.querySelectorAll('.progress-chapter-seg').forEach(el => el.remove());
+      if (videoDuration <= 0 || data.chapters.length <= 1) {
+        bar.classList.remove('has-chapters');
+        return;
+      }
+      bar.classList.add('has-chapters');
+      for (let i = 0; i < data.chapters.length; i++) {
+        const startTime = data.chapters[i].time;
+        const endTime = i < data.chapters.length - 1 ? data.chapters[i + 1].time : videoDuration;
+        const widthPct = ((endTime - startTime) / videoDuration) * 100;
+        const seg = document.createElement('div');
+        seg.className = 'progress-chapter-seg';
+        seg.style.flex = '0 0 ' + widthPct + '%';
+        seg.dataset.start = startTime;
+        seg.dataset.end = endTime;
+        seg.innerHTML = '<div class="progress-chapter-seg-fill"></div>';
+        bar.appendChild(seg);
+      }
+      updateProgressChapterFills();
+    }
+
+    function updateProgressChapterFills() {
+      const bar = document.getElementById('progressBar');
+      if (!bar.classList.contains('has-chapters')) return;
+      const currentTime = video.currentTime || 0;
+      bar.querySelectorAll('.progress-chapter-seg').forEach(seg => {
+        const start = parseFloat(seg.dataset.start);
+        const end = parseFloat(seg.dataset.end);
+        const fill = seg.querySelector('.progress-chapter-seg-fill');
+        if (currentTime >= end) {
+          fill.style.width = '100%';
+        } else if (currentTime <= start) {
+          fill.style.width = '0%';
+        } else {
+          const pct = ((currentTime - start) / (end - start)) * 100;
+          fill.style.width = pct + '%';
+        }
+      });
     }
 
     function renderChapterTrack() {
@@ -2748,25 +3764,27 @@
       if (data.chapters.length === 0) {
         container.removeAttribute('role');
         container.removeAttribute('aria-label');
-        container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptyChapterClick">Click to add your first chapter</div></div>';
+        container.innerHTML = '<div class="track-empty"><div class="track-empty-text" id="emptyChapterClick">Click to add your first summary & chapter</div></div>';
         document.getElementById('emptyChapterClick').addEventListener('click', addChapter);
         return;
       }
 
       data.chapters.forEach((ch, i) => {
+        if (i === 0 && ch.time !== 0) { ch.time = 0; }
         const nextTime = (i < data.chapters.length - 1) ? data.chapters[i + 1].time : videoDuration;
         const duration = nextTime - ch.time;
         const widthPx = duration * pixelsPerSecond;
         const el = document.createElement('div');
-        el.className = 'chapter-segment' + (selectedItem && selectedItem.type === 'chapter' && selectedItem.index === i ? ' active' : '');
+        el.className = 'chapter-segment' + ((selectedItem && selectedItem.type === 'chapter' && selectedItem.index === i) || (focusedItem && focusedItem.type === 'chapter' && focusedItem.index === i) ? ' active' : '');
         el.style.width = widthPx + 'px';
 
         let handles = '';
         if (i > 0) handles += '<span class="resize-handle left" data-side="left"></span>';
         if (i < data.chapters.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
-        el.innerHTML = handles + '<span class="segment-title">' + ch.title + '</span>';
+        const endTime = ch.time + duration;
+        el.innerHTML = handles + '<span class="segment-text"><span class="segment-time-row">' + formatTime(ch.time) + ' - ' + formatTime(endTime) + '</span><span class="segment-title-row">' + ch.title + '</span></span>';
 
-        el.title = formatTime(ch.time) + ' - ' + ch.title;
+        el.setAttribute('data-tooltip', 'Chapter: ' + ch.title);
         el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
         el.setAttribute('aria-label', 'Chapter: ' + ch.title + ' at ' + formatTime(ch.time));
@@ -2784,8 +3802,13 @@
           const endT = (i < data.chapters.length - 1) ? data.chapters[i + 1].time : videoDuration;
           zoomToTimeRange(startT, endT);
         });
+        el.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          timelineSelect('chapter', i);
+          showTimelineContextMenu(e.clientX, e.clientY, 'chapter', i);
+        });
         el.addEventListener('keydown', (e) => {
-          if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); selectItem('chapter', i); }
+          if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); timelineSelect('chapter', i); }
         });
         container.appendChild(el);
       });
@@ -2810,24 +3833,25 @@
         const duration = nextTime - sl.time;
         const widthPx = duration * pixelsPerSecond;
         const el = document.createElement('div');
-        el.className = 'slide-segment' + (selectedItem && selectedItem.type === 'slide' && selectedItem.index === i ? ' active' : '');
+        el.className = 'slide-segment' + ((selectedItem && selectedItem.type === 'slide' && selectedItem.index === i) || (focusedItem && focusedItem.type === 'slide' && focusedItem.index === i) ? ' active' : '');
         el.style.width = widthPx + 'px';
-        el.title = formatTime(sl.time) + ' - ' + sl.title;
+        if (i === 0 && sl.time > 0) {
+          el.style.marginLeft = (sl.time * pixelsPerSecond) + 'px';
+        }
+        el.setAttribute('data-tooltip', sl.title);
         el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
         el.setAttribute('aria-label', 'Slide: ' + sl.title + ' at ' + formatTime(sl.time));
         el.setAttribute('aria-roledescription', 'resizable slide');
 
-        let handles = '';
-        if (i > 0) handles += '<span class="resize-handle left" data-side="left"></span>';
+        let handles = '<span class="resize-handle left" data-side="left"></span>';
         if (i < data.slides.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
+        const endTime = sl.time + duration;
         el.innerHTML = handles +
           (sl.image ? '<img class="slide-segment-thumb" src="' + sl.image + '" alt="' + sl.title + ' thumbnail" draggable="false">' : '') +
-          '<span class="slide-segment-label">' + sl.title + '</span>' +
-          '<label class="slide-segment-replace" data-slide-index="' + i + '" for="replaceFileInput">Replace</label>';
+          '<span class="segment-text"><span class="segment-time-row">' + formatTime(sl.time) + ' - ' + formatTime(endTime) + '</span><span class="segment-title-row">' + sl.title + '</span></span>';
 
         el.addEventListener('mousedown', (e) => {
-          if (e.target.classList.contains('slide-segment-replace')) return;
           if (e.target.classList.contains('resize-handle')) {
             initResize(e, 'slide', i, e.target.dataset.side);
           } else {
@@ -2840,134 +3864,400 @@
           const endT = (i < data.slides.length - 1) ? data.slides[i + 1].time : videoDuration;
           zoomToTimeRange(startT, endT);
         });
-        el.addEventListener('keydown', (e) => {
-          if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); selectItem('slide', i); }
+        el.addEventListener('contextmenu', (e) => {
+          e.preventDefault();
+          timelineSelect('slide', i);
+          showTimelineContextMenu(e.clientX, e.clientY, 'slide', i);
         });
-        el.querySelector('.slide-segment-replace').addEventListener('mousedown', (e) => {
-          e.stopPropagation();
-          selectedItem = { type: 'slide', index: i };
+        el.addEventListener('keydown', (e) => {
+          if (e.code === 'Enter' || e.code === 'Space') { e.preventDefault(); timelineSelect('slide', i); }
         });
         container.appendChild(el);
       });
     }
 
+    function updateSidebarTabs() {}
+
+    function bindPanelTabEvents() {
+      document.querySelectorAll('.panel-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.disabled) return;
+          const newFilter = btn.dataset.panel;
+          panelFilter = newFilter;
+          // Keep selection if it matches the new tab
+          if (selectedItem) {
+            const matchesTab = (newFilter === 'all') ||
+              (newFilter === 'chapters' && selectedItem.type === 'chapter') ||
+              (newFilter === 'slides' && selectedItem.type === 'slide') ||
+              (newFilter === 'intro' && selectedItem.type === 'intro');
+            if (!matchesTab) selectedItem = null;
+          }
+          renderPanel();
+        });
+      });
+    }
+
+    function getPanelTabsHtml() {
+      return `<div class="panel-tabs">
+        <button class="panel-tab ${panelFilter === 'intro' ? 'active' : ''}" data-panel="intro" data-tooltip="Introduction" aria-label="Introduction">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2.52799 1.74765C2.19183 1.3214 2.2742 0.715626 2.71197 0.394611C3.14974 0.0735968 3.77713 0.158906 4.11329 0.585154L9.28699 7.14537C9.45507 7.3585 9.76876 7.40115 9.98765 7.24064C10.2065 7.08014 10.2477 6.77725 10.0796 6.56413L6.12328 1.54749C5.78712 1.12124 5.86949 0.515463 6.30726 0.194448C6.74502 -0.126566 7.37242 -0.0412577 7.70858 0.38499L13.3084 7.48547L12.5888 4.86474C12.4469 4.34781 12.7642 3.82144 13.2976 3.68906C13.831 3.55668 14.3784 3.86842 14.5204 4.38535C15.589 8.27753 18.1892 13.4078 14.0927 16.4117C11.4661 18.3378 7.70178 17.8259 5.68482 15.2684L0.206787 8.3223C-0.129372 7.89605 -0.0470024 7.29028 0.390765 6.96926C0.828533 6.64825 1.45592 6.73356 1.79208 7.1598L4.5311 10.6329C4.69918 10.846 5.01288 10.8886 5.23176 10.7281C5.45064 10.5676 5.49183 10.2647 5.32375 10.0516L1.36739 5.03498C1.03123 4.60873 1.1136 4.00295 1.55137 3.68194C1.98914 3.36092 2.61653 3.44623 2.95269 3.87248L6.45254 8.31028C6.62062 8.5234 6.93432 8.56605 7.1532 8.40555C7.37208 8.24504 7.41327 7.94215 7.24519 7.72903L2.52799 1.74765Z" fill="currentColor" transform="translate(3.84,3.21)"/></svg>
+        </button>
+        <button class="panel-tab ${panelFilter === 'chapters' ? 'active' : ''}" data-panel="chapters" data-tooltip="Chapters" aria-label="Chapters">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg>
+        </button>
+        <button class="panel-tab ${panelFilter === 'slides' ? 'active' : ''}" data-panel="slides" data-tooltip="Slides" aria-label="Slides">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg>
+        </button>
+        <button class="panel-tab ${panelFilter === 'all' ? 'active' : ''}" data-panel="all" data-tooltip="All" aria-label="All" ${data.chapters.length === 0 && data.slides.length === 0 ? 'disabled' : ''}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 0C1.44772 0 1 0.447715 1 1C1 1.55228 1.44772 2 2 2H15.5C16.8807 2 18 3.11929 18 4.5C18 5.88071 16.8807 7 15.5 7H4.5C2.01472 7 0 9.01472 0 11.5C0 13.9853 2.01472 16 4.5 16H15V17.0962C15 17.8169 15.8114 18.2467 16.4172 17.8469L19.5941 15.7507C20.1353 15.3936 20.1353 14.6064 19.5941 14.2493L16.4172 12.1531C15.8114 11.7533 15 12.1831 15 12.9038V14H4.5C3.11929 14 2 12.8807 2 11.5C2 10.1193 3.11929 9 4.5 9H15.5C17.9853 9 20 6.98528 20 4.5C20 2.01472 17.9853 0 15.5 0H2Z" fill="currentColor" transform="translate(2,3)"/></svg>
+        </button>
+      </div>`;
+    }
+
     function renderPanel() {
       const panel = document.getElementById('rightPanel');
+      updateSidebarTabs();
 
-      if (data.chapters.length === 0 && data.slides.length === 0 && !data.introduction.title) {
-        panel.innerHTML = '';
+      const isEmpty = data.chapters.length === 0 && data.slides.length === 0;
+
+      if (panelFilter === 'intro') {
+        if (data.introduction.text || selectedItem?.type === 'intro' || data.chapters.length > 0) {
+          const charCount = (data.introduction.text || '').length;
+          panel.innerHTML = getPanelTabsHtml() + `<div class="panel-intro-form">
+            <div class="accordion-section-title">Intro</div>
+            <div class="accordion-form">
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Add introduction</span>
+                  <span class="form-counter" id="introCharCount">${charCount}/500</span>
+                </div>
+                <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+              </div>
+              <div class="accordion-delete-section">
+                <button class="accordion-delete-btn" id="introDeleteBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg> Delete introduction</button>
+              </div>
+            </div>
+          </div>`;
+          bindPanelTabEvents();
+          bindIntroPanelEvents();
+        } else {
+          panel.innerHTML = getPanelTabsHtml() + `<div class="panel-intro-view">
+            <div class="panel-intro-section">
+              <div class="panel-getstarted-actions">
+                <div class="panel-intro-card">
+                  <p class="panel-intro-card-desc">Provide a brief overview of the video's purpose, topics, or key takeaways before they start watching.</p>
+                  <button class="pill-btn-md" id="addIntroBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add intro</button>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+                  <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add chapter</button>
+                  <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slide deck</label>
+                </div>
+              </div>
+            </div>
+          </div>`;
+          bindPanelTabEvents();
+          document.getElementById('addIntroBtn')?.addEventListener('click', () => {
+            selectedItem = { type: 'intro', index: 0 };
+            renderPanel();
+          });
+          document.getElementById('emptyAddChBtn')?.addEventListener('click', addChapter);
+        }
         return;
       }
 
-      let html = '';
+      // Empty states for chapters/slides/all tabs
+      const hasChapters = data.chapters.length > 0;
+      const hasSlides = data.slides.length > 0;
+      const showChaptersEmpty = panelFilter === 'chapters' && !hasChapters;
+      const showSlidesEmpty = panelFilter === 'slides' && !hasSlides;
+      const showAllEmpty = panelFilter === 'all' && !hasChapters && !hasSlides;
 
-      // Introduction
-      html += `<div class="intro-section ${selectedItem && selectedItem.type === 'intro' ? 'active' : ''}" id="introSection">
-        <div class="intro-badge">Video-level</div>
-        <div class="intro-title-display">${data.introduction.title || 'Introduction'}</div>
-        <div class="intro-text-display">${data.introduction.text || 'Click to add an introduction for this video.'}</div>
-      </div>`;
-
-      // Selected item form
-      if (selectedItem) {
-        if (selectedItem.type === 'intro') {
-          html += `<div class="panel-section">
-            <div class="panel-section-title">Introduction</div>
-            <div class="form-group">
-              <label class="form-label" for="introTitleInput">Title</label>
-              <input type="text" class="form-input" id="introTitleInput" value="${data.introduction.title}" placeholder="Enter video title">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="introTextInput">Description</label>
-              <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers">${data.introduction.text}</textarea>
-            </div>
-          </div>`;
-        } else if (selectedItem.type === 'chapter' && data.chapters[selectedItem.index]) {
-          const ch = data.chapters[selectedItem.index];
-          html += `<div class="selected-indicator">
-            <span class="selected-color" style="background: var(--chapter-color);"></span>
-            <span class="selected-label">Chapter</span>
-            <span class="selected-time">${formatTime(ch.time)}</span>
-          </div>
-          <div class="panel-section">
-            <div class="panel-section-title">Chapter Properties</div>
-            <div class="form-group">
-              <label class="form-label" for="chapterTimeInput">Timestamp</label>
-              <div class="timestamp-input">
-                <input type="text" class="form-input" id="chapterTimeInput" value="${formatTime(ch.time)}" style="width:100px;">
-                <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3V4.06189C7.38128 4.51314 4.51314 7.38128 4.06189 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H4.06189C4.51314 16.6187 7.38128 19.4869 11 19.9381V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V19.9381C16.6187 19.4869 19.4869 16.6187 19.9381 13H21C21.5523 13 22 12.5523 22 12C22 11.4477 21.5523 11 21 11H19.9381C19.4869 7.38128 16.6187 4.51314 13 4.06189V3ZM6.08296 11C6.50448 8.4875 8.4875 6.50448 11 6.08296V7C11 7.55228 11.4477 8 12 8C12.5523 8 13 7.55228 13 7V6.08296C15.5125 6.50448 17.4955 8.4875 17.917 11H17C16.4477 11 16 11.4477 16 12C16 12.5523 16.4477 13 17 13H17.917C17.4955 15.5125 15.5125 17.4955 13 17.917V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V17.917C8.4875 17.4955 6.50448 15.5125 6.08296 13H7C7.55228 13 8 12.5523 8 12C8 11.4477 7.55228 11 7 11H6.08296ZM12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="currentColor"/></svg><span class="ds-hint"><span class="ds-hint-arrow"><svg width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M0 9L5.4 2Q7 0 8.6 2L14 9Z" fill="currentColor"/></svg></span><span class="ds-hint-body">Snap to playhead</span></span></button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="chapterTitleInput">Title</label>
-              <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Chapter title" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="chapterSummaryInput">Summary</label>
-              <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers">${ch.summary || ''}</textarea>
-            </div>
-            ${ch.ai ? '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;"><span class="ai-badge">&#10022; AI</span><span style="font-size:11px;color:var(--text-tertiary);">Generated</span></div>' : ''}
-          </div>
-          <div class="panel-actions">
-            <button class="btn btn-danger btn-sm" id="deleteItemBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 4h8M5.5 4V3a1 1 0 011-1h1a1 1 0 011 1v1M4.5 4v7a1 1 0 001 1h3a1 1 0 001-1V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>Delete chapter</button>
-          </div>`;
-        } else if (selectedItem.type === 'slide' && data.slides[selectedItem.index]) {
-          const sl = data.slides[selectedItem.index];
-          html += `<div class="selected-indicator">
-            <span class="selected-color" style="background: var(--slide-color);"></span>
-            <span class="selected-label">Slide</span>
-            <span class="selected-time">${formatTime(sl.time)}</span>
-          </div>
-          <div class="panel-section">
-            <div class="panel-section-title">Slide Properties</div>
-            ${sl.image ? `<div class="slide-thumb-container">
-              <img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title}">
-              <label class="slide-thumb-replace" id="replaceSlideBtn" for="replaceFileInput" style="cursor:pointer;">Replace slide</label>
-            </div>` : ''}
-            <div class="form-group">
-              <label class="form-label" for="slideTimeInput">Timestamp</label>
-              <div class="timestamp-input">
-                <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}" style="width:100px;">
-                <button class="use-current-btn" id="useCurrentTimeBtn" aria-label="Snap to playhead"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3V4.06189C7.38128 4.51314 4.51314 7.38128 4.06189 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H4.06189C4.51314 16.6187 7.38128 19.4869 11 19.9381V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V19.9381C16.6187 19.4869 19.4869 16.6187 19.9381 13H21C21.5523 13 22 12.5523 22 12C22 11.4477 21.5523 11 21 11H19.9381C19.4869 7.38128 16.6187 4.51314 13 4.06189V3ZM6.08296 11C6.50448 8.4875 8.4875 6.50448 11 6.08296V7C11 7.55228 11.4477 8 12 8C12.5523 8 13 7.55228 13 7V6.08296C15.5125 6.50448 17.4955 8.4875 17.917 11H17C16.4477 11 16 11.4477 16 12C16 12.5523 16.4477 13 17 13H17.917C17.4955 15.5125 15.5125 17.4955 13 17.917V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V17.917C8.4875 17.4955 6.50448 15.5125 6.08296 13H7C7.55228 13 8 12.5523 8 12C8 11.4477 7.55228 11 7 11H6.08296ZM12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="currentColor"/></svg><span class="ds-hint"><span class="ds-hint-arrow"><svg width="14" height="9" viewBox="0 0 14 9" fill="none"><path d="M0 9L5.4 2Q7 0 8.6 2L14 9Z" fill="currentColor"/></svg></span><span class="ds-hint-body">Snap to playhead</span></span></button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="slideTitleInput">Title</label>
-              <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Slide title" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="slideDescInput">Description</label>
-              <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide">${sl.description || ''}</textarea>
-            </div>
-          </div>
-          <div class="panel-actions">
-            <button class="btn btn-danger btn-sm" id="deleteItemBtn"><span class="btn-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 4h8M5.5 4V3a1 1 0 011-1h1a1 1 0 011 1v1M4.5 4v7a1 1 0 001 1h3a1 1 0 001-1V4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></span>Remove slide</button>
+      if (showChaptersEmpty || showSlidesEmpty || showAllEmpty) {
+        let emptyHtml = getPanelTabsHtml();
+        if (showChaptersEmpty || showAllEmpty) {
+          emptyHtml += `<div class="panel-empty-state">
+            <div class="panel-empty-state-title">No chapters yet</div>
+            <p class="panel-empty-state-desc">Organize your video into chapters to help viewers find and revisit key topics.</p>
+            <button class="pill-btn-md" id="emptyAddChapterBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add chapter</button>
           </div>`;
         }
+        if (showSlidesEmpty || showAllEmpty) {
+          emptyHtml += `<div class="panel-empty-state">
+            <div class="panel-empty-state-title">No slides yet</div>
+            <p class="panel-empty-state-desc">Add slides to provide visual context and help viewers follow along while watching.</p>
+            <label class="pill-btn-md" id="emptyAddSlidesBtn" for="slideFileInput" style="cursor:pointer;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slides</label>
+          </div>`;
+        }
+        panel.innerHTML = emptyHtml;
+        bindPanelTabEvents();
+        document.getElementById('emptyAddChapterBtn')?.addEventListener('click', addChapter);
+        return;
       }
 
-      // Content list
-      const allItems = [
-        ...data.chapters.map((c, i) => ({ ...c, type: 'chapter', index: i })),
-        ...data.slides.map((s, i) => ({ ...s, type: 'slide', index: i }))
-      ].sort((a, b) => a.time - b.time);
+      let html = getPanelTabsHtml();
+      const chevronSvg = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.29289 11.7071C5.90237 11.3166 5.90237 10.6834 6.29289 10.2929L8.58579 8L6.29289 5.70711C5.90237 5.31658 5.90237 4.68342 6.29289 4.29289C6.68342 3.90237 7.31658 3.90237 7.70711 4.29289L10.7071 7.29289C11.0976 7.68342 11.0976 8.31658 10.7071 8.70711L7.70711 11.7071C7.31658 12.0976 6.68342 12.0976 6.29289 11.7071Z" fill="currentColor"/></svg>';
+      const targetSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3V4.06189C7.38128 4.51314 4.51314 7.38128 4.06189 11H3C2.44772 11 2 11.4477 2 12C2 12.5523 2.44772 13 3 13H4.06189C4.51314 16.6187 7.38128 19.4869 11 19.9381V21C11 21.5523 11.4477 22 12 22C12.5523 22 13 21.5523 13 21V19.9381C16.6187 19.4869 19.4869 16.6187 19.9381 13H21C21.5523 13 22 12.5523 22 12C22 11.4477 21.5523 11 21 11H19.9381C19.4869 7.38128 16.6187 4.51314 13 4.06189V3ZM6.08296 11C6.50448 8.4875 8.4875 6.50448 11 6.08296V7C11 7.55228 11.4477 8 12 8C12.5523 8 13 7.55228 13 7V6.08296C15.5125 6.50448 17.4955 8.4875 17.917 11H17C16.4477 11 16 11.4477 16 12C16 12.5523 16.4477 13 17 13H17.917C17.4955 15.5125 15.5125 17.4955 13 17.917V17C13 16.4477 12.5523 16 12 16C11.4477 16 11 16.4477 11 17V17.917C8.4875 17.4955 6.50448 15.5125 6.08296 13H7C7.55228 13 8 12.5523 8 12C8 11.4477 7.55228 11 7 11H6.08296ZM12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z" fill="white"/></svg>';
+      const deleteSvg = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg>';
 
-      if (allItems.length > 0) {
-        html += `<div class="panel-section" style="border-bottom:none;padding-bottom:0;">
-          <div class="panel-section-title">All content (${allItems.length})</div>
-        </div><ul class="chapter-list">`;
-        allItems.forEach(item => {
-          const isActive = selectedItem && selectedItem.type === item.type && selectedItem.index === item.index;
-          html += `<li class="chapter-list-item ${isActive ? 'active' : ''}" data-type="${item.type}" data-index="${item.index}">
-            <span class="chapter-list-time">${formatTime(item.time)}</span>
-            <span class="chapter-list-title">${item.title}</span>
-            <span class="chapter-list-type type-${item.type}">${item.type === 'chapter' ? 'Ch' : 'Sl'}</span>
-          </li>`;
-        });
-        html += '</ul>';
+      const isExpanded = (type, index) => selectedItem && selectedItem.type === type && selectedItem.index === index;
+      const isFocused = (type, index) => focusedItem && focusedItem.type === type && focusedItem.index === index;
+
+      // Focus View: show section title + toggle, then only the selected item's form
+      if (panelViewMode === 'focus' && panelFilter === 'chapters') {
+        html += `<div class="accordion-section-header">
+          <div class="accordion-section-title">Chapters</div>
+          <div class="mode-toggle">
+            <span class="mode-toggle-label" style="color: var(--w-60)">List View</span>
+            <div class="mode-toggle-switch active" id="modeToggle"></div>
+            <span class="mode-toggle-label" style="color: var(--w-100)">Focus View</span>
+          </div>
+        </div>`;
+        if (selectedItem && selectedItem.type === 'chapter') {
+          const ch = data.chapters[selectedItem.index];
+          html += `<div class="accordion-list"><div class="accordion-item expanded" data-type="chapter" data-index="${selectedItem.index}">
+            <div class="accordion-body">
+              <div class="accordion-form">
+                <div class="form-field">
+                  <div class="form-label-row"><span class="form-label">Chapter name</span><span class="form-counter">${(ch.title || '').length}/75</span></div>
+                  <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Untitled chapter" maxlength="75" required>
+                </div>
+                <div class="form-field">
+                  <div class="form-label-row"><span class="form-label">Chapter summary</span><span class="form-counter">${(ch.summary || '').length}/500</span></div>
+                  <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers" maxlength="500">${ch.summary || ''}</textarea>
+                </div>
+                <div class="form-field">
+                  <div class="form-label-row"><span class="form-label">Start time</span></div>
+                  <div class="timestamp-input">
+                    <input type="text" class="form-input" id="chapterTimeInput" value="${formatTime(ch.time)}">
+                    <button class="use-current-btn" aria-label="Snap to playhead">${targetSvg}</button>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-delete-section">
+                <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Delete chapter</button>
+              </div>
+            </div>
+          </div></div>`;
+        } else {
+          html += '<div class="accordion-list"><div class="panel-empty-hint" style="padding:24px;color:var(--w-50);font-size:13px;text-align:center;">Click a chapter on the timeline to view its properties.</div></div>';
+        }
+        panel.innerHTML = html;
+        bindPanelTabEvents();
+        bindPanelEvents();
+        return;
       }
+
+      // Focus View for slides
+      if (panelViewMode === 'focus' && panelFilter === 'slides') {
+        html += `<div class="accordion-section-header">
+          <div class="accordion-section-title">Slides</div>
+          <div class="mode-toggle">
+            <span class="mode-toggle-label" style="color: var(--w-60)">List View</span>
+            <div class="mode-toggle-switch active" id="modeToggle"></div>
+            <span class="mode-toggle-label" style="color: var(--w-100)">Focus View</span>
+          </div>
+        </div>`;
+        if (selectedItem && selectedItem.type === 'slide') {
+          const sl = data.slides[selectedItem.index];
+          html += `<div class="accordion-list"><div class="accordion-item expanded" data-type="slide" data-index="${selectedItem.index}">
+            <div class="accordion-body">
+              <div class="accordion-form">
+                <div class="slide-form-properties-title">Properties</div>
+                <div class="form-field">
+                  <span class="form-label">Slide</span>
+                  <div class="slide-thumb-container slide-thumb-small">
+                    ${sl.image ? `<img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title}">` : '<div class="slide-thumbnail-placeholder"></div>'}
+                    <label class="slide-thumb-replace" id="replaceSlideBtn" for="replaceFileInput" style="cursor:pointer;">Replace image</label>
+                  </div>
+                </div>
+                <div class="form-field">
+                  <div class="form-label-row"><span class="form-label">Slide name</span><span class="form-counter">${(sl.title || '').length}/75</span></div>
+                  <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide name" maxlength="75" required>
+                </div>
+                <div class="form-field">
+                  <div class="form-label-row"><span class="form-label">Slide description</span><span class="form-counter">${(sl.description || '').length}/500</span></div>
+                  <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+                </div>
+                <div class="form-field">
+                  <div class="form-label-row"><span class="form-label">Slide start</span></div>
+                  <div class="timestamp-input">
+                    <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}">
+                    <button class="use-current-btn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-delete-section">
+                <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Remove slide</button>
+              </div>
+            </div>
+          </div></div>`;
+        } else {
+          html += '<div class="accordion-list"><div class="panel-empty-hint" style="padding:24px;color:var(--w-50);font-size:13px;text-align:center;">Click a slide on the timeline to view its properties.</div></div>';
+        }
+        panel.innerHTML = html;
+        bindPanelTabEvents();
+        bindPanelEvents();
+        return;
+      }
+
+      html += '<div class="accordion-list">';
+
+      // Section title and toggle
+      if (panelFilter === 'all') {
+        html += `<div class="accordion-section-title">All items</div>`;
+      }
+
+      // Introduction — show in 'all' filter
+      if (panelFilter === 'all') {
+        const introExpanded = isExpanded('intro', 0);
+        html += `<div class="accordion-item ${introExpanded ? 'expanded' : ''}" data-type="intro" data-index="0">
+          <div class="accordion-row">
+            <div class="accordion-row-holder">
+              <span class="accordion-row-title">Introduction</span>
+            </div>
+            <span class="accordion-row-chevron">${chevronSvg}</span>
+          </div>
+          <div class="accordion-body">
+            <div class="accordion-form">
+              <div class="form-group">
+                <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }
+
+      if (panelFilter === 'chapters') {
+        html += `<div class="accordion-section-header">
+          <div class="accordion-section-title">Chapters</div>
+          <div class="mode-toggle">
+            <span class="mode-toggle-label" style="color: ${panelViewMode === 'list' ? 'var(--w-100)' : 'var(--w-60)'}">List View</span>
+            <div class="mode-toggle-switch ${panelViewMode === 'focus' ? 'active' : ''}" id="modeToggle"></div>
+            <span class="mode-toggle-label" style="color: ${panelViewMode === 'focus' ? 'var(--w-100)' : 'var(--w-60)'}">Focus View</span>
+          </div>
+        </div>`;
+      } else if (panelFilter === 'slides') {
+        html += `<div class="accordion-section-header">
+          <div class="accordion-section-title">Slides</div>
+          <div class="mode-toggle">
+            <span class="mode-toggle-label" style="color: ${panelViewMode === 'list' ? 'var(--w-100)' : 'var(--w-60)'}">List View</span>
+            <div class="mode-toggle-switch ${panelViewMode === 'focus' ? 'active' : ''}" id="modeToggle"></div>
+            <span class="mode-toggle-label" style="color: ${panelViewMode === 'focus' ? 'var(--w-100)' : 'var(--w-60)'}">Focus View</span>
+          </div>
+        </div>`;
+      }
+
+      // Build items list based on filter
+      let allItems = [];
+      if (panelFilter === 'all') {
+        allItems = [
+          ...data.chapters.map((c, i) => ({ ...c, type: 'chapter', index: i })),
+          ...data.slides.map((s, i) => ({ ...s, type: 'slide', index: i }))
+        ].sort((a, b) => a.time - b.time);
+      } else if (panelFilter === 'chapters') {
+        allItems = data.chapters.map((c, i) => ({ ...c, type: 'chapter', index: i }));
+      } else if (panelFilter === 'slides') {
+        allItems = data.slides.map((s, i) => ({ ...s, type: 'slide', index: i }));
+      }
+
+      allItems.forEach(item => {
+        const expanded = panelFilter !== 'all' && isExpanded(item.type, item.index);
+        const focused = isFocused(item.type, item.index);
+
+        const badge = panelFilter === 'all'
+          ? (item.type === 'chapter' ? '<span class="accordion-row-badge accordion-row-badge-ch">CH</span>' : '<span class="accordion-row-badge accordion-row-badge-sl">SL</span>')
+          : '';
+        const chevron = panelFilter !== 'all' ? `<span class="accordion-row-chevron">${chevronSvg}</span>` : '';
+        html += `<div class="accordion-item ${expanded ? 'expanded' : ''} ${focused ? 'focused' : ''}" data-type="${item.type}" data-index="${item.index}">
+          <div class="accordion-row">
+            <div class="accordion-row-holder">
+              <span class="accordion-row-time">${formatTime(item.time)}</span>
+              <span class="accordion-row-title">${item.title}</span>
+            </div>
+            ${badge}
+            ${chevron}
+          </div>
+          <div class="accordion-body">`;
+
+        if (item.type === 'chapter') {
+          const ch = data.chapters[item.index];
+          html += `
+            <div class="accordion-form">
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Chapter name</span>
+                  <span class="form-counter">${(ch.title || '').length}/75</span>
+                </div>
+                <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Untitled chapter" maxlength="75" required>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Chapter summary</span>
+                  <span class="form-counter">${(ch.summary || '').length}/500</span>
+                </div>
+                <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers" maxlength="500">${ch.summary || ''}</textarea>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Start time</span>
+                </div>
+                <div class="timestamp-input">
+                  <input type="text" class="form-input" id="chapterTimeInput" value="${formatTime(ch.time)}">
+                  <button class="use-current-btn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-delete-section">
+              <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Delete chapter</button>
+            </div>`;
+        } else {
+          const sl = data.slides[item.index];
+          html += `
+            <div class="accordion-form">
+              <div class="slide-form-properties-title">Properties</div>
+              <div class="form-field">
+                <span class="form-label">Slide</span>
+                <div class="slide-thumb-container slide-thumb-small">
+                  ${sl.image ? `<img class="slide-thumbnail-preview" src="${sl.image}" alt="Slide preview: ${sl.title}">` : '<div class="slide-thumbnail-placeholder"></div>'}
+                  <label class="slide-thumb-replace" id="replaceSlideBtn" for="replaceFileInput" style="cursor:pointer;">Replace image</label>
+                </div>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Slide name</span>
+                  <span class="form-counter">${(sl.title || '').length}/75</span>
+                </div>
+                <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide name" maxlength="75" required>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Slide description</span>
+                  <span class="form-counter">${(sl.description || '').length}/500</span>
+                </div>
+                <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+              </div>
+              <div class="form-field">
+                <div class="form-label-row">
+                  <span class="form-label">Slide start</span>
+                </div>
+                <div class="timestamp-input">
+                  <input type="text" class="form-input" id="slideTimeInput" value="${formatTime(sl.time)}">
+                  <button class="use-current-btn" aria-label="Snap to playhead">${targetSvg}<span class="ds-hint"><span class="ds-hint-body">Snap to playhead</span><span class="ds-hint-arrow"><svg width="10" height="5" viewBox="0 0 10 5"><path d="M5 0L10 5H0L5 0Z"/></svg></span></span></button>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-delete-section">
+              <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Remove slide</button>
+            </div>`;
+        }
+
+        html += `</div></div>`;
+      });
+
+      html += '</div>';
 
       panel.innerHTML = html;
+      bindPanelTabEvents();
       bindPanelEvents();
     }
 
@@ -2987,20 +4277,60 @@
       return null;
     }
 
+    function bindIntroPanelEvents() {
+      const introText = document.getElementById('introTextInput');
+      const charCount = document.getElementById('introCharCount');
+      if (introText) {
+        introText.addEventListener('input', (e) => {
+          data.introduction.text = e.target.value;
+          if (charCount) charCount.textContent = e.target.value.length + '/500';
+          triggerSave();
+        });
+      }
+      const deleteBtn = document.getElementById('introDeleteBtn');
+      if (deleteBtn) deleteBtn.addEventListener('click', () => {
+        data.introduction.text = '';
+        selectedItem = null;
+        render();
+        triggerSave();
+        showToast('Introduction deleted');
+      });
+    }
+
     function bindPanelEvents() {
-      const introSection = document.getElementById('introSection');
-      if (introSection) introSection.addEventListener('click', () => selectItem('intro', 0));
+      const modeToggle = document.getElementById('modeToggle');
+      if (modeToggle) {
+        modeToggle.addEventListener('click', () => {
+          panelViewMode = panelViewMode === 'list' ? 'focus' : 'list';
+          renderPanel();
+        });
+      }
 
-      const useCurrentBtn = document.getElementById('useCurrentTimeBtn');
-      if (useCurrentBtn) useCurrentBtn.addEventListener('click', useCurrentTime);
+      document.querySelectorAll('.use-current-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = btn.closest('.accordion-item');
+          if (item) {
+            const type = item.dataset.type;
+            const index = parseInt(item.dataset.index);
+            selectedItem = { type, index };
+          }
+          useCurrentTime();
+        });
+      });
 
-      const deleteBtn = document.getElementById('deleteItemBtn');
-      if (deleteBtn) deleteBtn.addEventListener('click', confirmDelete);
+      document.querySelectorAll('.accordion-delete-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const item = btn.closest('.accordion-item');
+          if (item) {
+            const type = item.dataset.type;
+            const index = parseInt(item.dataset.index);
+            selectedItem = { type, index };
+          }
+          confirmDelete();
+        });
+      });
 
       // Form inputs
-      const introTitle = document.getElementById('introTitleInput');
-      if (introTitle) introTitle.addEventListener('input', (e) => { data.introduction.title = e.target.value; triggerSave(); });
-
       const introText = document.getElementById('introTextInput');
       if (introText) introText.addEventListener('input', (e) => { data.introduction.text = e.target.value; triggerSave(); });
 
@@ -3072,44 +4402,157 @@
         }
       });
 
-      // Content list items
-      document.querySelectorAll('.chapter-list-item').forEach(item => {
-        item.addEventListener('click', () => {
+      // Accordion row clicks — select item; chevron toggles expand/collapse
+      document.querySelectorAll('.accordion-item > .accordion-row').forEach(row => {
+        row.addEventListener('click', (e) => {
+          if (e.target.closest('input, textarea, button')) return;
+          const item = row.parentElement;
           const type = item.dataset.type;
           const index = parseInt(item.dataset.index);
-          selectItem(type, index);
+          if (e.target.closest('.accordion-row-chevron')) {
+            const alreadyExpanded = selectedItem && selectedItem.type === type && selectedItem.index === index;
+            if (alreadyExpanded) {
+              selectedItem = null;
+              focusedItem = { type, index };
+              render();
+            } else {
+              selectItem(type, index);
+            }
+          } else {
+            selectItem(type, index);
+          }
         });
       });
     }
 
     // ===== SELECTION =====
-    function selectItem(type, index) {
-      selectedItem = { type, index };
+    function timelineSelect(type, index) {
+      selectItem(type, index);
+    }
+
+    function focusItem(type, index) {
+      focusedItem = { type, index };
+      selectedItem = null;
+      if (type === 'chapter') {
+        panelFilter = 'chapters';
+      } else if (type === 'slide') {
+        panelFilter = 'slides';
+      }
+      updateSidebarActive();
       render();
       if (type === 'chapter' && data.chapters[index]) {
         video.currentTime = data.chapters[index].time;
       } else if (type === 'slide' && data.slides[index]) {
         video.currentTime = data.slides[index].time;
       }
+      const focusedEl = document.querySelector('.accordion-item.focused');
+      if (focusedEl) {
+        focusedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function selectItem(type, index) {
+      selectedItem = { type, index };
+      focusedItem = null;
+      // Always switch panel filter to show the selected item's type
+      if (type === 'intro') {
+        panelFilter = 'intro';
+      } else if (type === 'chapter') {
+        panelFilter = 'chapters';
+      } else if (type === 'slide') {
+        panelFilter = 'slides';
+      }
+      updateSidebarActive();
+      render();
+      if (type === 'chapter' && data.chapters[index]) {
+        video.currentTime = data.chapters[index].time;
+      } else if (type === 'slide' && data.slides[index]) {
+        video.currentTime = data.slides[index].time;
+      }
+      // Scroll the expanded item into view in the panel
+      const expandedEl = document.querySelector('.accordion-item.expanded');
+      if (expandedEl) {
+        expandedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    function updateSidebarActive() {
+      document.querySelectorAll('.panel-tab').forEach(b => {
+        b.classList.toggle('active', b.dataset.panel === panelFilter);
+      });
     }
 
     // ===== ADD CHAPTER =====
+    function findAvailableTime(requestedTime, existingTimes) {
+      const time = Math.round(requestedTime * 10) / 10;
+      const tooClose = existingTimes.some(t => Math.abs(t - time) < 0.5);
+      if (!tooClose) return time;
+      const maxTime = videoDuration;
+      for (let offset = 1; offset <= Math.ceil(maxTime); offset++) {
+        const forward = Math.round((time + offset) * 10) / 10;
+        if (forward <= maxTime && !existingTimes.some(t => Math.abs(t - forward) < 0.5)) return forward;
+      }
+      return null;
+    }
+
     function addChapter() {
-      let time = video.currentTime || 0;
-      // First chapter always starts at 0:00 to fill timeline from the beginning
-      if (data.chapters.length === 0) time = 0;
+      let time;
+      if (data.chapters.length === 0) {
+        time = 0;
+      } else {
+        time = video.currentTime || 0;
+        const existingChapterTimes = data.chapters.map(c => c.time);
+        const rounded = Math.round(time * 10) / 10;
+        const tooClose = existingChapterTimes.some(t => Math.abs(t - rounded) < 0.5);
+
+        if (!tooClose) {
+          time = rounded;
+        } else {
+          // Snap to slide positions on the other timeline first
+          let placed = false;
+          if (data.slides.length > 0) {
+            const sortedSlides = [...data.slides].sort((a, b) => a.time - b.time);
+            for (const slide of sortedSlides) {
+              const sTime = Math.round(slide.time * 10) / 10;
+              if (sTime >= rounded && !existingChapterTimes.some(t => Math.abs(t - sTime) < 0.5)) {
+                time = sTime;
+                placed = true;
+                break;
+              }
+            }
+          }
+          // Then try 2s gaps forward from current time
+          if (!placed) {
+            let candidate = rounded;
+            while (candidate <= videoDuration) {
+              candidate = Math.round((candidate + 2) * 10) / 10;
+              if (candidate <= videoDuration && !existingChapterTimes.some(t => Math.abs(t - candidate) < 0.5)) {
+                time = candidate;
+                placed = true;
+                break;
+              }
+            }
+          }
+          if (!placed) {
+            showToast('No more room — timeline is full');
+            return;
+          }
+        }
+      }
       const newChapter = { time, title: 'Untitled chapter', summary: '', ai: false };
       data.chapters.push(newChapter);
       data.chapters.sort((a, b) => a.time - b.time);
       const newIndex = data.chapters.indexOf(newChapter);
       selectedItem = { type: 'chapter', index: newIndex };
+      panelFilter = 'chapters';
+      updateSidebarActive();
       render();
       triggerSave();
       showToast('Chapter added at ' + formatTime(time));
     }
 
     // ===== ADD SLIDES (PDF upload from desktop) =====
-    async function handlePdfUpload(file) {
+    async function handlePdfUpload(file, startTime) {
       if (typeof pdfjsLib === 'undefined') {
         showToast('PDF library loading, please try again...');
         return;
@@ -3120,7 +4563,9 @@
         const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
         const totalPages = pdf.numPages;
         const dur = videoDuration || 1;
-        const interval = dur / totalPages;
+        const rangeStart = (startTime !== undefined) ? startTime : video.currentTime;
+        const availableRange = dur - rangeStart;
+        const slideDuration = availableRange / totalPages;
         const deckName = file.name.replace(/\.[^.]+$/, '');
 
         showToast('Extracting ' + totalPages + ' slides from PDF...');
@@ -3134,12 +4579,24 @@
           const ctx = canvas.getContext('2d');
           await page.render({ canvasContext: ctx, viewport }).promise;
           const image = canvas.toDataURL('image/png');
-          const time = (data.slides.length === 0 && p === 1) ? 0 : interval * (p - 1);
-          data.slides.push({ time, title: deckName + ' - Slide ' + p, description: '', image });
+          const time = rangeStart + (p - 1) * slideDuration;
+          const textContent = await page.getTextContent();
+          const lines = [];
+          let currentLine = '';
+          for (const item of textContent.items) {
+            if (item.hasEOL && currentLine) { lines.push(currentLine.trim()); currentLine = ''; }
+            currentLine += item.str;
+          }
+          if (currentLine.trim()) lines.push(currentLine.trim());
+          const title = lines[0] || ('Slide ' + p + ' - ' + deckName);
+          const description = lines.slice(1).join('\n');
+          data.slides.push({ time, title, description, image });
         }
 
         data.slides.sort((a, b) => a.time - b.time);
         selectedItem = { type: 'slide', index: 0 };
+        panelFilter = 'slides';
+        updateSidebarActive();
         render();
         triggerSave();
         showToast(totalPages + ' slides added from ' + file.name);
@@ -3148,24 +4605,113 @@
       }
     }
 
-    function addSlide() {
-      var el = document.getElementById('slideFileInput');
-      el.showPicker ? el.showPicker() : el.click();
+    async function handlePptxUpload(file, startTime) {
+      if (typeof JSZip === 'undefined') {
+        showToast('PPTX library loading, please try again...');
+        return;
+      }
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const zip = await JSZip.loadAsync(arrayBuffer);
+
+        // Find slide image thumbnails in ppt/media/
+        const mediaFiles = [];
+        zip.forEach((path, entry) => {
+          if (path.match(/^ppt\/media\/image\d+\.(png|jpg|jpeg|gif|webp)$/i)) {
+            mediaFiles.push({ path, entry });
+          }
+        });
+
+        // Find slides to count them
+        const slideFiles = [];
+        zip.forEach((path, entry) => {
+          if (path.match(/^ppt\/slides\/slide\d+\.xml$/i)) {
+            slideFiles.push(path);
+          }
+        });
+        slideFiles.sort((a, b) => {
+          const numA = parseInt(a.match(/slide(\d+)/)[1]);
+          const numB = parseInt(b.match(/slide(\d+)/)[1]);
+          return numA - numB;
+        });
+
+        const totalSlides = slideFiles.length;
+        if (totalSlides === 0) {
+          showToast('No slides found in PPTX file');
+          return;
+        }
+
+        const dur = videoDuration || 1;
+        const rangeStart = (startTime !== undefined) ? startTime : video.currentTime;
+        const availableRange = dur - rangeStart;
+        const slideDuration = availableRange / totalSlides;
+        const deckName = file.name.replace(/\.[^.]+$/, '');
+
+        showToast('Extracting ' + totalSlides + ' slides from PPTX...');
+
+        // Extract text from slide XMLs
+        const slideTexts = [];
+        for (const slidePath of slideFiles) {
+          const xmlStr = await zip.file(slidePath).async('string');
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(xmlStr, 'application/xml');
+          const textNodes = doc.getElementsByTagNameNS('http://schemas.openxmlformats.org/drawingml/2006/main', 't');
+          const paragraphs = doc.getElementsByTagNameNS('http://schemas.openxmlformats.org/drawingml/2006/main', 'p');
+          const lines = [];
+          let currentLine = '';
+          for (const p of paragraphs) {
+            const tNodes = p.getElementsByTagNameNS('http://schemas.openxmlformats.org/drawingml/2006/main', 't');
+            let pText = '';
+            for (const t of tNodes) { pText += t.textContent; }
+            if (pText.trim()) lines.push(pText.trim());
+          }
+          slideTexts.push(lines);
+        }
+
+        // Extract images sorted by name
+        mediaFiles.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }));
+
+        for (let i = 0; i < totalSlides; i++) {
+          let image = '';
+          if (i < mediaFiles.length) {
+            const blob = await mediaFiles[i].entry.async('blob');
+            image = await new Promise(resolve => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+            });
+          }
+          const time = rangeStart + i * slideDuration;
+          const lines = slideTexts[i] || [];
+          const title = lines[0] || ('Slide ' + (i + 1) + ' - ' + deckName);
+          const description = lines.slice(1).join('\n');
+          data.slides.push({ time, title, description, image });
+        }
+
+        data.slides.sort((a, b) => a.time - b.time);
+        selectedItem = { type: 'slide', index: 0 };
+        panelFilter = 'slides';
+        updateSidebarActive();
+        render();
+        triggerSave();
+        showToast(totalSlides + ' slides added from ' + file.name);
+      } catch (err) {
+        showToast('Error reading PPTX: ' + err.message);
+      }
     }
 
     document.getElementById('slideFileInput').addEventListener('change', function() {
       const file = this.files && this.files[0];
       if (!file) return;
-      handlePdfUpload(file);
+      if (file.name.toLowerCase().endsWith('.pptx')) {
+        handlePptxUpload(file);
+      } else {
+        handlePdfUpload(file);
+      }
       this.value = '';
     });
 
     // ===== REPLACE SLIDE (image upload from desktop) =====
-    function replaceSlide() {
-      var el = document.getElementById('replaceFileInput');
-      el.showPicker ? el.showPicker() : el.click();
-    }
-
     document.getElementById('replaceFileInput').addEventListener('change', function() {
       const file = this.files && this.files[0];
       if (!file || !selectedItem || selectedItem.type !== 'slide') return;
@@ -3181,6 +4727,10 @@
     });
 
     document.getElementById('addChapterBtn').addEventListener('click', addChapter);
+    document.getElementById('undoBtn').addEventListener('click', undo);
+    document.getElementById('redoBtn').addEventListener('click', redo);
+
+    // Panel tab events are bound dynamically in bindPanelTabEvents()
 
     // ===== USE CURRENT TIME =====
     function useCurrentTime() {
@@ -3197,6 +4747,68 @@
       }
       render();
       triggerSave();
+    }
+
+    // ===== TIMELINE CONTEXT MENU =====
+    function showTimelineContextMenu(x, y, type, index) {
+      hideTimelineContextMenu();
+      const menu = document.createElement('div');
+      menu.className = 'timeline-context-menu';
+      menu.id = 'timelineContextMenu';
+      menu.style.left = x + 'px';
+      menu.style.top = y + 'px';
+
+      const snapBtn = document.createElement('button');
+      snapBtn.className = 'timeline-context-menu-item';
+      snapBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="currentColor"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>Snap to playhead';
+      snapBtn.addEventListener('click', () => {
+        hideTimelineContextMenu();
+        const time = video.currentTime;
+        if (type === 'chapter' && data.chapters[index]) {
+          data.chapters[index].time = time;
+          data.chapters.sort((a, b) => a.time - b.time);
+          const newIndex = data.chapters.findIndex(c => c.time === time);
+          selectedItem = { type: 'chapter', index: newIndex };
+        } else if (type === 'slide' && data.slides[index]) {
+          data.slides[index].time = time;
+          data.slides.sort((a, b) => a.time - b.time);
+          const newIndex = data.slides.findIndex(s => s.time === time);
+          selectedItem = { type: 'slide', index: newIndex };
+        }
+        render();
+        triggerSave();
+        showToast('Snapped to ' + formatTime(time));
+      });
+      menu.appendChild(snapBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'timeline-context-menu-item destructive';
+      deleteBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" fill="currentColor"/></svg>Delete';
+      deleteBtn.addEventListener('click', () => {
+        selectedItem = { type, index };
+        hideTimelineContextMenu();
+        confirmDelete();
+      });
+      menu.appendChild(deleteBtn);
+
+      document.body.appendChild(menu);
+
+      const menuRect = menu.getBoundingClientRect();
+      if (menuRect.right > window.innerWidth) menu.style.left = (window.innerWidth - menuRect.width - 8) + 'px';
+      if (menuRect.bottom > window.innerHeight) menu.style.top = (window.innerHeight - menuRect.height - 8) + 'px';
+
+      setTimeout(() => document.addEventListener('mousedown', onContextMenuOutside), 0);
+    }
+
+    function hideTimelineContextMenu() {
+      const existing = document.getElementById('timelineContextMenu');
+      if (existing) existing.remove();
+      document.removeEventListener('mousedown', onContextMenuOutside);
+    }
+
+    function onContextMenuOutside(e) {
+      const menu = document.getElementById('timelineContextMenu');
+      if (menu && !menu.contains(e.target)) hideTimelineContextMenu();
     }
 
     // ===== DELETE =====
@@ -3247,29 +4859,21 @@
       setTimeout(() => {
         const dur = videoDuration || 600;
         data.chapters = [
-          { time: 0, title: 'Introduction', summary: 'Welcome and overview of the presentation topic.', ai: true },
-          { time: dur * 0.12, title: 'What is AX?', summary: 'Defining Accessibility Experience as a design discipline.', ai: true },
-          { time: dur * 0.28, title: 'AX vs UX Comparison', summary: 'Key differences and overlaps between accessibility and user experience.', ai: true },
-          { time: dur * 0.45, title: 'Design Evolution', summary: 'How accessibility is reshaping modern design practices.', ai: true },
-          { time: dur * 0.65, title: 'Practical Applications', summary: 'Real-world examples of AX-first design approaches.', ai: true },
-          { time: dur * 0.82, title: 'Future of Design', summary: 'Where the industry is heading and how to prepare.', ai: true },
-          { time: dur * 0.93, title: 'Q&A', summary: 'Questions from the audience.', ai: true }
+          { time: 0, title: 'Meet the Elephants', summary: 'Overview of the African and Asian elephant species and their significance in the animal kingdom.', ai: true },
+          { time: dur * 0.10, title: 'Physical Characteristics', summary: 'Exploring the size, trunk dexterity, tusks, and unique skin adaptations of elephants.', ai: true },
+          { time: dur * 0.25, title: 'Social Structure', summary: 'How matriarchal herds form, communicate, and make collective decisions.', ai: true },
+          { time: dur * 0.40, title: 'Intelligence & Memory', summary: 'Evidence of problem-solving, tool use, self-awareness, and long-term memory in elephants.', ai: true },
+          { time: dur * 0.55, title: 'Diet & Habitat', summary: 'Feeding behaviors, migration patterns, and the ecosystems elephants shape as keystone species.', ai: true },
+          { time: dur * 0.70, title: 'Reproduction & Family', summary: 'Gestation, calf-rearing, and the strong family bonds that define elephant societies.', ai: true },
+          { time: dur * 0.85, title: 'Conservation Threats', summary: 'Poaching, habitat loss, and human-wildlife conflict endangering elephant populations worldwide.', ai: true },
+          { time: dur * 0.95, title: 'Protection Efforts', summary: 'Global initiatives, wildlife corridors, and anti-poaching programs working to save elephants.', ai: true }
         ];
-        data.slides = [
-          { time: 0, title: 'Title Slide', description: 'AX vs UX presentation cover', image: '' },
-          { time: dur * 0.12, title: 'AX Definition', description: 'What Accessibility Experience means', image: '' },
-          { time: dur * 0.28, title: 'Comparison Chart', description: 'AX and UX side by side', image: '' },
-          { time: dur * 0.45, title: 'Evolution Timeline', description: 'How design has evolved', image: '' },
-          { time: dur * 0.65, title: 'Case Studies', description: 'Real-world AX examples', image: '' }
-        ];
-        data.introduction = {
-          title: 'AX vs. UX: The Next Evolution of Design',
-          text: 'Exploring whether accessibility-first design represents the next evolution of the design discipline, presented by Bonterra.'
-        };
         selectedItem = { type: 'chapter', index: 0 };
+        panelFilter = 'chapters';
+        updateSidebarActive();
         render();
         triggerSave();
-        showToast('AI generated 7 chapters and 5 slides');
+        showToast('AI generated 8 chapters');
       }, 2500);
     }
 
@@ -3572,7 +5176,6 @@
 
     function generateVideoThumbnails() {
       thumbnailsGenerated = true;
-      document.getElementById('videoTrackLoader').classList.remove('hidden');
 
       const canvas = document.getElementById('videoThumbnails');
       const ctx = canvas.getContext('2d');
@@ -3603,7 +5206,10 @@
       function seekNext() {
         if (captured >= thumbCount) {
           thumbVideo.remove();
-          document.getElementById('videoTrackLoader').classList.add('hidden');
+          if (!thumbnailsReady) {
+            thumbnailsReady = true;
+            checkAllReady();
+          }
           return;
         }
         const t = (videoDuration / thumbCount) * captured + 0.1;
@@ -3856,7 +5462,11 @@
         segCount++;
       }
 
-      // Position ghost placeholder in the gap
+      // Position ghost placeholder in the gap — clamp within timeline bounds
+      const maxPx = videoDuration * pixelsPerSecond;
+      const clampedInsertPx = Math.max(0, Math.min(insertPx, maxPx - draggedWidth));
+      const clampedWidth = Math.min(draggedWidth, maxPx - clampedInsertPx);
+
       if (!dragState.indicator) {
         dragState.indicator = document.createElement('div');
         dragState.indicator.className = 'drag-ghost-placeholder';
@@ -3865,9 +5475,9 @@
         dragState.indicator.appendChild(content);
         trackContent.appendChild(dragState.indicator);
       }
-      dragState.indicator.style.left = insertPx + 'px';
-      dragState.indicator.style.width = draggedWidth + 'px';
-      const insertTime = insertPx / pixelsPerSecond;
+      dragState.indicator.style.left = clampedInsertPx + 'px';
+      dragState.indicator.style.width = clampedWidth + 'px';
+      const insertTime = clampedInsertPx / pixelsPerSecond;
       const segName = (dragState.type === 'chapter' ? data.chapters : data.slides)[dragState.index].title;
       dragState.indicator.querySelector('.drag-ghost-placeholder-content').textContent = formatTime(insertTime) + ' · ' + segName;
     }
@@ -3876,7 +5486,7 @@
       if (!dragState) return;
 
       const dx = Math.abs(e.clientX - dragState.startX);
-      if (dx < 5 && !dragState.moved) return;
+      if (dx < 10 && !dragState.moved) return;
 
       if (!dragState.moved) {
         dragState.moved = true;
@@ -3928,31 +5538,61 @@
       document.querySelectorAll('.track').forEach(t => t.classList.remove('drop-target-active'));
 
       if (!dragState.moved) {
-        selectItem(dragState.type, dragState.index);
+        timelineSelect(dragState.type, dragState.index);
       } else {
-        // Reorder while preserving all durations
+        lastDragWasMoved = true;
         const arr = dragState.type === 'chapter' ? data.chapters : data.slides;
-        const durations = dragState.originalDurations;
-        const fromIdx = dragState.index;
-        const targetIdx = dragState.targetInsertIdx;
+        const item = arr[dragState.index];
+        const originalIndex = dragState.index;
 
-        // Remove item and its duration from their positions
-        const item = arr.splice(fromIdx, 1)[0];
-        const itemDuration = durations.splice(fromIdx, 1)[0];
+        // Calculate target insert position from cursor
+        const trackContent = dragState.type === 'chapter'
+          ? document.getElementById('chapterTrackContent')
+          : document.getElementById('slideTrackContent');
+        const rect = trackContent.getBoundingClientRect();
+        const relX = Math.max(0, Math.min(dragState.lastClientX - rect.left, rect.width));
+        const dropTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
 
-        // Insert at new position
-        const insertAt = targetIdx > fromIdx ? targetIdx - 1 : targetIdx;
-        arr.splice(insertAt, 0, item);
-        durations.splice(insertAt, 0, itemDuration);
+        // Find target index based on drop position
+        let targetIdx = arr.length;
+        for (let i = 0; i < arr.length; i++) {
+          if (i === originalIndex) continue;
+          if (dropTime < arr[i].time) { targetIdx = i; break; }
+        }
 
-        // Rebuild all times from durations (preserves all segment lengths)
-        rebuildTimesFromDurations(dragState.type, durations);
+        // Store original durations before reordering
+        const durations = arr.map((a, i) => {
+          const nextTime = (i < arr.length - 1) ? arr[i + 1].time : videoDuration;
+          return nextTime - a.time;
+        });
+        const itemDuration = durations[originalIndex];
 
-        selectedItem = { type: dragState.type, index: insertAt };
+        // Remove item from original position
+        arr.splice(originalIndex, 1);
+        durations.splice(originalIndex, 1);
+
+        // Adjust target index after removal
+        const insertIdx = targetIdx > originalIndex ? targetIdx - 1 : targetIdx;
+
+        // Insert item at new position
+        arr.splice(insertIdx, 0, item);
+        durations.splice(insertIdx, 0, itemDuration);
+
+        // Recalculate times from durations (preserves all durations)
+        if (dragState.type === 'chapter') {
+          let t = 0;
+          arr.forEach((a, i) => { a.time = Math.round(t * 10) / 10; t += durations[i]; });
+        } else {
+          // For slides: preserve relative spacing — use drop time for the moved item
+          item.time = Math.round(dropTime * 10) / 10;
+          arr.sort((a, b) => a.time - b.time);
+        }
+
+        const newIndex = arr.indexOf(item);
+        selectedItem = { type: dragState.type, index: newIndex };
         render();
         triggerSave();
-        const itemName = item.title;
-        showToast('"' + itemName + '" moved to position ' + (insertAt + 1));
+        showToast('"' + item.title + '" moved to ' + formatTime(item.time));
       }
 
       dragState = null;
@@ -4009,15 +5649,34 @@
       const arr = resizeState.type === 'chapter' ? data.chapters : data.slides;
       const i = resizeState.index;
 
+      // Snap to playhead (same magnet effect as scrubber dragging)
+      const snapTargets = [0, videoDuration, video.currentTime];
+      data.chapters.forEach((ch, ci) => {
+        if (resizeState.type === 'chapter' && ci === i) return;
+        snapTargets.push(ch.time);
+      });
+      data.slides.forEach((sl, si) => {
+        if (resizeState.type === 'slide' && si === i) return;
+        snapTargets.push(sl.time);
+      });
+      const snapResult = applySnap(rawTime, snapTargets);
+      let snappedTime = snapResult.snapped ? snapResult.time : rawTime;
+
+      if (snapResult.snapped) {
+        showSnapLine(snapResult.time * pixelsPerSecond);
+      } else {
+        hideSnapLine();
+      }
+
       if (resizeState.side === 'left') {
         const prevTime = (i > 0) ? arr[i - 1].time + MIN_SEGMENT_DURATION : 0;
         const nextBound = (i < arr.length - 1) ? arr[i + 1].time - MIN_SEGMENT_DURATION : videoDuration - MIN_SEGMENT_DURATION;
         const maxTime = Math.min(nextBound, videoDuration - MIN_SEGMENT_DURATION);
-        arr[i].time = Math.max(prevTime, Math.min(maxTime, rawTime));
+        arr[i].time = Math.max(prevTime, Math.min(maxTime, snappedTime));
       } else {
         const thisStart = arr[i].time + MIN_SEGMENT_DURATION;
         const nextEnd = (i + 2 < arr.length) ? arr[i + 2].time - MIN_SEGMENT_DURATION : videoDuration - MIN_SEGMENT_DURATION;
-        arr[i + 1].time = Math.max(thisStart, Math.min(nextEnd, rawTime));
+        arr[i + 1].time = Math.max(thisStart, Math.min(nextEnd, snappedTime));
       }
 
       renderChapterTrack();
@@ -4028,8 +5687,10 @@
       if (!resizeState) return;
 
       document.body.classList.remove('is-resizing');
+      hideSnapLine();
 
       if (resizeState.moved) {
+        lastDragWasMoved = true;
         render();
         triggerSave();
         showToast('Segment boundary adjusted');
@@ -4059,11 +5720,12 @@
         if (!dropOverlay) {
           dropOverlay = document.createElement('div');
           dropOverlay.className = 'drop-zone-overlay visible';
-          dropOverlay.innerHTML = '<span class="drop-zone-overlay-text">Drop image to add slide</span>';
-          slideTrack.style.position = 'relative';
-          slideTrack.appendChild(dropOverlay);
+          dropOverlay.innerHTML = '<span class="drop-zone-overlay-text">Drop slide deck or image to add slides</span>';
+          const trackContent = document.getElementById('slideTrackContent');
+          trackContent.style.position = 'relative';
+          trackContent.appendChild(dropOverlay);
         }
-        announce('Drop zone active. Drop image file to add a slide.');
+        announce('Drop zone active. Drop slide deck or image file to add slides.');
       });
 
       slideTrack.addEventListener('dragover', (e) => {
@@ -4103,8 +5765,15 @@
         if (dropOverlay) { dropOverlay.remove(); dropOverlay = null; }
         if (dropIndicator) { dropIndicator.remove(); dropIndicator = null; }
 
-        const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-        if (files.length === 0) { showToast('Only image files can be added as slides'); return; }
+        const allFiles = Array.from(e.dataTransfer.files);
+        const imageFiles = allFiles.filter(f => f.type.startsWith('image/'));
+        const deckExtensions = ['.ppt', '.pptx', '.pdf', '.key'];
+        const deckFiles = allFiles.filter(f => deckExtensions.some(ext => f.name.toLowerCase().endsWith(ext)));
+
+        if (imageFiles.length === 0 && deckFiles.length === 0) {
+          showToast('Drop image files or slide decks (PPT, PPTX, PDF)');
+          return;
+        }
 
         const trackContent = document.getElementById('slideTrackContent');
         const rect = trackContent.getBoundingClientRect();
@@ -4112,18 +5781,66 @@
         const dropTime = Math.max(0, Math.min(videoDuration, relX / pixelsPerSecond));
 
         pushHistory();
+
+        if (deckFiles.length > 0) {
+          const file = deckFiles[0];
+          const deckName = file.name.replace(/\.[^.]+$/, '');
+
+          // Place slides at chapter boundaries if chapters exist
+          let slideTimes = [];
+          if (data.chapters.length > 0) {
+            slideTimes = data.chapters.map(ch => ch.time);
+          } else {
+            // No chapters — distribute evenly across video
+            const slideCount = 5;
+            const spacing = videoDuration / (slideCount + 1);
+            for (let i = 0; i < slideCount; i++) {
+              slideTimes.push(Math.round((dropTime + i * spacing) * 10) / 10);
+            }
+          }
+
+          // Use proper handlers for PDF and PPTX — drag & drop starts from 00:00
+          const isPdf = file.name.toLowerCase().endsWith('.pdf');
+          const isPptx = file.name.toLowerCase().endsWith('.pptx');
+          if (isPdf && typeof pdfjsLib !== 'undefined') {
+            handlePdfUpload(file, 0);
+          } else if (isPptx && typeof JSZip !== 'undefined') {
+            handlePptxUpload(file, 0);
+          } else {
+            addDeckSlides(slideTimes, deckName, file);
+          }
+          return;
+        }
+
+        function addDeckSlides(times, deckName, file) {
+          const existingSlideTimes = data.slides.map(s => Math.round(s.time * 10) / 10);
+          let added = 0;
+          times.forEach((t, i) => {
+            const rounded = Math.round(t * 10) / 10;
+            if (existingSlideTimes.includes(rounded)) return;
+            data.slides.push({ time: rounded, title: 'Slide ' + (i + 1) + ' - ' + deckName, description: '', image: '', deckFile: file ? file.name : null });
+            existingSlideTimes.push(rounded);
+            added++;
+          });
+          data.slides.sort((a, b) => a.time - b.time);
+          panelFilter = 'slides';
+          render();
+          triggerSave();
+          showToast(added + ' slides added from ' + deckName);
+        }
+
         let added = 0;
-        files.forEach((file, i) => {
+        imageFiles.forEach((file, i) => {
           const reader = new FileReader();
           reader.onload = (ev) => {
             const slideTime = Math.min(videoDuration, dropTime + i * 2);
             data.slides.push({ time: slideTime, title: file.name.replace(/\.[^.]+$/, ''), image: ev.target.result });
             added++;
-            if (added === files.length) {
+            if (added === imageFiles.length) {
               data.slides.sort((a, b) => a.time - b.time);
               render();
               triggerSave();
-              showToast(files.length === 1 ? 'Slide added from ' + file.name : files.length + ' slides added');
+              showToast(imageFiles.length === 1 ? 'Slide added from ' + file.name : imageFiles.length + ' slides added');
             }
           };
           reader.readAsDataURL(file);
@@ -4152,27 +5869,39 @@
     function revealApp() {
       document.body.classList.remove('is-loading');
       document.getElementById('pageLoader').classList.add('loaded');
+      document.querySelectorAll('.timeline-actions button, .timeline-actions label, .zoom-controls button, .zoom-controls input, .player-action, #playBtn').forEach(el => {
+        el.removeAttribute('disabled');
+      });
+      if (videoDuration > 0) {
+        zoomFit();
+      }
     }
 
-    let videoReady = false;
+    // Disable CTA tools until app is fully loaded
+    document.querySelectorAll('.timeline-actions button, .timeline-actions label, .zoom-controls button, .zoom-controls input, .player-action, #playBtn').forEach(el => {
+      el.setAttribute('disabled', 'true');
+    });
+
+    let videoCanPlay = false;
     let fontsReady = false;
+    let thumbnailsReady = false;
 
     function checkAllReady() {
-      if (videoReady && fontsReady) revealApp();
+      if (videoCanPlay && fontsReady && thumbnailsReady) revealApp();
     }
 
-    if (video.readyState >= 1) {
-      videoReady = true;
+    if (video.readyState >= 4) {
+      videoCanPlay = true;
     } else {
-      video.addEventListener('loadedmetadata', () => { videoReady = true; checkAllReady(); }, { once: true });
+      video.addEventListener('canplaythrough', () => { videoCanPlay = true; checkAllReady(); }, { once: true });
     }
 
     document.fonts.ready.then(() => { fontsReady = true; checkAllReady(); });
 
     checkAllReady();
 
-    // Failsafe — reveal after 5s regardless
-    setTimeout(revealApp, 5000);
+    // Failsafe — reveal after 15s regardless
+    setTimeout(revealApp, 15000);
   </script>
 </body>
 </html>
