@@ -1619,6 +1619,20 @@
       border-bottom: 1px solid var(--w-10);
       flex-shrink: 0;
     }
+
+    .panel-footer-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 12px 16px 16px;
+      flex-shrink: 0;
+      border-top: 1px solid var(--w-10);
+    }
+
+    .panel-footer-toggle .mode-toggle {
+      padding: 0;
+      border-bottom: none;
+    }
     .mode-toggle-label {
       font-size: 11px;
       color: var(--w-60);
@@ -1975,6 +1989,7 @@
       padding: 16px 16px;
       border-bottom: 1px solid var(--w-10);
       background: rgba(255,255,255,0.04);
+      flex-shrink: 0;
     }
 
     .accordion-section-header .accordion-section-title {
@@ -1983,10 +1998,6 @@
       background: none;
     }
 
-    .accordion-section-header .mode-toggle {
-      padding: 0;
-      border-bottom: none;
-    }
 
     .accordion-item:not(.expanded) {
       border-bottom: 1px solid var(--w-30);
@@ -4014,15 +4025,10 @@
       const isExpanded = (type, index) => selectedItem && selectedItem.type === type && selectedItem.index === index;
       const isFocused = (type, index) => focusedItem && focusedItem.type === type && focusedItem.index === index;
 
-      // Focus View: show section title + toggle, then only the selected item's form
+      // Focus View: show section title, then only the selected item's form
       if (panelViewMode === 'focus' && panelFilter === 'chapters') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Chapters</div>
-          <div class="mode-toggle">
-            <span class="mode-toggle-label" style="color: var(--w-60)">List View</span>
-            <div class="mode-toggle-switch active" id="modeToggle"></div>
-            <span class="mode-toggle-label" style="color: var(--w-100)">Focus View</span>
-          </div>
         </div>`;
         if (selectedItem && selectedItem.type === 'chapter') {
           const ch = data.chapters[selectedItem.index];
@@ -4053,6 +4059,13 @@
         } else {
           html += '<div class="accordion-list"><div class="panel-empty-hint" style="padding:24px;color:var(--w-50);font-size:13px;text-align:center;">Click a chapter on the timeline to view its properties.</div></div>';
         }
+        html += `<div class="panel-footer-toggle">
+          <div class="mode-toggle">
+            <span class="mode-toggle-label" style="color: var(--w-60)">List View</span>
+            <div class="mode-toggle-switch active" id="modeToggle"></div>
+            <span class="mode-toggle-label" style="color: var(--w-100)">Focus View</span>
+          </div>
+        </div>`;
         panel.innerHTML = html;
         bindPanelTabEvents();
         bindPanelEvents();
@@ -4063,11 +4076,6 @@
       if (panelViewMode === 'focus' && panelFilter === 'slides') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Slides</div>
-          <div class="mode-toggle">
-            <span class="mode-toggle-label" style="color: var(--w-60)">List View</span>
-            <div class="mode-toggle-switch active" id="modeToggle"></div>
-            <span class="mode-toggle-label" style="color: var(--w-100)">Focus View</span>
-          </div>
         </div>`;
         if (selectedItem && selectedItem.type === 'slide') {
           const sl = data.slides[selectedItem.index];
@@ -4106,6 +4114,13 @@
         } else {
           html += '<div class="accordion-list"><div class="panel-empty-hint" style="padding:24px;color:var(--w-50);font-size:13px;text-align:center;">Click a slide on the timeline to view its properties.</div></div>';
         }
+        html += `<div class="panel-footer-toggle">
+          <div class="mode-toggle">
+            <span class="mode-toggle-label" style="color: var(--w-60)">List View</span>
+            <div class="mode-toggle-switch active" id="modeToggle"></div>
+            <span class="mode-toggle-label" style="color: var(--w-100)">Focus View</span>
+          </div>
+        </div>`;
         panel.innerHTML = html;
         bindPanelTabEvents();
         bindPanelEvents();
@@ -4142,20 +4157,10 @@
       if (panelFilter === 'chapters') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Chapters</div>
-          <div class="mode-toggle">
-            <span class="mode-toggle-label" style="color: ${panelViewMode === 'list' ? 'var(--w-100)' : 'var(--w-60)'}">List View</span>
-            <div class="mode-toggle-switch ${panelViewMode === 'focus' ? 'active' : ''}" id="modeToggle"></div>
-            <span class="mode-toggle-label" style="color: ${panelViewMode === 'focus' ? 'var(--w-100)' : 'var(--w-60)'}">Focus View</span>
-          </div>
         </div>`;
       } else if (panelFilter === 'slides') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Slides</div>
-          <div class="mode-toggle">
-            <span class="mode-toggle-label" style="color: ${panelViewMode === 'list' ? 'var(--w-100)' : 'var(--w-60)'}">List View</span>
-            <div class="mode-toggle-switch ${panelViewMode === 'focus' ? 'active' : ''}" id="modeToggle"></div>
-            <span class="mode-toggle-label" style="color: ${panelViewMode === 'focus' ? 'var(--w-100)' : 'var(--w-60)'}">Focus View</span>
-          </div>
         </div>`;
       }
 
@@ -4267,6 +4272,17 @@
       });
 
       html += '</div>';
+
+      // Add fixed footer toggle for chapters/slides tabs
+      if (panelFilter === 'chapters' || panelFilter === 'slides') {
+        html += `<div class="panel-footer-toggle">
+          <div class="mode-toggle">
+            <span class="mode-toggle-label" style="color: ${panelViewMode === 'list' ? 'var(--w-100)' : 'var(--w-60)'}">List View</span>
+            <div class="mode-toggle-switch ${panelViewMode === 'focus' ? 'active' : ''}" id="modeToggle"></div>
+            <span class="mode-toggle-label" style="color: ${panelViewMode === 'focus' ? 'var(--w-100)' : 'var(--w-60)'}">Focus View</span>
+          </div>
+        </div>`;
+      }
 
       panel.innerHTML = html;
       bindPanelTabEvents();
@@ -4880,7 +4896,7 @@
           { time: dur * 0.85, title: 'Conservation Threats', summary: 'Poaching, habitat loss, and human-wildlife conflict endangering elephant populations worldwide.', ai: true },
           { time: dur * 0.95, title: 'Protection Efforts', summary: 'Global initiatives, wildlife corridors, and anti-poaching programs working to save elephants.', ai: true }
         ];
-        selectedItem = { type: 'chapter', index: 0 };
+        selectedItem = null;
         panelFilter = 'chapters';
         updateSidebarActive();
         render();
