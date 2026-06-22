@@ -5715,8 +5715,9 @@
           dropOverlay = document.createElement('div');
           dropOverlay.className = 'drop-zone-overlay visible';
           dropOverlay.innerHTML = '<span class="drop-zone-overlay-text">Drop slide deck or image to add slides</span>';
-          slideTrack.style.position = 'relative';
-          slideTrack.appendChild(dropOverlay);
+          const trackContent = document.getElementById('slideTrackContent');
+          trackContent.style.position = 'relative';
+          trackContent.appendChild(dropOverlay);
         }
         announce('Drop zone active. Drop slide deck or image file to add slides.');
       });
