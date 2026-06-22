@@ -78,7 +78,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 16px 24px;
-      background: var(--b-100);
+      background: rgba(255, 255, 255, 0.1);
       border-bottom: 1px solid var(--w-30);
       height: 67px;
       flex-shrink: 0;
@@ -453,10 +453,10 @@
       background: rgba(0, 0, 0, 0.85);
       color: #fff;
       font-size: 11px;
-      line-height: 1.3;
+      line-height: 1.4;
       padding: 5px 8px;
       border-radius: 4px;
-      white-space: pre;
+      white-space: nowrap;
       text-align: center;
       pointer-events: none;
       opacity: 0;
@@ -1368,19 +1368,12 @@
       overflow: hidden;
       display: flex;
       align-items: center;
-      background: linear-gradient(90deg, hsl(220,20%,14%) 0%, hsl(220,20%,16%) 25%, hsl(220,20%,14%) 50%, hsl(220,20%,16%) 75%, hsl(220,20%,14%) 100%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s ease-in-out infinite;
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
     }
 
     .video-track-content.loaded {
       background: transparent;
-      animation: none;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
     }
 
     .video-track-content canvas {
@@ -1388,6 +1381,27 @@
       width: 100%;
       border-radius: 8px;
       image-rendering: auto;
+    }
+
+    .video-track-loaders {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      pointer-events: none;
+    }
+    .video-track-loaders svg {
+      width: 16px;
+      height: 16px;
+      opacity: 0.4;
+      animation: spinLoader 0.8s linear infinite;
+    }
+    .video-track-content.loaded .video-track-loaders {
+      display: none;
     }
 
     .track-label-video { color: var(--w-50); opacity: 1; }
@@ -1648,7 +1662,7 @@
     /* Right Panel */
     .right-panel {
       width: 360px;
-      background: var(--b-100);
+      background: rgba(255, 255, 255, 0.1);
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
@@ -2313,10 +2327,10 @@
     }
 
     .track-empty-text {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--w-60);
-      border: 2px solid var(--w-30);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--w-50);
+      border: none;
       border-radius: var(--radius-md);
       padding: 0 16px;
       width: 100%;
@@ -2326,14 +2340,11 @@
       justify-content: center;
       text-align: center;
       cursor: pointer;
-      transition: all 0.15s;
-      backdrop-filter: blur(16px);
+      transition: color 0.15s;
     }
 
     .track-empty-text:hover {
-      border-color: var(--w-50);
-      color: var(--w-100);
-      background: var(--w-10);
+      color: var(--w-80);
     }
 
     .panel-empty {
@@ -2341,8 +2352,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 24px;
+      justify-content: flex-start;
+      padding: 60px 24px 24px;
       text-align: center;
     }
 
@@ -2519,7 +2530,7 @@
     }
 
     .panel-intro-card {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.16);
       border-radius: 4px;
       padding: 16px;
       display: flex;
@@ -2543,7 +2554,7 @@
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      padding: 32px 24px;
+      padding: 60px 24px 32px;
       text-align: center;
     }
 
@@ -3257,7 +3268,7 @@
             </div>
             <div class="track track-video" role="region" aria-label="Video track">
               <div class="track-label track-label-video" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4V6.5l-4 4z" fill="currentColor"/></svg></div>
-              <div class="track-content is-loading"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas></div></div>
+              <div class="track-content is-loading"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas><div class="video-track-loaders"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg></div></div></div>
             </div>
           </div>
         </div>
@@ -3380,7 +3391,7 @@
       document.getElementById('zoomSlider').value = 0;
       applyZoom(pixelsPerSecond);
       const loaderText = document.getElementById('loaderText');
-      if (loaderText) loaderText.textContent = 'Generating timeline…';
+      if (loaderText) loaderText.textContent = 'Generating video thumbnails…';
     });
 
     let rafId = null;
@@ -3401,12 +3412,18 @@
 
     const progressTooltip = document.getElementById('progressTooltip');
 
+    const chapterIconSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="vertical-align:-1px;margin-right:3px;"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg>';
+
     progressBar.addEventListener('mousemove', (e) => {
       const rect = progressBar.getBoundingClientRect();
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       const hoverTime = pct * videoDuration;
       const ch = getChapterAtTime(hoverTime);
-      progressTooltip.textContent = ch ? ch.title + '\n' + formatTime(hoverTime) : formatTime(hoverTime);
+      if (ch) {
+        progressTooltip.innerHTML = chapterIconSvg + ch.title + '<br>' + formatTime(hoverTime);
+      } else {
+        progressTooltip.textContent = formatTime(hoverTime);
+      }
       progressTooltip.style.left = (pct * 100) + '%';
     });
 
@@ -3610,11 +3627,22 @@
         return;
       }
 
+      // Select clicked segment
+      const chapterSeg = e.target.closest('.chapter-segment');
+      const slideSeg = e.target.closest('.slide-segment');
+      if (chapterSeg) {
+        const idx = [...chapterSeg.parentElement.children].filter(c => c.classList.contains('chapter-segment')).indexOf(chapterSeg);
+        if (idx >= 0) timelineSelect('chapter', idx, true);
+      } else if (slideSeg) {
+        const idx = [...slideSeg.parentElement.children].filter(c => c.classList.contains('slide-segment')).indexOf(slideSeg);
+        if (idx >= 0) timelineSelect('slide', idx, true);
+      }
+
       video.currentTime = newTime;
       const posPercent = (newTime / videoDuration) * 100;
       positionPlayhead(posPercent);
       positionHoverScrubberAt(e.clientX, rect);
-      checkScrubberAssetMatch(newTime);
+      if (!chapterSeg && !slideSeg) checkScrubberAssetMatch(newTime);
     });
 
     // ===== HOVER SCRUBBER =====
@@ -3949,8 +3977,6 @@
         el.addEventListener('mousedown', (e) => {
           if (e.target.classList.contains('resize-handle')) {
             initResize(e, 'chapter', i, e.target.dataset.side);
-          } else {
-            initDrag(e, 'chapter', i);
           }
         });
         el.addEventListener('dblclick', (e) => {
@@ -4011,8 +4037,6 @@
         el.addEventListener('mousedown', (e) => {
           if (e.target.classList.contains('resize-handle')) {
             initResize(e, 'slide', i, e.target.dataset.side);
-          } else {
-            initDrag(e, 'slide', i);
           }
         });
         el.addEventListener('dblclick', (e) => {
@@ -4105,10 +4129,6 @@
                   <p class="panel-intro-card-desc">Provide a brief overview of the video's purpose, topics, or key takeaways before they start watching.</p>
                   <button class="pill-btn-md" id="addIntroBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add intro</button>
                 </div>
-                <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
-                  <button class="pill-btn-md" id="emptyAddChBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add chapter</button>
-                  <label class="pill-btn-md" id="emptyAddSlBtn" for="slideFileInput" style="cursor:pointer;" title="Upload Slides Deck (PDF, PPTX)"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 5C11.4477 5 11 5.44772 11 6V11H6C5.44772 11 5 11.4477 5 12C5 12.5523 5.44772 13 6 13H11V18C11 18.5523 11.4477 19 12 19C12.5523 19 13 18.5523 13 18V13H18C18.5523 13 19 12.5523 19 12C19 11.4477 18.5523 11 18 11H13V6C13 5.44772 12.5523 5 12 5Z" fill="currentColor"/></svg>Add slide deck</label>
-                </div>
               </div>
             </div>
           </div>`;
@@ -4117,7 +4137,6 @@
             selectedItem = { type: 'intro', index: 0 };
             renderPanel();
           });
-          document.getElementById('emptyAddChBtn')?.addEventListener('click', addChapter);
         }
         return;
       }
@@ -4163,6 +4182,7 @@
       if (panelViewMode === 'focus' && panelFilter === 'chapters') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Chapters</div>
+          ${data.chapters.length > 0 ? '<button class="section-clear-btn" id="clearAllChaptersBtn" aria-label="Clear all chapters"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg></button>' : ''}
         </div>`;
         if (selectedItem && selectedItem.type === 'chapter') {
           const ch = data.chapters[selectedItem.index];
@@ -4291,6 +4311,7 @@
       if (panelFilter === 'chapters') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Chapters</div>
+          ${data.chapters.length > 0 ? '<button class="section-clear-btn" id="clearAllChaptersBtn" aria-label="Clear all chapters"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg></button>' : ''}
         </div>`;
       } else if (panelFilter === 'slides') {
         html += `<div class="accordion-section-header">
@@ -4713,6 +4734,13 @@
       render();
       triggerSave();
       showToast('Chapter added at ' + formatTime(time));
+      requestAnimationFrame(() => {
+        const titleInput = document.getElementById('chapterTitleInput');
+        if (titleInput) {
+          titleInput.focus();
+          titleInput.select();
+        }
+      });
     }
 
     // ===== ADD SLIDES (PDF upload from desktop) =====
@@ -5350,8 +5378,8 @@
       const ctx = canvas.getContext('2d');
       const container = document.getElementById('videoTrackContent');
       const containerWidth = Math.max(200, container.offsetWidth);
-      const thumbCellWidth = 64;
-      const thumbCount = Math.min(100, Math.max(5, Math.ceil(containerWidth / thumbCellWidth)));
+      const thumbCellWidth = 80;
+      const thumbCount = Math.min(30, Math.max(5, Math.ceil(containerWidth / thumbCellWidth)));
       const thumbWidth = Math.ceil(containerWidth / thumbCount);
       const thumbHeight = 40;
 
@@ -5378,6 +5406,8 @@
           container.classList.add('loaded');
           if (!thumbnailsReady) {
             thumbnailsReady = true;
+            const loaderText = document.getElementById('loaderText');
+            if (loaderText) loaderText.textContent = 'Preparing editor…';
             checkAllReady();
           }
           return;
@@ -5400,7 +5430,7 @@
           ctx.fillRect(x, 0, thumbWidth, thumbHeight);
         }
         captured++;
-        setTimeout(seekNext, 50);
+        seekNext();
       });
     }
 
@@ -6055,7 +6085,7 @@
       document.querySelectorAll('.timeline-actions button, .timeline-actions label, .zoom-controls button, .zoom-controls input, .player-action, #playBtn').forEach(el => {
         el.removeAttribute('disabled');
       });
-      // Set zoom before enabling render so it only renders once
+      // Set fit zoom and regenerate thumbnails at correct width
       if (videoDuration > 0) {
         zoomFit();
       }
@@ -6087,10 +6117,10 @@
       if (videoCanPlay && fontsReady && thumbnailsReady) revealApp();
     }
 
-    if (video.readyState >= 4) {
+    if (video.readyState >= 3) {
       videoCanPlay = true;
     } else {
-      video.addEventListener('canplaythrough', () => { videoCanPlay = true; checkAllReady(); }, { once: true });
+      video.addEventListener('canplay', () => { videoCanPlay = true; checkAllReady(); }, { once: true });
     }
 
     document.fonts.ready.then(() => { fontsReady = true; checkAllReady(); });
