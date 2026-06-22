@@ -1311,7 +1311,19 @@
       overflow: hidden;
       display: flex;
       align-items: center;
+      background: linear-gradient(90deg, hsl(220,20%,14%) 0%, hsl(220,20%,16%) 25%, hsl(220,20%,14%) 50%, hsl(220,20%,16%) 75%, hsl(220,20%,14%) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+
+    .video-track-content.loaded {
       background: var(--b-100);
+      animation: none;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
 
     .video-track-content canvas {
@@ -5206,6 +5218,7 @@
       function seekNext() {
         if (captured >= thumbCount) {
           thumbVideo.remove();
+          container.classList.add('loaded');
           if (!thumbnailsReady) {
             thumbnailsReady = true;
             checkAllReady();
