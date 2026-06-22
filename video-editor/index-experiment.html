@@ -973,6 +973,11 @@
     }
 
     /* Chapter Segments */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .chapter-segment {
       height: 40px;
       border-radius: 8px;
@@ -991,6 +996,7 @@
       background: transparent;
       backdrop-filter: blur(16px);
       color: var(--w-100);
+      animation: fadeSlideIn 0.25s ease both;
     }
 
     .chapter-segment:hover {
@@ -1088,6 +1094,7 @@
       backdrop-filter: blur(16px);
       color: var(--w-100);
       gap: 8px;
+      animation: fadeSlideIn 0.25s ease both;
     }
 
     .slide-segment:hover {
@@ -1553,10 +1560,15 @@
       padding: 3px 8px;
       border-radius: var(--roundness-1);
       border: 1px solid var(--w-30);
-      white-space: nowrap;
+      white-space: pre;
+      text-align: center;
       pointer-events: none;
       opacity: 0;
       transition: opacity 0.15s;
+    }
+
+    .playhead-ruler.dragging .scrubber-tooltip {
+      top: -42px;
     }
 
     .playhead-ruler:hover .scrubber-tooltip,
@@ -1948,7 +1960,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 16px;
+      padding: 16px 16px;
       border-bottom: 1px solid var(--w-10);
       background: rgba(255,255,255,0.04);
     }
@@ -1968,6 +1980,7 @@
       border-bottom: 1px solid var(--w-30);
       flex-shrink: 0;
       min-height: 48px;
+      animation: fadeSlideIn 0.2s ease both;
     }
 
     .accordion-item.focused:not(.expanded) {
@@ -2058,6 +2071,13 @@
       flex-shrink: 0;
       transition: transform 0.2s;
       color: var(--w-50);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .accordion-row-chevron:hover {
+      color: var(--w-100);
+      background: rgba(255,255,255,0.1);
     }
 
     .accordion-row-chevron svg {
@@ -2092,14 +2112,20 @@
     }
 
     .accordion-body {
-      display: none;
-    }
-
-    .accordion-item.expanded > .accordion-body {
       display: flex;
       flex-direction: column;
       background: var(--w-10);
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.25s ease, opacity 0.2s ease;
+    }
+
+    .accordion-item.expanded > .accordion-body {
+      max-height: 600px;
+      opacity: 1;
       overflow: visible;
+      transition: max-height 0.3s ease, opacity 0.25s ease 0.05s;
     }
 
     .accordion-form {
@@ -2228,38 +2254,6 @@
       border-color: var(--w-50);
       color: var(--w-100);
       background: var(--w-10);
-    }
-
-    .timeline-tracks-loading {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 0 0 10px 24px;
-      align-items: center;
-      justify-content: center;
-      height: 130px;
-    }
-
-    .timeline-loading-spinner {
-      width: 24px;
-      height: 24px;
-      border: 2px solid var(--w-20);
-      border-top-color: var(--blue);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    .timeline-loading-text {
-      font-size: 12px;
-      color: var(--w-50);
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .timeline-tracks.hidden {
-      display: none;
     }
 
     .panel-empty {
@@ -3163,11 +3157,7 @@
 
           <!-- Tracks -->
           <div class="tracks-hover-scrubber" id="tracksHoverScrubber"><div class="hover-scrubber-tooltip" id="hoverScrubberTooltip">00:00</div></div>
-          <div class="timeline-tracks-loading" id="timelineLoading">
-            <div class="timeline-loading-spinner"></div>
-            <span class="timeline-loading-text">Processing...</span>
-          </div>
-          <div class="timeline-tracks hidden" id="timelineTracks">
+          <div class="timeline-tracks" id="timelineTracks">
             <div class="tracks-playhead" id="tracksPlayhead"></div>
             <div id="snapLine" class="snap-line" aria-hidden="true"></div>
             <div class="track track-slides" role="region" aria-label="Slide track" id="slideTrack">
@@ -3359,7 +3349,7 @@
       const tracksLeft = trackRect.left - tracksRect.left + px;
       tracksPlayhead.style.left = tracksLeft + 'px';
 
-      document.getElementById('scrubberTooltip').textContent = formatTime(video.currentTime);
+      document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(video.currentTime);
       updatePlayerSlide();
     }
 
@@ -3373,6 +3363,19 @@
     }
 
     // ===== SCRUBBER DRAG =====
+    function getChapterAtTime(time) {
+      for (let i = data.chapters.length - 1; i >= 0; i--) {
+        if (time >= data.chapters[i].time) return data.chapters[i];
+      }
+      return null;
+    }
+
+    function getScrubberTooltipText(time) {
+      const ch = getChapterAtTime(time);
+      if (ch) return ch.title + '\n' + formatTime(time);
+      return formatTime(time);
+    }
+
     let scrubberDragging = false;
 
     playheadRuler.addEventListener('mousedown', (e) => {
@@ -3381,6 +3384,7 @@
       scrubberDragging = true;
       playheadRuler.classList.add('dragging');
       tracksPlayhead.classList.add('dragging');
+      document.getElementById('tracksHoverScrubber').style.opacity = '0';
       video.pause();
       playBtn.innerHTML = '&#9654;';
       // Immediately seek to click position
@@ -3393,7 +3397,7 @@
       video.currentTime = newTime;
       const posPercent = (newTime / videoDuration) * 100;
       positionPlayhead(posPercent);
-      document.getElementById('scrubberTooltip').textContent = formatTime(newTime);
+      document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(newTime);
       document.addEventListener('mousemove', onScrubberMove);
       document.addEventListener('mouseup', onScrubberUp);
     });
@@ -3437,7 +3441,7 @@
       timestampEl.textContent = formatTime(newTime) + ' / ' + formatTime(videoDuration);
       progressFill.style.width = actualPct + '%';
       updateProgressChapterFills();
-      document.getElementById('scrubberTooltip').textContent = formatTime(newTime);
+      document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(newTime);
     }
 
     function onScrubberUp(e) {
@@ -3453,8 +3457,10 @@
     });
 
     // Click on timeline tracks area to position scrubber
+    let lastDragWasMoved = false;
     document.getElementById('timelineTracks').addEventListener('click', (e) => {
-      if (e.target.closest('.chapter-segment') || e.target.closest('.slide-segment') || e.target.closest('.track-empty-text')) return;
+      if (e.target.closest('.track-empty-text')) return;
+      if (lastDragWasMoved) { lastDragWasMoved = false; return; }
       const trackContent = document.getElementById('chapterTrackContent');
       const rect = trackContent.getBoundingClientRect();
       if (e.clientX < rect.left || e.clientX > rect.right) return;
@@ -3473,6 +3479,10 @@
     const timelineScrollableEl = document.getElementById('timelineScrollable');
 
     timelineScrollableEl.addEventListener('mousemove', (e) => {
+      if (scrubberDragging) {
+        hoverScrubber.style.opacity = '0';
+        return;
+      }
       const trackContent = document.getElementById('chapterTrackContent');
       const rect = trackContent.getBoundingClientRect();
       const scrollableRect = timelineScrollableEl.getBoundingClientRect();
@@ -4149,12 +4159,13 @@
       }
 
       allItems.forEach(item => {
-        const expanded = isExpanded(item.type, item.index);
+        const expanded = panelFilter !== 'all' && isExpanded(item.type, item.index);
         const focused = isFocused(item.type, item.index);
 
         const badge = panelFilter === 'all'
           ? (item.type === 'chapter' ? '<span class="accordion-row-badge accordion-row-badge-ch">CH</span>' : '<span class="accordion-row-badge accordion-row-badge-sl">SL</span>')
           : '';
+        const chevron = panelFilter !== 'all' ? `<span class="accordion-row-chevron">${chevronSvg}</span>` : '';
         html += `<div class="accordion-item ${expanded ? 'expanded' : ''} ${focused ? 'focused' : ''}" data-type="${item.type}" data-index="${item.index}">
           <div class="accordion-row">
             <div class="accordion-row-holder">
@@ -4162,7 +4173,7 @@
               <span class="accordion-row-title">${item.title}</span>
             </div>
             ${badge}
-            <span class="accordion-row-chevron">${chevronSvg}</span>
+            ${chevron}
           </div>
           <div class="accordion-body">`;
 
@@ -4389,14 +4400,25 @@
         }
       });
 
-      // Accordion row clicks — toggle expand, only one at a time
+      // Accordion row clicks — select item; chevron toggles expand/collapse
       document.querySelectorAll('.accordion-item > .accordion-row').forEach(row => {
         row.addEventListener('click', (e) => {
           if (e.target.closest('input, textarea, button')) return;
           const item = row.parentElement;
           const type = item.dataset.type;
           const index = parseInt(item.dataset.index);
-          selectItem(type, index);
+          if (e.target.closest('.accordion-row-chevron')) {
+            const alreadyExpanded = selectedItem && selectedItem.type === type && selectedItem.index === index;
+            if (alreadyExpanded) {
+              selectedItem = null;
+              focusedItem = { type, index };
+              render();
+            } else {
+              selectItem(type, index);
+            }
+          } else {
+            selectItem(type, index);
+          }
         });
       });
     }
@@ -5182,8 +5204,6 @@
       function seekNext() {
         if (captured >= thumbCount) {
           thumbVideo.remove();
-          document.getElementById('timelineLoading').style.display = 'none';
-          document.getElementById('timelineTracks').classList.remove('hidden');
           return;
         }
         const t = (videoDuration / thumbCount) * captured + 0.1;
@@ -5514,6 +5534,7 @@
       if (!dragState.moved) {
         timelineSelect(dragState.type, dragState.index);
       } else {
+        lastDragWasMoved = true;
         const arr = dragState.type === 'chapter' ? data.chapters : data.slides;
         const item = arr[dragState.index];
         const originalIndex = dragState.index;
@@ -5663,6 +5684,7 @@
       hideSnapLine();
 
       if (resizeState.moved) {
+        lastDragWasMoved = true;
         render();
         triggerSave();
         showToast('Segment boundary adjusted');
@@ -5843,6 +5865,9 @@
       document.querySelectorAll('.timeline-actions button, .timeline-actions label, .zoom-controls button, .zoom-controls input, .player-action, #playBtn').forEach(el => {
         el.removeAttribute('disabled');
       });
+      if (videoDuration > 0) {
+        zoomFit();
+      }
     }
 
     // Disable CTA tools until app is fully loaded
