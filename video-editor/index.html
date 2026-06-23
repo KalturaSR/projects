@@ -1007,7 +1007,20 @@
       background-size: 200% 100%;
       animation: trackShimmer 1.8s ease infinite;
     }
-    .track-content.is-loading > * {
+    .track-content.is-loading > *:not(.track-loader-icon) {
+      display: none;
+    }
+    .track-loader-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .track-loader-icon svg {
+      animation: spinLoader 0.8s linear infinite;
+    }
+    .track-content:not(.is-loading) .track-loader-icon {
       display: none;
     }
 
@@ -1044,7 +1057,7 @@
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: border-color 0.15s, background 0.15s;
       position: relative;
       white-space: nowrap;
       overflow: hidden;
@@ -1053,7 +1066,6 @@
       background: transparent;
       backdrop-filter: blur(16px);
       color: var(--w-100);
-      animation: fadeSlideIn 0.25s ease both;
     }
 
     .chapter-segment:hover {
@@ -1141,7 +1153,7 @@
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: border-color 0.15s, background 0.15s;
       position: relative;
       white-space: nowrap;
       overflow: hidden;
@@ -1151,7 +1163,6 @@
       backdrop-filter: blur(16px);
       color: var(--w-100);
       gap: 8px;
-      animation: fadeSlideIn 0.25s ease both;
     }
 
     .slide-segment:hover {
@@ -2067,6 +2078,24 @@
       padding: 0;
       border-bottom: none;
       background: none;
+    }
+
+    .section-clear-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: none;
+      border-radius: 4px;
+      color: var(--w-50);
+      cursor: pointer;
+      transition: color 0.15s, background 0.15s;
+    }
+    .section-clear-btn:hover {
+      color: var(--w-100);
+      background: rgba(255,255,255,0.1);
     }
 
 
@@ -3162,7 +3191,7 @@
         <span id="saveText">Draft saved</span>
       </span>
     </div>
-    <span class="editor-title">Video structure</span>
+    <span class="editor-title" id="editorTitle">How Screens Stole Childhood and How to Get It Back</span>
     <div class="top-bar-right">
       <button class="btn btn-ai" id="aiGenerateBtn"><span class="btn-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.4552 10.9986C19.2775 11.3894 18.7225 11.3894 18.5448 10.9986L17.4375 8.5625L15.0014 7.45518C14.6106 7.27755 14.6106 6.72245 15.0014 6.54482L17.4375 5.4375L18.5448 3.0014C18.7225 2.61061 19.2775 2.6106 19.4552 3.0014L20.5625 5.4375L22.9986 6.54482C23.3894 6.72245 23.3894 7.27755 22.9986 7.45518L20.5625 8.5625L19.4552 10.9986Z" fill="currentColor"/><path d="M9.45518 19.9986C9.27755 20.3894 8.72245 20.3894 8.54482 19.9986L6.5 15.5L2.0014 13.4552C1.61061 13.2775 1.61061 12.7225 2.0014 12.5448L6.5 10.5L8.54482 6.0014C8.72245 5.61061 9.27755 5.61061 9.45518 6.0014L11.5 10.5L15.9986 12.5448C16.3894 12.7225 16.3894 13.2775 15.9986 13.4552L11.5 15.5L9.45518 19.9986Z" fill="currentColor"/></svg></span>Generate with AI</button>
       <button class="btn btn-ghost" id="previewBtn"><span class="btn-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3C4.5 3 2 8 2 8s2.5 5 6 5 6-5 6-5-2.5-5-6-5z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" fill="none"/></svg></span>Preview</button>
@@ -3182,7 +3211,7 @@
       <!-- Video Player -->
       <div class="video-area">
         <video id="videoPlayer" class="video-player" preload="metadata">
-          <source src="Content/Elephants 101  Nat Geo Wild - Nat Geo Animals (1080p, h264).mp4" type="video/mp4">
+          <source src="content/YTDown_YouTube_How-Screens-Stole-Childhood-and-How-to-G_Media_DH9L7vJ03DE_001_1080p.mp4" type="video/mp4">
         </video>
         <!-- Video thumbnail CTAs (visible only in slide-main mode) -->
         <div class="video-thumb-ctas" id="videoThumbCtas">
@@ -3260,11 +3289,11 @@
             <div id="snapLine" class="snap-line" aria-hidden="true"></div>
             <div class="track track-slides" role="region" aria-label="Slide track" id="slideTrack">
               <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg></div>
-              <div class="track-content is-loading" id="slideTrackContent"></div>
+              <div class="track-content is-loading" id="slideTrackContent"><div class="track-loader-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
             </div>
             <div class="track track-chapters" role="region" aria-label="Chapter track" id="chapterTrack">
               <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg></div>
-              <div class="track-content is-loading" id="chapterTrackContent"></div>
+              <div class="track-content is-loading" id="chapterTrackContent"><div class="track-loader-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
             </div>
             <div class="track track-video" role="region" aria-label="Video track">
               <div class="track-label track-label-video" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4V6.5l-4 4z" fill="currentColor"/></svg></div>
@@ -3332,6 +3361,8 @@
 
     // ===== VIDEO PLAYER =====
     const video = document.getElementById('videoPlayer');
+    video.muted = false;
+    video.volume = 1;
     const playBtn = document.getElementById('playBtn');
     const progressBar = document.getElementById('progressBar');
     const progressFill = document.getElementById('progressFill');
@@ -3375,7 +3406,9 @@
 
     function togglePlay() {
       if (video.paused) {
-        video.play();
+        video.muted = false;
+        video.volume = 1;
+        video.play().catch(() => {});
         playBtn.innerHTML = '&#9646;&#9646;';
       } else {
         video.pause();
@@ -3590,6 +3623,7 @@
       progressFill.style.width = actualPct + '%';
       updateProgressChapterFills();
       document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(newTime);
+      updatePlayerSlide();
     }
 
     function onScrubberUp(e) {
@@ -3599,6 +3633,7 @@
       document.removeEventListener('mousemove', onScrubberMove);
       document.removeEventListener('mouseup', onScrubberUp);
       checkScrubberAssetMatch(video.currentTime);
+      updatePlayerSlide();
     }
 
     document.getElementById('fullscreenBtn').addEventListener('click', () => {
@@ -4182,7 +4217,7 @@
       if (panelViewMode === 'focus' && panelFilter === 'chapters') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Chapters</div>
-          ${data.chapters.length > 0 ? '<button class="section-clear-btn" id="clearAllChaptersBtn" aria-label="Clear all chapters"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg></button>' : ''}
+          ${data.chapters.length > 0 ? '<button class="section-clear-btn" id="clearAllChaptersBtn" aria-label="Clear all chapters" title="Clear all chapters"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg></button>' : ''}
         </div>`;
         if (selectedItem && selectedItem.type === 'chapter') {
           const ch = data.chapters[selectedItem.index];
@@ -4230,6 +4265,7 @@
       if (panelViewMode === 'focus' && panelFilter === 'slides') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Slides</div>
+          ${data.slides.length > 0 ? '<button class="section-clear-btn" id="clearAllSlidesBtn" aria-label="Clear all slides" title="Clear all slides"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg></button>' : ''}
         </div>`;
         if (selectedItem && selectedItem.type === 'slide') {
           const sl = data.slides[selectedItem.index];
@@ -4311,11 +4347,12 @@
       if (panelFilter === 'chapters') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Chapters</div>
-          ${data.chapters.length > 0 ? '<button class="section-clear-btn" id="clearAllChaptersBtn" aria-label="Clear all chapters"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg></button>' : ''}
+          ${data.chapters.length > 0 ? '<button class="section-clear-btn" id="clearAllChaptersBtn" aria-label="Clear all chapters" title="Clear all chapters"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg></button>' : ''}
         </div>`;
       } else if (panelFilter === 'slides') {
         html += `<div class="accordion-section-header">
           <div class="accordion-section-title">Slides</div>
+          ${data.slides.length > 0 ? '<button class="section-clear-btn" id="clearAllSlidesBtn" aria-label="Clear all slides" title="Clear all slides"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg></button>' : ''}
         </div>`;
       }
 
@@ -4481,10 +4518,19 @@
     }
 
     function bindPanelEvents() {
+      const clearChBtn = document.getElementById('clearAllChaptersBtn');
+      if (clearChBtn) clearChBtn.addEventListener('click', () => showClearAllModal('chapters'));
+      const clearSlBtn = document.getElementById('clearAllSlidesBtn');
+      if (clearSlBtn) clearSlBtn.addEventListener('click', () => showClearAllModal('slides'));
+
       const modeToggle = document.getElementById('modeToggle');
       if (modeToggle) {
         modeToggle.addEventListener('click', () => {
           panelViewMode = panelViewMode === 'list' ? 'focus' : 'list';
+          if (focusedItem && !selectedItem) {
+            selectedItem = { ...focusedItem };
+            focusedItem = null;
+          }
           renderPanel();
         });
       }
@@ -4628,6 +4674,7 @@
       } else if (type === 'slide' && data.slides[index]) {
         video.currentTime = data.slides[index].time;
       }
+      updatePlayerSlide();
       const focusedEl = document.querySelector('.accordion-item.focused');
       if (focusedEl) {
         focusedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -4653,6 +4700,7 @@
         } else if (type === 'slide' && data.slides[index]) {
           video.currentTime = data.slides[index].time;
         }
+        updatePlayerSlide();
       }
       // Scroll the expanded item into view in the panel
       const expandedEl = document.querySelector('.accordion-item.expanded');
@@ -5009,8 +5057,21 @@
     }
 
     // ===== DELETE =====
+    let clearAllTarget = null;
+
+    function showClearAllModal(type) {
+      clearAllTarget = type;
+      const count = type === 'chapters' ? data.chapters.length : data.slides.length;
+      document.getElementById('deleteModalTitle').textContent = 'Clear all ' + type + '?';
+      document.getElementById('deleteModalDesc').textContent = `Remove all ${count} ${type}? This action cannot be undone.`;
+      document.getElementById('deleteModal').classList.add('visible');
+      setTimeout(() => document.getElementById('deleteCancelBtn').focus(), 100);
+    }
+
     function confirmDelete() {
       deleteTarget = { ...selectedItem };
+      clearAllTarget = null;
+      document.getElementById('deleteModalTitle').textContent = 'Delete item?';
       const desc = selectedItem.type === 'chapter'
         ? `Delete "${data.chapters[selectedItem.index].title}"? This cannot be undone.`
         : `Remove Slide ${selectedItem.index + 1}? This cannot be undone.`;
@@ -5022,10 +5083,24 @@
     document.getElementById('deleteCancelBtn').addEventListener('click', () => {
       document.getElementById('deleteModal').classList.remove('visible');
       deleteTarget = null;
+      clearAllTarget = null;
     });
 
     document.getElementById('deleteConfirmBtn').addEventListener('click', () => {
-      if (deleteTarget) {
+      if (clearAllTarget) {
+        if (clearAllTarget === 'chapters') {
+          data.chapters = [];
+          showToast('All chapters cleared');
+        } else if (clearAllTarget === 'slides') {
+          data.slides = [];
+          showToast('All slides cleared');
+        }
+        selectedItem = null;
+        focusedItem = null;
+        render();
+        triggerSave();
+        clearAllTarget = null;
+      } else if (deleteTarget) {
         if (deleteTarget.type === 'chapter') {
           data.chapters.splice(deleteTarget.index, 1);
         } else if (deleteTarget.type === 'slide') {
@@ -5056,14 +5131,14 @@
       setTimeout(() => {
         const dur = videoDuration || 600;
         data.chapters = [
-          { time: 0, title: 'Meet the Elephants', summary: 'Overview of the African and Asian elephant species and their significance in the animal kingdom.', ai: true },
-          { time: dur * 0.10, title: 'Physical Characteristics', summary: 'Exploring the size, trunk dexterity, tusks, and unique skin adaptations of elephants.', ai: true },
-          { time: dur * 0.25, title: 'Social Structure', summary: 'How matriarchal herds form, communicate, and make collective decisions.', ai: true },
-          { time: dur * 0.40, title: 'Intelligence & Memory', summary: 'Evidence of problem-solving, tool use, self-awareness, and long-term memory in elephants.', ai: true },
-          { time: dur * 0.55, title: 'Diet & Habitat', summary: 'Feeding behaviors, migration patterns, and the ecosystems elephants shape as keystone species.', ai: true },
-          { time: dur * 0.70, title: 'Reproduction & Family', summary: 'Gestation, calf-rearing, and the strong family bonds that define elephant societies.', ai: true },
-          { time: dur * 0.85, title: 'Conservation Threats', summary: 'Poaching, habitat loss, and human-wildlife conflict endangering elephant populations worldwide.', ai: true },
-          { time: dur * 0.95, title: 'Protection Efforts', summary: 'Global initiatives, wildlife corridors, and anti-poaching programs working to save elephants.', ai: true }
+          { time: 0, title: 'Techno-Skepticism and Childhood', summary: 'Introduction to the intersection of human development, social connection, education, and AI in children\'s lives.', ai: true },
+          { time: dur * 0.07, title: 'Research Framework', summary: 'Humans are ultrasocial creatures — understanding childhood through the lens of evolutionary social needs.', ai: true },
+          { time: dur * 0.14, title: 'Social Media & Mental Health', summary: 'Teens moved social lives online, losing real-world bonding. Loneliness and anxiety rose across countries simultaneously.', ai: true },
+          { time: dur * 0.25, title: 'Mechanisms of Social Bonding', summary: 'Eating together, shared laughter, synchronous movement, and touch — the embodied bonding teens are losing to screens.', ai: true },
+          { time: dur * 0.37, title: 'Attention Fragmentation', summary: 'One-third of teens are online almost constantly. Short videos are rewiring adolescent brains during critical development.', ai: true },
+          { time: dur * 0.52, title: 'Evidence Snapshot', summary: 'Sweden reversed EdTech adoption after declining scores. Experiments show reduced social media improves mental health.', ai: true },
+          { time: dur * 0.70, title: 'Three Principles of Techno-Skepticism', summary: 'Protect brain development through puberty. Prioritize people and books over screens. Beware artificial relationships for minors.', ai: true },
+          { time: dur * 0.85, title: 'Counterarguments & Conclusion', summary: 'Digital skills are easy to learn later. Human connection is not optional — policy and parenting must prioritize real-world relationships.', ai: true }
         ];
         selectedItem = null;
         panelFilter = 'chapters';
@@ -5892,8 +5967,30 @@
         arr[i + 1].time = Math.max(thisStart, Math.min(nextEnd, snappedTime));
       }
 
-      renderChapterTrack();
-      renderSlideTrack();
+      updateTrackWidthsInPlace(resizeState.type);
+    }
+
+    function updateTrackWidthsInPlace(type) {
+      const container = type === 'chapter'
+        ? document.getElementById('chapterTrackContent')
+        : document.getElementById('slideTrackContent');
+      const arr = type === 'chapter' ? data.chapters : data.slides;
+      const segments = container.querySelectorAll('.' + type + '-segment');
+      const dur = videoDuration || 1;
+
+      arr.forEach((item, i) => {
+        if (!segments[i]) return;
+        const nextTime = (i < arr.length - 1) ? arr[i + 1].time : dur;
+        const duration = nextTime - item.time;
+        const widthPx = duration * pixelsPerSecond;
+        segments[i].style.width = widthPx + 'px';
+        if (type === 'slide' && i === 0 && item.time > 0) {
+          segments[i].style.marginLeft = (item.time * pixelsPerSecond) + 'px';
+        }
+        const endTime = item.time + duration;
+        const timeRow = segments[i].querySelector('.segment-time-row');
+        if (timeRow) timeRow.textContent = formatTime(item.time) + ' - ' + formatTime(endTime);
+      });
     }
 
     function onResizeEnd(e) {
@@ -6089,19 +6186,21 @@
       if (videoDuration > 0) {
         zoomFit();
       }
-      // Select first chapter at 00:00 on load
+      // Focus first chapter at 00:00 on load (collapsed)
       if (data.chapters.length > 0 && data.chapters[0].time === 0) {
-        selectedItem = { type: 'chapter', index: 0 };
+        focusedItem = { type: 'chapter', index: 0 };
         panelFilter = 'chapters';
         updateSidebarActive();
       }
-      // Enable rendering and reveal all assets once
+      // Enable rendering, populate DOM while still hidden, then reveal
       appReady = true;
-      document.querySelectorAll('.track-content.is-loading').forEach(el => {
-        el.classList.remove('is-loading');
-      });
-      document.getElementById('timelineLoadingIndicator').classList.add('hidden');
       render();
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.track-content.is-loading').forEach(el => {
+          el.classList.remove('is-loading');
+        });
+        document.getElementById('timelineLoadingIndicator').classList.add('hidden');
+      });
     }
 
     // Disable CTA tools until app is fully loaded
