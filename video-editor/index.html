@@ -3652,12 +3652,10 @@
       const snapped = findSnapTime(newTime, rect.width);
       if (snapped !== null) newTime = snapped;
 
-      // Slide empty state: single click moves scrubber and opens file browser
+      // Slide empty state: single click opens file browser, slides start from 00:00
       if (e.target.closest('#emptySlideClick')) {
-        video.currentTime = newTime;
-        const posPercent = (newTime / videoDuration) * 100;
-        positionPlayhead(posPercent);
-        positionHoverScrubberAt(e.clientX, rect);
+        video.currentTime = 0;
+        positionPlayhead(0);
         document.getElementById('slideFileInput').click();
         return;
       }
@@ -4944,9 +4942,9 @@
       const file = this.files && this.files[0];
       if (!file) return;
       if (file.name.toLowerCase().endsWith('.pptx')) {
-        handlePptxUpload(file);
+        handlePptxUpload(file, 0);
       } else {
-        handlePdfUpload(file);
+        handlePdfUpload(file, 0);
       }
       this.value = '';
     });
@@ -6109,7 +6107,6 @@
             }
           }
 
-          // Use proper handlers for PDF and PPTX — drag & drop starts from 00:00
           const isPdf = file.name.toLowerCase().endsWith('.pdf');
           const isPptx = file.name.toLowerCase().endsWith('.pptx');
           if (isPdf && typeof pdfjsLib !== 'undefined') {
