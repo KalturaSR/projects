@@ -1066,6 +1066,8 @@
       background: transparent;
       backdrop-filter: blur(16px);
       color: var(--w-100);
+      will-change: contents;
+      contain: layout style;
     }
 
     .chapter-segment:hover {
@@ -1163,6 +1165,8 @@
       backdrop-filter: blur(16px);
       color: var(--w-100);
       gap: 8px;
+      will-change: contents;
+      contain: layout style;
     }
 
     .slide-segment:hover {
@@ -1310,6 +1314,48 @@
 
     .form-input-icon-btn:hover {
       background: var(--w-10);
+    }
+
+    .form-input-clear {
+      position: absolute;
+      right: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--w-50);
+      padding: 0;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .form-input-clear:hover {
+      color: var(--w-100);
+      background: var(--w-10);
+    }
+
+    .form-input-with-clear {
+      position: relative;
+    }
+
+    .form-input-with-clear .form-input,
+    .form-input-with-clear .form-textarea {
+      padding-right: 28px;
+    }
+
+    .form-input-with-clear.has-value .form-input-clear {
+      display: flex;
+    }
+
+    .form-input-with-clear:has(.form-textarea) .form-input-clear {
+      top: 8px;
+      transform: none;
     }
 
     .form-textarea-wrapper {
@@ -1789,14 +1835,15 @@
       position: relative;
     }
 
-    [data-tooltip]:hover::after {
+    [data-tooltip]::after {
       content: attr(data-tooltip);
       position: absolute;
-      top: calc(100% + 6px);
+      top: calc(100% + 8px);
       left: 50%;
-      transform: translateX(-50%);
+      transform: translateX(-50%) scale(0.95);
       background: #ffffff;
       color: #000000;
+      font-family: 'Lato', sans-serif;
       font-size: 12px;
       font-weight: 700;
       line-height: 16px;
@@ -1806,12 +1853,21 @@
       pointer-events: none;
       z-index: 100;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      opacity: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      transition-delay: 0s;
     }
 
-    .chapter-segment[data-tooltip]:hover::after,
-    .slide-segment[data-tooltip]:hover::after {
+    [data-tooltip]:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+      transition-delay: 1s;
+    }
+
+    .chapter-segment[data-tooltip]::after,
+    .slide-segment[data-tooltip]::after {
       top: auto;
-      bottom: calc(100% + 6px);
+      bottom: calc(100% + 8px);
     }
 
     .panel-section {
@@ -1953,9 +2009,10 @@
       pointer-events: none;
       opacity: 0;
       transform: scale(0.95);
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      transition-delay: 0s;
       z-index: 100;
-      top: calc(100% + 6px);
+      top: calc(100% + 8px);
       left: 50%;
       translate: -50% 0;
       display: inline-flex;
@@ -1966,6 +2023,7 @@
     .use-current-btn:hover .ds-hint {
       opacity: 1;
       transform: scale(1);
+      transition-delay: 1s;
     }
 
     .use-current-btn .ds-hint-body {
@@ -3288,15 +3346,15 @@
             <div class="tracks-playhead" id="tracksPlayhead"></div>
             <div id="snapLine" class="snap-line" aria-hidden="true"></div>
             <div class="track track-slides" role="region" aria-label="Slide track" id="slideTrack">
-              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg></div>
+              <div class="track-label" data-tooltip="Slides"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.65 6C17.3956 6 18 6.50368 18 7.125V16.875C18 17.4963 17.3956 18 16.65 18H1.35C0.604416 18 0 17.4963 0 16.875V7.125C0 6.50368 0.604416 6 1.35 6H16.65ZM14.4 3C15.3356 3 16.1045 3.59489 16.1918 4.35554L16.2 4.5H1.8C1.8 3.67157 2.60589 3 3.6 3H14.4ZM12.6 0C13.5356 0 14.3045 0.594888 14.3918 1.35554L14.4 1.5H3.6C3.6 0.671573 4.40589 0 5.4 0H12.6Z" fill="currentColor" transform="translate(3,3)"/></svg></div>
               <div class="track-content is-loading" id="slideTrackContent"><div class="track-loader-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
             </div>
             <div class="track track-chapters" role="region" aria-label="Chapter track" id="chapterTrack">
-              <div class="track-label" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg></div>
+              <div class="track-label" data-tooltip="Chapters"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1C0 0.447716 0.447715 0 1 0H11C11.5523 0 12 0.447715 12 1V16C12 16.824 11.0592 17.2944 10.4 16.8L6.6 13.95C6.24444 13.6833 5.75556 13.6833 5.4 13.95L1.6 16.8C0.940764 17.2944 0 16.824 0 16V1Z" fill="currentColor" transform="translate(6,3.5)"/></svg></div>
               <div class="track-content is-loading" id="chapterTrackContent"><div class="track-loader-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
             </div>
             <div class="track track-video" role="region" aria-label="Video track">
-              <div class="track-label track-label-video" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4V6.5l-4 4z" fill="currentColor"/></svg></div>
+              <div class="track-label track-label-video" data-tooltip="Video"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4V6.5l-4 4z" fill="currentColor"/></svg></div>
               <div class="track-content is-loading"><div class="video-track-content" id="videoTrackContent"><canvas id="videoThumbnails"></canvas><div class="video-track-loaders"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.25)" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"/></svg></div></div></div>
             </div>
           </div>
@@ -3434,12 +3492,7 @@
       rafId = requestAnimationFrame(() => {
         rafId = null;
         if (scrubberDragging) return;
-        const pct = (video.currentTime / videoDuration) * 100;
-        progressFill.style.width = pct + '%';
-        updateProgressChapterFills();
-        timestampEl.textContent = formatTime(video.currentTime) + ' / ' + formatTime(videoDuration);
-        updatePlayhead(pct);
-        updatePlayerSlide();
+        syncTimeUI();
       });
     });
 
@@ -3453,7 +3506,7 @@
       const hoverTime = pct * videoDuration;
       const ch = getChapterAtTime(hoverTime);
       if (ch) {
-        progressTooltip.innerHTML = chapterIconSvg + ch.title + '<br>' + formatTime(hoverTime);
+        progressTooltip.innerHTML = chapterIconSvg + (ch.title.trim() || 'Untitled Chapter') + '<br>' + formatTime(hoverTime);
       } else {
         progressTooltip.textContent = formatTime(hoverTime);
       }
@@ -3468,9 +3521,7 @@
       const rect = progressBar.getBoundingClientRect();
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       video.currentTime = pct * videoDuration;
-      progressFill.style.width = (pct * 100) + '%';
-      updateProgressChapterFills();
-      positionPlayhead(pct * 100);
+      syncTimeUI(pct * videoDuration);
       checkScrubberAssetMatch(pct * videoDuration);
     });
 
@@ -3486,7 +3537,7 @@
       const rect = trackContent.getBoundingClientRect();
       const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       video.currentTime = pct * videoDuration;
-      positionPlayhead(pct * 100);
+      syncTimeUI(pct * videoDuration);
       checkScrubberAssetMatch(pct * videoDuration);
     }
 
@@ -3506,6 +3557,16 @@
       tracksPlayhead.style.left = tracksLeft + 'px';
 
       document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(video.currentTime);
+      updatePlayerSlide();
+    }
+
+    function syncTimeUI(time) {
+      if (time === undefined) time = video.currentTime;
+      const pct = (time / videoDuration) * 100;
+      positionPlayhead(pct);
+      timestampEl.textContent = formatTime(time) + ' / ' + formatTime(videoDuration);
+      progressFill.style.width = pct + '%';
+      updateProgressChapterFills();
       updatePlayerSlide();
     }
 
@@ -3576,8 +3637,7 @@
       const snapped = findSnapTime(newTime, rect.width);
       if (snapped !== null) newTime = snapped;
       video.currentTime = newTime;
-      const posPercent = (newTime / videoDuration) * 100;
-      positionPlayhead(posPercent);
+      syncTimeUI(newTime);
       document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(newTime);
       document.addEventListener('mousemove', onScrubberMove);
       document.addEventListener('mouseup', onScrubberUp);
@@ -3617,13 +3677,8 @@
       }
 
       video.currentTime = newTime;
-      const actualPct = (newTime / videoDuration) * 100;
-      positionPlayhead(actualPct);
-      timestampEl.textContent = formatTime(newTime) + ' / ' + formatTime(videoDuration);
-      progressFill.style.width = actualPct + '%';
-      updateProgressChapterFills();
+      syncTimeUI(newTime);
       document.getElementById('scrubberTooltip').textContent = getScrubberTooltipText(newTime);
-      updatePlayerSlide();
     }
 
     function onScrubberUp(e) {
@@ -3672,8 +3727,7 @@
       }
 
       video.currentTime = newTime;
-      const posPercent = (newTime / videoDuration) * 100;
-      positionPlayhead(posPercent);
+      syncTimeUI(newTime);
       positionHoverScrubberAt(e.clientX, rect);
       if (!chapterSeg && !slideSeg) checkScrubberAssetMatch(newTime);
     });
@@ -4000,16 +4054,19 @@
         if (i > 0) handles += '<span class="resize-handle left" data-side="left"></span>';
         if (i < data.chapters.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
         const endTime = ch.time + duration;
-        el.innerHTML = handles + '<span class="segment-text"><span class="segment-time-row">' + formatTime(ch.time) + ' - ' + formatTime(endTime) + '</span><span class="segment-title-row">' + ch.title + '</span></span>';
+        const chLabel = ch.title.trim() || 'Untitled Chapter';
+        el.innerHTML = handles + '<span class="segment-text"><span class="segment-time-row">' + formatTime(ch.time) + ' - ' + formatTime(endTime) + '</span><span class="segment-title-row">' + chLabel + '</span></span>';
 
-        el.setAttribute('data-tooltip', 'Chapter: ' + ch.title);
+        el.setAttribute('data-tooltip', 'Chapter: ' + chLabel);
         el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
-        el.setAttribute('aria-label', 'Chapter: ' + ch.title + ' at ' + formatTime(ch.time));
+        el.setAttribute('aria-label', 'Chapter: ' + chLabel + ' at ' + formatTime(ch.time));
         el.setAttribute('aria-roledescription', 'resizable chapter');
         el.addEventListener('mousedown', (e) => {
           if (e.target.classList.contains('resize-handle')) {
             initResize(e, 'chapter', i, e.target.dataset.side);
+          } else {
+            initDrag(e, 'chapter', i);
           }
         });
         el.addEventListener('dblclick', (e) => {
@@ -4028,6 +4085,32 @@
         });
         container.appendChild(el);
       });
+    }
+
+    function updateChapterSegmentLabel(index) {
+      const container = document.getElementById('chapterTrackContent');
+      const segments = container.querySelectorAll('.chapter-segment');
+      const seg = segments[index];
+      if (!seg) return;
+      const ch = data.chapters[index];
+      const label = ch.title.trim() || 'Untitled Chapter';
+      const titleEl = seg.querySelector('.segment-title-row');
+      if (titleEl) titleEl.textContent = label;
+      seg.setAttribute('data-tooltip', 'Chapter: ' + label);
+      seg.setAttribute('aria-label', 'Chapter: ' + label + ' at ' + formatTime(ch.time));
+    }
+
+    function updateSlideSegmentLabel(index) {
+      const container = document.getElementById('slideTrackContent');
+      const segments = container.querySelectorAll('.slide-segment');
+      const seg = segments[index];
+      if (!seg) return;
+      const sl = data.slides[index];
+      const label = sl.title.trim() || 'Untitled Slide';
+      const titleEl = seg.querySelector('.segment-title-row');
+      if (titleEl) titleEl.textContent = label;
+      seg.setAttribute('data-tooltip', label);
+      seg.setAttribute('aria-label', 'Slide: ' + label + ' at ' + formatTime(sl.time));
     }
 
     function renderSlideTrack() {
@@ -4054,22 +4137,25 @@
         if (i === 0 && sl.time > 0) {
           el.style.marginLeft = (sl.time * pixelsPerSecond) + 'px';
         }
-        el.setAttribute('data-tooltip', sl.title);
+        const slLabel = sl.title.trim() || 'Untitled Slide';
+        el.setAttribute('data-tooltip', slLabel);
         el.setAttribute('role', 'listitem');
         el.setAttribute('tabindex', '0');
-        el.setAttribute('aria-label', 'Slide: ' + sl.title + ' at ' + formatTime(sl.time));
+        el.setAttribute('aria-label', 'Slide: ' + slLabel + ' at ' + formatTime(sl.time));
         el.setAttribute('aria-roledescription', 'resizable slide');
 
         let handles = '<span class="resize-handle left" data-side="left"></span>';
         if (i < data.slides.length - 1) handles += '<span class="resize-handle right" data-side="right"></span>';
         const endTime = sl.time + duration;
         el.innerHTML = handles +
-          (sl.image ? '<img class="slide-segment-thumb" src="' + sl.image + '" alt="' + sl.title + ' thumbnail" draggable="false">' : '') +
-          '<span class="segment-text"><span class="segment-time-row">' + formatTime(sl.time) + ' - ' + formatTime(endTime) + '</span><span class="segment-title-row">' + sl.title + '</span></span>';
+          (sl.image ? '<img class="slide-segment-thumb" src="' + sl.image + '" alt="' + slLabel + ' thumbnail" draggable="false">' : '') +
+          '<span class="segment-text"><span class="segment-time-row">' + formatTime(sl.time) + ' - ' + formatTime(endTime) + '</span><span class="segment-title-row">' + slLabel + '</span></span>';
 
         el.addEventListener('mousedown', (e) => {
           if (e.target.classList.contains('resize-handle')) {
             initResize(e, 'slide', i, e.target.dataset.side);
+          } else {
+            initDrag(e, 'slide', i);
           }
         });
         el.addEventListener('dblclick', (e) => {
@@ -4145,7 +4231,10 @@
                   <span class="form-label">Add introduction</span>
                   <span class="form-counter" id="introCharCount">${charCount}/500</span>
                 </div>
-                <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+                <div class="form-input-with-clear ${data.introduction.text ? 'has-value' : ''}">
+                  <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+                  <button class="form-input-clear" data-clear="introTextInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                </div>
               </div>
               <div class="accordion-delete-section">
                 <button class="accordion-delete-btn" id="introDeleteBtn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 6C8 4.89543 8.89543 4 10 4H14C15.1046 4 16 4.89543 16 6V7H19C19.5523 7 20 7.44772 20 8C20 8.55228 19.5523 9 19 9H14H10H5C4.44772 9 4 8.55228 4 8C4 7.44772 4.44772 7 5 7H8V6ZM6 10H18V18C18 19.1046 17.1046 20 16 20H8C6.89543 20 6 19.1046 6 18V10Z" fill="currentColor"/></svg> Delete introduction</button>
@@ -4224,11 +4313,17 @@
               <div class="accordion-form">
                 <div class="form-field">
                   <div class="form-label-row"><span class="form-label">Chapter name</span><span class="form-counter">${(ch.title || '').length}/75</span></div>
-                  <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Untitled chapter" maxlength="75" required>
+                  <div class="form-input-with-clear ${ch.title ? 'has-value' : ''}">
+                    <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Untitled chapter" maxlength="75" required>
+                    <button class="form-input-clear" data-clear="chapterTitleInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
                 <div class="form-field">
                   <div class="form-label-row"><span class="form-label">Chapter summary</span><span class="form-counter">${(ch.summary || '').length}/500</span></div>
-                  <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers" maxlength="500">${ch.summary || ''}</textarea>
+                  <div class="form-input-with-clear ${ch.summary ? 'has-value' : ''}">
+                    <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers" maxlength="500">${ch.summary || ''}</textarea>
+                    <button class="form-input-clear" data-clear="chapterSummaryInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
                 <div class="form-field">
                   <div class="form-label-row"><span class="form-label">Start time</span></div>
@@ -4280,11 +4375,17 @@
                 </div>
                 <div class="form-field">
                   <div class="form-label-row"><span class="form-label">Slide name</span><span class="form-counter">${(sl.title || '').length}/75</span></div>
-                  <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide name" maxlength="75" required>
+                  <div class="form-input-with-clear ${sl.title ? 'has-value' : ''}">
+                    <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide name" maxlength="75" required>
+                    <button class="form-input-clear" data-clear="slideTitleInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
                 <div class="form-field">
                   <div class="form-label-row"><span class="form-label">Slide description</span><span class="form-counter">${(sl.description || '').length}/500</span></div>
-                  <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+                  <div class="form-input-with-clear ${sl.description ? 'has-value' : ''}">
+                    <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+                    <button class="form-input-clear" data-clear="slideDescInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                  </div>
                 </div>
                 <div class="form-field">
                   <div class="form-label-row"><span class="form-label">Slide start</span></div>
@@ -4335,7 +4436,10 @@
           <div class="accordion-body">
             <div class="accordion-form">
               <div class="form-group">
-                <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+                <div class="form-input-with-clear ${data.introduction.text ? 'has-value' : ''}">
+                  <textarea class="form-textarea" id="introTextInput" placeholder="Describe what this video covers" maxlength="500">${data.introduction.text}</textarea>
+                  <button class="form-input-clear" data-clear="introTextInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                </div>
               </div>
             </div>
           </div>
@@ -4370,6 +4474,8 @@
       allItems.forEach(item => {
         const expanded = panelFilter !== 'all' && isExpanded(item.type, item.index);
         const focused = isFocused(item.type, item.index);
+        const fallbackTitle = item.type === 'chapter' ? 'Untitled Chapter' : 'Untitled Slide';
+        const displayTitle = (item.title && item.title.trim()) ? item.title : fallbackTitle;
 
         const badge = panelFilter === 'all'
           ? (item.type === 'chapter' ? '<span class="accordion-row-badge accordion-row-badge-ch">CH</span>' : '<span class="accordion-row-badge accordion-row-badge-sl">SL</span>')
@@ -4379,7 +4485,7 @@
           <div class="accordion-row">
             <div class="accordion-row-holder">
               <span class="accordion-row-time">${formatTime(item.time)}</span>
-              <span class="accordion-row-title">${item.title}</span>
+              <span class="accordion-row-title">${displayTitle}</span>
             </div>
             ${badge}
             ${chevron}
@@ -4388,21 +4494,28 @@
 
         if (item.type === 'chapter') {
           const ch = data.chapters[item.index];
-          html += `
+          if (expanded) {
+            html += `
             <div class="accordion-form">
               <div class="form-field">
                 <div class="form-label-row">
                   <span class="form-label">Chapter name</span>
                   <span class="form-counter">${(ch.title || '').length}/75</span>
                 </div>
-                <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Untitled chapter" maxlength="75" required>
+                <div class="form-input-with-clear ${ch.title ? 'has-value' : ''}">
+                  <input type="text" class="form-input" id="chapterTitleInput" value="${ch.title}" placeholder="Untitled chapter" maxlength="75" required>
+                  <button class="form-input-clear" data-clear="chapterTitleInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                </div>
               </div>
               <div class="form-field">
                 <div class="form-label-row">
                   <span class="form-label">Chapter summary</span>
                   <span class="form-counter">${(ch.summary || '').length}/500</span>
                 </div>
-                <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers" maxlength="500">${ch.summary || ''}</textarea>
+                <div class="form-input-with-clear ${ch.summary ? 'has-value' : ''}">
+                  <textarea class="form-textarea" id="chapterSummaryInput" placeholder="Describe what this chapter covers" maxlength="500">${ch.summary || ''}</textarea>
+                  <button class="form-input-clear" data-clear="chapterSummaryInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                </div>
               </div>
               <div class="form-field">
                 <div class="form-label-row">
@@ -4417,9 +4530,11 @@
             <div class="accordion-delete-section">
               <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Delete chapter</button>
             </div>`;
+          }
         } else {
           const sl = data.slides[item.index];
-          html += `
+          if (expanded) {
+            html += `
             <div class="accordion-form">
               <div class="slide-form-properties-title">Properties</div>
               <div class="form-field">
@@ -4434,14 +4549,20 @@
                   <span class="form-label">Slide name</span>
                   <span class="form-counter">${(sl.title || '').length}/75</span>
                 </div>
-                <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide name" maxlength="75" required>
+                <div class="form-input-with-clear ${sl.title ? 'has-value' : ''}">
+                  <input type="text" class="form-input" id="slideTitleInput" value="${sl.title}" placeholder="Add slide name" maxlength="75" required>
+                  <button class="form-input-clear" data-clear="slideTitleInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                </div>
               </div>
               <div class="form-field">
                 <div class="form-label-row">
                   <span class="form-label">Slide description</span>
                   <span class="form-counter">${(sl.description || '').length}/500</span>
                 </div>
-                <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+                <div class="form-input-with-clear ${sl.description ? 'has-value' : ''}">
+                  <textarea class="form-textarea" id="slideDescInput" placeholder="Describe this slide" maxlength="500">${sl.description || ''}</textarea>
+                  <button class="form-input-clear" data-clear="slideDescInput" aria-label="Clear"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+                </div>
               </div>
               <div class="form-field">
                 <div class="form-label-row">
@@ -4456,6 +4577,7 @@
             <div class="accordion-delete-section">
               <button class="accordion-delete-btn" id="deleteItemBtn">${deleteSvg} Remove slide</button>
             </div>`;
+          }
         }
 
         html += `</div></div>`;
@@ -4502,9 +4624,23 @@
         introText.addEventListener('input', (e) => {
           data.introduction.text = e.target.value;
           if (charCount) charCount.textContent = e.target.value.length + '/500';
+          const wrapper = introText.closest('.form-input-with-clear');
+          if (wrapper) wrapper.classList.toggle('has-value', e.target.value.length > 0);
           triggerSave();
         });
       }
+      document.querySelectorAll('.form-input-clear').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const inputId = btn.dataset.clear;
+          const input = document.getElementById(inputId);
+          if (!input) return;
+          input.value = '';
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          const wrapper = btn.closest('.form-input-with-clear');
+          if (wrapper) wrapper.classList.remove('has-value');
+        });
+      });
       const deleteBtn = document.getElementById('introDeleteBtn');
       if (deleteBtn) deleteBtn.addEventListener('click', () => {
         data.introduction.text = '';
@@ -4516,6 +4652,20 @@
     }
 
     function bindPanelEvents() {
+      // Clear buttons on text inputs
+      document.querySelectorAll('.form-input-clear').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const inputId = btn.dataset.clear;
+          const input = document.getElementById(inputId);
+          if (!input) return;
+          input.value = '';
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          const wrapper = btn.closest('.form-input-with-clear');
+          if (wrapper) wrapper.classList.remove('has-value');
+        });
+      });
+
       const clearChBtn = document.getElementById('clearAllChaptersBtn');
       if (clearChBtn) clearChBtn.addEventListener('click', () => showClearAllModal('chapters'));
       const clearSlBtn = document.getElementById('clearAllSlidesBtn');
@@ -4557,77 +4707,133 @@
         });
       });
 
+      // Confirm on Enter for all text inputs
+      document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && input.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            input.blur();
+          }
+        });
+      });
+
       // Form inputs
       const introText = document.getElementById('introTextInput');
-      if (introText) introText.addEventListener('input', (e) => { data.introduction.text = e.target.value; triggerSave(); });
+      if (introText) introText.addEventListener('input', (e) => {
+        data.introduction.text = e.target.value;
+        const counter = document.getElementById('introCharCount');
+        if (counter) counter.textContent = e.target.value.length + '/500';
+        const wrapper = introText.closest('.form-input-with-clear');
+        if (wrapper) wrapper.classList.toggle('has-value', e.target.value.length > 0);
+        triggerSave();
+      });
 
       const chTitle = document.getElementById('chapterTitleInput');
       if (chTitle) {
+        const chTitleCounter = chTitle.closest('.form-field').querySelector('.form-counter');
+        const chTitleWrapper = chTitle.closest('.form-input-with-clear');
+        const chTitleRow = chTitle.closest('.accordion-item');
+        const chTitleRowLabel = chTitleRow ? chTitleRow.querySelector('.accordion-row-title') : null;
         chTitle.addEventListener('input', (e) => {
-          if (e.target.value.trim()) {
-            data.chapters[selectedItem.index].title = e.target.value;
-            renderChapterTrack();
-            triggerSave();
-          }
-        });
-        chTitle.addEventListener('blur', (e) => {
-          if (!e.target.value.trim()) e.target.value = data.chapters[selectedItem.index].title;
+          const val = e.target.value;
+          const label = val.trim() || 'Untitled Chapter';
+          data.chapters[selectedItem.index].title = val;
+          updateChapterSegmentLabel(selectedItem.index);
+          if (chTitleRowLabel) chTitleRowLabel.textContent = label;
+          if (chTitleCounter) chTitleCounter.textContent = val.length + '/75';
+          if (chTitleWrapper) chTitleWrapper.classList.toggle('has-value', val.length > 0);
+          triggerSave();
         });
       }
 
       const chSummary = document.getElementById('chapterSummaryInput');
-      if (chSummary) chSummary.addEventListener('input', (e) => { data.chapters[selectedItem.index].summary = e.target.value; triggerSave(); });
-
-      // Chapter timestamp auto-save
-      const chTime = document.getElementById('chapterTimeInput');
-      if (chTime) chTime.addEventListener('change', (e) => {
-        const seconds = parseTime(e.target.value);
-        if (seconds !== null && seconds >= 0 && seconds <= videoDuration) {
-          data.chapters[selectedItem.index].time = seconds;
-          data.chapters.sort((a, b) => a.time - b.time);
-          const item = data.chapters.find(c => c.time === seconds);
-          selectedItem.index = data.chapters.indexOf(item);
-          video.currentTime = seconds;
-          render();
-          triggerSave();
-        } else {
-          e.target.value = formatTime(data.chapters[selectedItem.index].time);
-        }
+      if (chSummary) chSummary.addEventListener('input', (e) => {
+        data.chapters[selectedItem.index].summary = e.target.value;
+        const counter = chSummary.closest('.form-field').querySelector('.form-counter');
+        if (counter) counter.textContent = e.target.value.length + '/500';
+        const wrapper = chSummary.closest('.form-input-with-clear');
+        if (wrapper) wrapper.classList.toggle('has-value', e.target.value.length > 0);
+        triggerSave();
       });
 
-      const slTitle = document.getElementById('slideTitleInput');
-      if (slTitle) {
-        slTitle.addEventListener('input', (e) => {
-          if (e.target.value.trim()) {
-            data.slides[selectedItem.index].title = e.target.value;
-            renderSlideTrack();
+      // Chapter timestamp — update immediately on valid input
+      const chTime = document.getElementById('chapterTimeInput');
+      if (chTime) {
+        chTime.addEventListener('input', (e) => {
+          const seconds = parseTime(e.target.value);
+          if (seconds !== null && seconds >= 0 && seconds <= videoDuration) {
+            data.chapters[selectedItem.index].time = seconds;
+            data.chapters.sort((a, b) => a.time - b.time);
+            const item = data.chapters.find(c => c.time === seconds);
+            selectedItem.index = data.chapters.indexOf(item);
+            video.currentTime = seconds;
+            syncTimeUI(seconds);
+            renderChapterTrack();
+            renderProgressSplits();
+            updatePlayerSlide();
             triggerSave();
           }
         });
-        slTitle.addEventListener('blur', (e) => {
-          if (!e.target.value.trim()) e.target.value = data.slides[selectedItem.index].title;
+        chTime.addEventListener('blur', (e) => {
+          const seconds = parseTime(e.target.value);
+          if (seconds === null || seconds < 0 || seconds > videoDuration) {
+            e.target.value = formatTime(data.chapters[selectedItem.index].time);
+          }
+        });
+      }
+
+      const slTitle = document.getElementById('slideTitleInput');
+      if (slTitle) {
+        const slTitleCounter = slTitle.closest('.form-field').querySelector('.form-counter');
+        const slTitleWrapper = slTitle.closest('.form-input-with-clear');
+        const slTitleRow = slTitle.closest('.accordion-item');
+        const slTitleRowLabel = slTitleRow ? slTitleRow.querySelector('.accordion-row-title') : null;
+        slTitle.addEventListener('input', (e) => {
+          const val = e.target.value;
+          const label = val.trim() || 'Untitled Slide';
+          data.slides[selectedItem.index].title = val;
+          updateSlideSegmentLabel(selectedItem.index);
+          if (slTitleRowLabel) slTitleRowLabel.textContent = label;
+          if (slTitleCounter) slTitleCounter.textContent = val.length + '/75';
+          if (slTitleWrapper) slTitleWrapper.classList.toggle('has-value', val.length > 0);
+          triggerSave();
         });
       }
 
       const slDesc = document.getElementById('slideDescInput');
-      if (slDesc) slDesc.addEventListener('input', (e) => { data.slides[selectedItem.index].description = e.target.value; triggerSave(); });
-
-      // Slide timestamp auto-save
-      const slTime = document.getElementById('slideTimeInput');
-      if (slTime) slTime.addEventListener('change', (e) => {
-        const seconds = parseTime(e.target.value);
-        if (seconds !== null && seconds >= 0 && seconds <= videoDuration) {
-          data.slides[selectedItem.index].time = seconds;
-          data.slides.sort((a, b) => a.time - b.time);
-          const item = data.slides.find(s => s.time === seconds);
-          selectedItem.index = data.slides.indexOf(item);
-          video.currentTime = seconds;
-          render();
-          triggerSave();
-        } else {
-          e.target.value = formatTime(data.slides[selectedItem.index].time);
-        }
+      if (slDesc) slDesc.addEventListener('input', (e) => {
+        data.slides[selectedItem.index].description = e.target.value;
+        const counter = slDesc.closest('.form-field').querySelector('.form-counter');
+        if (counter) counter.textContent = e.target.value.length + '/500';
+        const wrapper = slDesc.closest('.form-input-with-clear');
+        if (wrapper) wrapper.classList.toggle('has-value', e.target.value.length > 0);
+        triggerSave();
       });
+
+      // Slide timestamp — update immediately on valid input
+      const slTime = document.getElementById('slideTimeInput');
+      if (slTime) {
+        slTime.addEventListener('input', (e) => {
+          const seconds = parseTime(e.target.value);
+          if (seconds !== null && seconds >= 0 && seconds <= videoDuration) {
+            data.slides[selectedItem.index].time = seconds;
+            data.slides.sort((a, b) => a.time - b.time);
+            const item = data.slides.find(s => s.time === seconds);
+            selectedItem.index = data.slides.indexOf(item);
+            video.currentTime = seconds;
+            syncTimeUI(seconds);
+            renderSlideTrack();
+            updatePlayerSlide();
+            triggerSave();
+          }
+        });
+        slTime.addEventListener('blur', (e) => {
+          const seconds = parseTime(e.target.value);
+          if (seconds === null || seconds < 0 || seconds > videoDuration) {
+            e.target.value = formatTime(data.slides[selectedItem.index].time);
+          }
+        });
+      }
 
       // Accordion row clicks — select item; chevron toggles expand/collapse
       document.querySelectorAll('.accordion-item > .accordion-row').forEach(row => {
@@ -4669,10 +4875,11 @@
       render();
       if (type === 'chapter' && data.chapters[index]) {
         video.currentTime = data.chapters[index].time;
+        syncTimeUI(data.chapters[index].time);
       } else if (type === 'slide' && data.slides[index]) {
         video.currentTime = data.slides[index].time;
+        syncTimeUI(data.slides[index].time);
       }
-      updatePlayerSlide();
       const focusedEl = document.querySelector('.accordion-item.focused');
       if (focusedEl) {
         focusedEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -4695,10 +4902,11 @@
       if (!skipSeek) {
         if (type === 'chapter' && data.chapters[index]) {
           video.currentTime = data.chapters[index].time;
+          syncTimeUI(data.chapters[index].time);
         } else if (type === 'slide' && data.slides[index]) {
           video.currentTime = data.slides[index].time;
+          syncTimeUI(data.slides[index].time);
         }
-        updatePlayerSlide();
       }
       // Scroll the expanded item into view in the panel
       const expandedEl = document.querySelector('.accordion-item.expanded');
@@ -5226,25 +5434,25 @@
       data = state.data;
       selectedItem = state.selectedItem;
       render();
-      triggerSaveUI();
+      triggerSave();
     }
 
     // ===== SAVE =====
     let saveTimeout;
+    let _saveDebounce = null;
+    const _saveStatusEl = document.getElementById('saveStatus');
+    const _saveTextEl = document.getElementById('saveText');
     function triggerSave() {
-      pushHistory();
-      triggerSaveUI();
-    }
-
-    function triggerSaveUI() {
-      const status = document.getElementById('saveStatus');
-      const text = document.getElementById('saveText');
-      status.classList.add('saving');
-      text.textContent = 'Saving...';
+      clearTimeout(_saveDebounce);
+      _saveDebounce = setTimeout(() => {
+        pushHistory();
+      }, 300);
+      _saveStatusEl.classList.add('saving');
+      _saveTextEl.textContent = 'Saving...';
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
-        status.classList.remove('saving');
-        text.textContent = 'Draft saved';
+        _saveStatusEl.classList.remove('saving');
+        _saveTextEl.textContent = 'Draft saved';
       }, 1000);
     }
 
@@ -5276,7 +5484,7 @@
       const img = document.getElementById('playerSlideImage');
       if (img.src !== activeSlide.image) {
         img.src = activeSlide.image;
-        img.alt = activeSlide.title;
+        img.alt = (activeSlide.title && activeSlide.title.trim()) ? activeSlide.title : 'Untitled Slide';
       }
     }
 
@@ -5360,7 +5568,7 @@
 
         selectedItem.index = swapIdx;
         render();
-        triggerSaveUI();
+        triggerSave();
         announce((selectedItem.type === 'chapter' ? 'Chapter' : 'Slide') + ' moved to position ' + (swapIdx + 1));
         const segments = document.querySelectorAll('.' + selectedItem.type + '-segment');
         if (segments[swapIdx]) segments[swapIdx].focus();
