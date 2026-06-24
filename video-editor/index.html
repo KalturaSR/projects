@@ -3481,8 +3481,6 @@
       pixelsPerSecond = ppsMin;
       document.getElementById('zoomSlider').value = 0;
       applyZoom(pixelsPerSecond);
-      const loaderText = document.getElementById('loaderText');
-      if (loaderText) loaderText.textContent = 'Generating video thumbnails…';
     });
 
     let rafId = null;
@@ -5651,6 +5649,8 @@
 
     // ===== VIDEO THUMBNAILS =====
     let thumbnailsGenerated = false;
+    const thumbnailSprite = new Image();
+    thumbnailSprite.src = 'Content/timeline-thumbnails.png';
 
     function generateVideoThumbnails() {
       thumbnailsGenerated = true;
@@ -5659,60 +5659,25 @@
       const ctx = canvas.getContext('2d');
       const container = document.getElementById('videoTrackContent');
       const containerWidth = Math.max(200, container.offsetWidth);
-      const thumbCellWidth = 80;
-      const thumbCount = Math.min(30, Math.max(5, Math.ceil(containerWidth / thumbCellWidth)));
-      const thumbWidth = Math.ceil(containerWidth / thumbCount);
       const thumbHeight = 40;
 
       canvas.width = containerWidth;
       canvas.height = thumbHeight;
 
-      // Create a dedicated offscreen video for thumbnail extraction
-      const thumbVideo = document.createElement('video');
-      thumbVideo.muted = true;
-      thumbVideo.preload = 'auto';
-      thumbVideo.playsInline = true;
-      // Use the same source as main video, no crossOrigin for local files
-      thumbVideo.src = document.querySelector('#videoPlayer source').src;
-
-      let captured = 0;
-
-      thumbVideo.addEventListener('loadeddata', () => {
-        seekNext();
-      });
-
-      function seekNext() {
-        if (captured >= thumbCount) {
-          thumbVideo.remove();
-          container.classList.add('loaded');
-          if (!thumbnailsReady) {
-            thumbnailsReady = true;
-            const loaderText = document.getElementById('loaderText');
-            if (loaderText) loaderText.textContent = 'Preparing editor…';
-            checkAllReady();
-          }
-          return;
+      function draw() {
+        ctx.drawImage(thumbnailSprite, 0, 0, containerWidth, thumbHeight);
+        container.classList.add('loaded');
+        if (!thumbnailsReady) {
+          thumbnailsReady = true;
+          checkAllReady();
         }
-        const t = (videoDuration / thumbCount) * captured + 0.1;
-        thumbVideo.currentTime = Math.min(t, videoDuration - 0.5);
       }
 
-      thumbVideo.addEventListener('seeked', () => {
-        try {
-          const x = captured * thumbWidth;
-          ctx.drawImage(thumbVideo, x, 0, thumbWidth, thumbHeight);
-          ctx.fillStyle = 'rgba(0,0,0,0.15)';
-          ctx.fillRect(x, 0, 1, thumbHeight);
-        } catch (e) {
-          // If drawImage fails due to security, draw colored placeholder
-          const x = captured * thumbWidth;
-          const hue = (captured / thumbCount) * 40 + 200;
-          ctx.fillStyle = `hsl(${hue}, 30%, ${15 + (captured % 2) * 5}%)`;
-          ctx.fillRect(x, 0, thumbWidth, thumbHeight);
-        }
-        captured++;
-        seekNext();
-      });
+      if (thumbnailSprite.complete) {
+        draw();
+      } else {
+        thumbnailSprite.onload = draw;
+      }
     }
 
     // ===== DRAG & DROP (reorder — preserves duration) =====
