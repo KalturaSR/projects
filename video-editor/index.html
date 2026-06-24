@@ -3269,7 +3269,7 @@
       <!-- Video Player -->
       <div class="video-area">
         <video id="videoPlayer" class="video-player" preload="metadata">
-          <source src="content/How Screens Stole Childhood and How to Get It Back -.mp4" type="video/mp4">
+          <source src="Content/How Screens Stole Childhood and How to Get It Back -.mp4" type="video/mp4">
         </video>
         <!-- Video thumbnail CTAs (visible only in slide-main mode) -->
         <div class="video-thumb-ctas" id="videoThumbCtas">
@@ -5651,6 +5651,10 @@
     let thumbnailsGenerated = false;
     const thumbnailSprite = new Image();
     thumbnailSprite.src = 'Content/timeline-thumbnails.png';
+    thumbnailSprite.onerror = function() {
+      thumbnailsReady = true;
+      checkAllReady();
+    };
 
     function generateVideoThumbnails() {
       thumbnailsGenerated = true;
@@ -5673,8 +5677,11 @@
         }
       }
 
-      if (thumbnailSprite.complete) {
+      if (thumbnailSprite.complete && thumbnailSprite.naturalWidth > 0) {
         draw();
+      } else if (thumbnailSprite.complete) {
+        container.classList.add('loaded');
+        if (!thumbnailsReady) { thumbnailsReady = true; checkAllReady(); }
       } else {
         thumbnailSprite.onload = draw;
       }

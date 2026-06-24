@@ -12,7 +12,9 @@
       "Bash(file *)",
       "Bash(brew list *)",
       "Bash(python3 *)",
-      "Bash(pip3 install *)"
+      "Bash(pip3 install *)",
+      "Bash(git status *)",
+      "Bash(git ls-tree *)"
     ]
   }
 }
