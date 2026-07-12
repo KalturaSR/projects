@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaltura Platform DS — Guidelines</title>
+  <link rel="stylesheet" href="ds/styles.css" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--ds-font-family);
+      background: var(--ds-background);
+      color: var(--ds-tone-1);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .ds-doc-header {
+      background: linear-gradient(135deg, #006EFA 0%, #0041AD 100%);
+      color: #fff;
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .ds-doc-header-logo { width: 48px; height: 48px; flex-shrink: 0; }
+    .ds-doc-header h1 { font-size: 28px; font-weight: 700; }
+    .ds-doc-header p { font-size: 16px; opacity: 0.85; margin-top: 4px; }
+
+    /* Layout */
+    .ds-doc-layout {
+      display: flex;
+      min-height: calc(100vh - 120px);
+    }
+
+    /* Sidebar */
+    .ds-doc-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: var(--ds-paper);
+      border-right: 1px solid var(--ds-tone-6);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 24px 0;
+    }
+    .ds-doc-sidebar::-webkit-scrollbar { width: 4px; }
+    .ds-doc-sidebar::-webkit-scrollbar-thumb { background: var(--ds-tone-5); border-radius: 2px; }
+    .ds-doc-nav-group { margin-bottom: 8px; }
+    .ds-doc-nav-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--ds-tone-3);
+      padding: 8px 24px 4px;
+    }
+    .ds-doc-nav-link {
+      display: block;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--ds-tone-2);
+      text-decoration: none;
+      padding: 5px 24px 5px 32px;
+      transition: color 0.15s, background 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .ds-doc-nav-link:hover {
+      color: var(--ds-primary);
+      background: rgba(0,110,250,0.04);
+    }
+    .ds-doc-nav-link.active {
+      color: var(--ds-primary);
+      font-weight: 700;
+      border-left-color: var(--ds-primary);
+      background: rgba(0,110,250,0.06);
+    }
+
+    /* Main content */
+    .ds-doc-main {
+      flex: 1;
+      min-width: 0;
+      padding: 0;
+    }
+
+    /* Section */
+    .ds-doc-section {
+      padding: 48px;
+      border-bottom: 1px solid var(--ds-tone-6);
+    }
+    .ds-doc-section:last-child { border-bottom: none; }
+
+    .ds-doc-section-header {
+      margin-bottom: 24px;
+    }
+    .ds-doc-section-category {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--ds-primary);
+      margin-bottom: 4px;
+    }
+    .ds-doc-section-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--ds-tone-1);
+      margin-bottom: 8px;
+    }
+    .ds-doc-section-desc {
+      font-size: 16px;
+      color: var(--ds-tone-2);
+      line-height: 1.5;
+      max-width: 720px;
+    }
+
+    /* Image container */
+    .ds-doc-image {
+      margin-top: 24px;
+      border: 1px solid var(--ds-tone-6);
+      border-radius: var(--ds-roundness-2);
+      overflow: hidden;
+      background: #fff;
+    }
+    .ds-doc-image img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Spec table */
+    .ds-doc-specs {
+      margin-top: 24px;
+    }
+    .ds-doc-specs h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .ds-doc-specs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .ds-doc-specs-table th {
+      text-align: left;
+      font-weight: 700;
+      color: var(--ds-tone-2);
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--ds-tone-5);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .ds-doc-specs-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--ds-tone-6);
+      color: var(--ds-tone-1);
+    }
+    .ds-doc-color-swatch {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid var(--ds-tone-5);
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    /* Intro hero */
+    .ds-doc-hero {
+      background: linear-gradient(135deg, #006EFA 0%, #0041AD 100%);
+      color: #fff;
+      padding: 80px 48px;
+    }
+    .ds-doc-hero h2 { font-size: 48px; font-weight: 400; max-width: 600px; line-height: 1.15; }
+    .ds-doc-hero p { font-size: 18px; opacity: 0.85; margin-top: 16px; max-width: 600px; line-height: 1.5; }
+
+    /* Subsections within a section */
+    .ds-doc-subsection {
+      margin-top: 32px;
+    }
+    .ds-doc-subsection h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ds-primary);
+      margin-bottom: 8px;
+    }
+    .ds-doc-subsection p {
+      font-size: 15px;
+      color: var(--ds-tone-2);
+      line-height: 1.5;
+      max-width: 720px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="ds-doc-header">
+    <div class="ds-doc-header-logo">
+      <svg width="48" height="48" viewBox="0 0 32 32" fill="none">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M15.9657 9.13483C15.2414 9.13483 14.6529 8.40741 14.6529 7.68312V1.45171C14.6529 0.725854 15.2414 0 15.9657 0C16.6899 0 17.28 0.725854 17.28 1.45171V7.67532C17.28 8.39961 16.6915 9.13483 15.9657 9.13483ZM11.1298 11.1298C10.6178 11.6433 9.68741 11.545 9.17541 11.0314L4.77346 6.63727C4.26146 6.12371 4.16312 5.19493 4.67668 4.68137C5.19024 4.16781 6.11902 4.26615 6.63102 4.77971L11.033 9.1801C11.545 9.68742 11.6433 10.6162 11.1298 11.1298ZM7.67532 17.28C8.40117 17.28 9.12702 16.6915 9.12702 15.9657C9.12702 15.2398 8.40117 14.6529 7.67532 14.6529H1.45171C0.725854 14.6529 0 15.2398 0 15.9657C0 16.6915 0.725854 17.28 1.45171 17.28H7.67532ZM11.1298 20.8016C11.6433 21.3151 11.545 22.2439 11.033 22.7575L6.63102 27.1579C6.11902 27.6714 5.18868 27.7698 4.67668 27.2562C4.16468 26.7426 4.26146 25.8139 4.77346 25.3003L9.17541 20.8999C9.68741 20.3863 10.6178 20.2896 11.1298 20.8016ZM17.28 24.2576C17.28 23.5317 16.6915 22.8059 15.9657 22.8059C15.2414 22.8059 14.6529 23.5317 14.6529 24.2576V30.4812C14.6529 31.207 15.2398 31.9329 15.9657 31.9329C16.6915 31.9329 17.28 31.207 17.28 30.4812V24.2576ZM20.8016 20.8016C21.3151 20.2896 22.2439 20.3863 22.7575 20.8999L27.1579 25.3003C27.6714 25.8139 27.7698 26.7426 27.2562 27.2562C26.7426 27.7698 25.8139 27.6714 25.3003 27.1579L20.8999 22.7575C20.3863 22.247 20.2896 21.3104 20.8016 20.8016ZM24.2576 14.6529C23.5317 14.6529 22.8059 15.2398 22.8059 15.9657C22.8059 16.6915 23.5317 17.28 24.2513 17.28H30.4812C31.207 17.28 31.9329 16.6915 31.9329 15.9657C31.9329 15.2398 31.207 14.6529 30.4812 14.6529H24.2576ZM20.8016 11.1298C20.2896 10.6162 20.3863 9.68741 20.8999 9.17385L25.3003 4.77346C25.8139 4.2599 26.7426 4.16312 27.2562 4.67512C27.7698 5.18712 27.6714 6.11746 27.1579 6.63102L22.7575 11.0314C22.2439 11.545 21.3151 11.6433 20.8016 11.1298ZM15.9657 18.0777C17.1321 18.0777 18.0777 17.1321 18.0777 15.9657C18.0777 14.7992 17.1321 13.8537 15.9657 13.8537C14.7992 13.8537 13.8537 14.7992 13.8537 15.9657C13.8537 17.1321 14.7992 18.0777 15.9657 18.0777Z" fill="white"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Kaltura Platform DS</h1>
+      <p>A single source of truth to design product experiences.</p>
+    </div>
+  </header>
+
+  <div class="ds-doc-layout">
+
+    <!-- Sidebar Navigation -->
+    <nav class="ds-doc-sidebar">
+
+      <div class="ds-doc-nav-group">
+        <div class="ds-doc-nav-group-title">Getting Started</div>
+        <a class="ds-doc-nav-link" href="#intro-what">What is a Design System?</a>
+        <a class="ds-doc-nav-link" href="#intro-atomic">Atomic Design Approach</a>
+        <a class="ds-doc-nav-link" href="#intro-docs">DS Documentation</a>
+        <a class="ds-doc-nav-link" href="#intro-theming">Theming</a>
+      </div>
+
+      <div class="ds-doc-nav-group">
+        <div class="ds-doc-nav-group-title">Style</div>
+        <a class="ds-doc-nav-link" href="#colors">Colors</a>
+        <a class="ds-doc-nav-link" href="#theme">Theme</a>
+        <a class="ds-doc-nav-link" href="#typography">Typography</a>
+        <a class="ds-doc-nav-link" href="#iconography">Iconography</a>
+        <a class="ds-doc-nav-link" href="#elevation">Elevation</a>
+        <a class="ds-doc-nav-link" href="#shape">Shape</a>
+        <a class="ds-doc-nav-link" href="#illustration">Illustration</a>
+      </div>
+
+      <div class="ds-doc-nav-group">
+        <div class="ds-doc-nav-group-title">Layout</div>
+        <a class="ds-doc-nav-link" href="#breakpoints">Breakpoints</a>
+        <a class="ds-doc-nav-link" href="#grid">Grid System</a>
+      </div>
+
+      <div class="ds-doc-nav-group">
+        <div class="ds-doc-nav-group-title">Components</div>
+        <a class="ds-doc-nav-link" href="#action-buttons">Action Buttons</a>
+        <a class="ds-doc-nav-link" href="#circular-button">Circular Button</a>
+        <a class="ds-doc-nav-link" href="#links">Links</a>
+        <a class="ds-doc-nav-link" href="#select-button">Select Button</a>
+        <a class="ds-doc-nav-link" href="#input-fields">Input Text Fields</a>
+        <a class="ds-doc-nav-link" href="#form-input">Form Inputs</a>
+        <a class="ds-doc-nav-link" href="#input-tags">Input Tags</a>
+        <a class="ds-doc-nav-link" href="#checkbox">Checkbox</a>
+        <a class="ds-doc-nav-link" href="#radio">Radio Button</a>
+        <a class="ds-doc-nav-link" href="#switch">Switch</a>
+        <a class="ds-doc-nav-link" href="#menu">Menu</a>
+        <a class="ds-doc-nav-link" href="#autocomplete">Autocomplete</a>
+        <a class="ds-doc-nav-link" href="#date-time">Date &amp; Time Picker</a>
+        <a class="ds-doc-nav-link" href="#tabs">Tabs</a>
+        <a class="ds-doc-nav-link" href="#segmented">Segmented Control</a>
+        <a class="ds-doc-nav-link" href="#data-table">Data Table</a>
+        <a class="ds-doc-nav-link" href="#cards">Cards</a>
+        <a class="ds-doc-nav-link" href="#modal">Modal</a>
+        <a class="ds-doc-nav-link" href="#acknowledgment">Acknowledgment</a>
+        <a class="ds-doc-nav-link" href="#hint">Hint</a>
+        <a class="ds-doc-nav-link" href="#breadcrumb">Breadcrumb</a>
+        <a class="ds-doc-nav-link" href="#chips-tags">Chips &amp; Tags</a>
+        <a class="ds-doc-nav-link" href="#user-picture">User Picture</a>
+        <a class="ds-doc-nav-link" href="#tree-view">Tree View</a>
+        <a class="ds-doc-nav-link" href="#color-picker">Color Picker</a>
+        <a class="ds-doc-nav-link" href="#slider">Slider</a>
+        <a class="ds-doc-nav-link" href="#loading">Loading &amp; Processing</a>
+        <a class="ds-doc-nav-link" href="#keyboard-focus">Keyboard Focus</a>
+        <a class="ds-doc-nav-link" href="#title">Title</a>
+      </div>
+
+    </nav>
+
+    <!-- Main Content -->
+    <main class="ds-doc-main">
+
+      <!-- ===================== GETTING STARTED ===================== -->
+
+      <div class="ds-doc-hero" id="intro-what">
+        <h2>What is a Design System?</h2>
+        <p>The design system is uniting Kaltura products under the same experience. It provides a common visual language, shared UX patterns and common standards. It helps the design team to scale their design work across all products and maintain consistency.</p>
+      </div>
+      <div class="ds-doc-section">
+        <div class="ds-doc-image"><img src="ds-docs-images/277-7.png" alt="What is a Design System" loading="lazy" /></div>
+      </div>
+
+      <section class="ds-doc-section" id="intro-atomic">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Getting Started</div>
+          <h2 class="ds-doc-section-title">Atomic Design Approach</h2>
+          <p class="ds-doc-section-desc">The system follows an atomic design methodology — from design tokens (colors, typography) to components (buttons, inputs) to full page templates.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/277-143.png" alt="Atomic Design Approach" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="intro-docs">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Getting Started</div>
+          <h2 class="ds-doc-section-title">DS Documentation</h2>
+          <p class="ds-doc-section-desc">The design system guidelines are documented and maintained. The documentation serves product designers, developers, QA engineers, and product owners — each able to reference, reuse, and contribute to the system.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/277-386.png" alt="DS Documentation" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="intro-theming">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Getting Started</div>
+          <h2 class="ds-doc-section-title">Theming</h2>
+          <p class="ds-doc-section-desc">The theming empowers any brand by allowing the customization of every design token.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/277-25.png" alt="Theming" loading="lazy" /></div>
+      </section>
+
+      <!-- ===================== STYLE ===================== -->
+
+      <section class="ds-doc-section" id="colors">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Style</div>
+          <h2 class="ds-doc-section-title">Colors</h2>
+          <p class="ds-doc-section-desc">Accent colors are the main colors of the brand, used in call-to-actions or as highlights. Neutrals are used for texts, lines, outlines and backgrounds. The system includes 8 tones and 3 surface colors.</p>
+        </div>
+
+        <div class="ds-doc-specs">
+          <h3>Accent Colors</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Token</th><th>Light</th><th>Usage</th></tr></thead>
+            <tbody>
+              <tr><td><span class="ds-doc-color-swatch" style="background:#006EFA"></span>Primary</td><td>#006EFA</td><td>Primary actions, active states, navigation highlights</td></tr>
+              <tr><td><span class="ds-doc-color-swatch" style="background:#004CAD"></span>Primary Darker</td><td>#004CAD</td><td>Hover states, emphasis</td></tr>
+              <tr><td><span class="ds-doc-color-swatch" style="background:#4798FF"></span>Primary Brighter</td><td>#4798FF</td><td>Light accents</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ds-doc-specs">
+          <h3>Neutrals (Light Theme / Dark Theme)</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Token</th><th>Light</th><th>Dark</th></tr></thead>
+            <tbody>
+              <tr><td>Tone 1</td><td><span class="ds-doc-color-swatch" style="background:#333333"></span>#333333</td><td><span class="ds-doc-color-swatch" style="background:#FFFFFF;border-color:#ccc"></span>#FFFFFF</td></tr>
+              <tr><td>Tone 2</td><td><span class="ds-doc-color-swatch" style="background:#707070"></span>#707070</td><td><span class="ds-doc-color-swatch" style="background:#CCCCCC"></span>#CCCCCC</td></tr>
+              <tr><td>Tone 3</td><td><span class="ds-doc-color-swatch" style="background:#878787"></span>#878787</td><td><span class="ds-doc-color-swatch" style="background:#999999"></span>#999999</td></tr>
+              <tr><td>Tone 4</td><td><span class="ds-doc-color-swatch" style="background:#BDBDBD"></span>#BDBDBD</td><td><span class="ds-doc-color-swatch" style="background:#888888"></span>#888888</td></tr>
+              <tr><td>Tone 5</td><td><span class="ds-doc-color-swatch" style="background:#D9D9D9"></span>#D9D9D9</td><td><span class="ds-doc-color-swatch" style="background:#525252"></span>#525252</td></tr>
+              <tr><td>Tone 6</td><td><span class="ds-doc-color-swatch" style="background:#EBEBEB"></span>#EBEBEB</td><td><span class="ds-doc-color-swatch" style="background:#383838"></span>#383838</td></tr>
+              <tr><td>Tone 7</td><td><span class="ds-doc-color-swatch" style="background:#F5F5F5"></span>#F5F5F5</td><td><span class="ds-doc-color-swatch" style="background:#212121"></span>#212121</td></tr>
+              <tr><td>Tone 8</td><td><span class="ds-doc-color-swatch" style="background:#FFFFFF;border-color:#ccc"></span>#FFFFFF</td><td><span class="ds-doc-color-swatch" style="background:#000000"></span>#000000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ds-doc-specs">
+          <h3>Surfaces</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Token</th><th>Light</th><th>Dark</th></tr></thead>
+            <tbody>
+              <tr><td>Background</td><td>#FFFFFF</td><td>#121212</td></tr>
+              <tr><td>Paper</td><td>#F5F5F5</td><td>#242424</td></tr>
+              <tr><td>Elevated</td><td>#FFFFFF</td><td>#333333</td></tr>
+              <tr><td>Protection</td><td>#3D3D3D</td><td>#3D3D3D</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ds-doc-specs">
+          <h3>Acknowledgment</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Token</th><th>Value</th><th>Usage</th></tr></thead>
+            <tbody>
+              <tr><td><span class="ds-doc-color-swatch" style="background:#23803A"></span>Success</td><td>#23803A</td><td>Success messages, confirmations</td></tr>
+              <tr><td><span class="ds-doc-color-swatch" style="background:#CA1C2D"></span>Danger</td><td>#CA1C2D</td><td>Errors, destructive actions</td></tr>
+              <tr><td><span class="ds-doc-color-swatch" style="background:#E86925"></span>Warning</td><td>#E86925</td><td>Warnings, caution states</td></tr>
+              <tr><td><span class="ds-doc-color-swatch" style="background:#006EFA"></span>Info</td><td>#006EFA</td><td>Informational messages</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ds-doc-image"><img src="ds-docs-images/7311-13414.png" alt="Colors" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="theme">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Style</div>
+          <h2 class="ds-doc-section-title">Theme</h2>
+          <p class="ds-doc-section-desc">Theme allows to customize the interface to match any brand. Design tokens are values that allow customization of various properties such as colors, typography styles, radii, and more.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/7311-13949.png" alt="Theme" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="typography">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Style</div>
+          <h2 class="ds-doc-section-title">Typography</h2>
+          <p class="ds-doc-section-desc">The font family is defined by default for all typographic rules: Lato, Helvetica Neue, Segoe UI, sans-serif. Base font size is 16px (1rem).</p>
+        </div>
+
+        <div class="ds-doc-specs">
+          <h3>Heading Ramp</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Token</th><th>Size</th><th>Weight</th><th>Line Height</th><th>Margins</th></tr></thead>
+            <tbody>
+              <tr><td style="font-size:32px;font-weight:700">Heading 1</td><td>48px (3rem)</td><td>700</td><td>1.2</td><td>32/32 px</td></tr>
+              <tr><td style="font-size:24px;font-weight:700">Heading 2</td><td>32px (2rem)</td><td>700</td><td>1.2</td><td>16/16 px</td></tr>
+              <tr><td style="font-size:20px;font-weight:700">Heading 3</td><td>24px (1.5rem)</td><td>700</td><td>1.2</td><td>8/8 px</td></tr>
+              <tr><td style="font-size:18px;font-weight:700">Heading 4</td><td>20px (1.25rem)</td><td>700</td><td>1.2</td><td>8/8 px</td></tr>
+              <tr><td style="font-size:16px;font-weight:700">Heading 5</td><td>18px (1.125rem)</td><td>700</td><td>1.2</td><td>4/4 px</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ds-doc-specs">
+          <h3>Body</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Token</th><th>Size</th><th>Weight</th><th>Line Height</th></tr></thead>
+            <tbody>
+              <tr><td>Body 1</td><td>16px (1rem)</td><td>400</td><td>1.4</td></tr>
+              <tr><td><strong>Body 1 Highlight</strong></td><td>16px (1rem)</td><td>700</td><td>1.4</td></tr>
+              <tr><td>Body 2</td><td>14px (0.875rem)</td><td>400</td><td>1.4</td></tr>
+              <tr><td><strong>Body 2 Highlight</strong></td><td>14px (0.875rem)</td><td>700</td><td>1.4</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ds-doc-image"><img src="ds-docs-images/67-325.png" alt="Typography" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="iconography">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Style</div>
+          <h2 class="ds-doc-section-title">Iconography</h2>
+          <p class="ds-doc-section-desc">Icons symbolize concepts and actions in a graphic form. They are designed on 16px and 24px pixel grids with 2px stroke, 2px corner radius, and 1px caps. Icons scale with consistent factors to ensure alignment.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/73-1.png" alt="Iconography" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="elevation">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Style</div>
+          <h2 class="ds-doc-section-title">Elevation</h2>
+          <p class="ds-doc-section-desc">Elevation is the depth relation of all surfaces. Every element has its corresponding location along the z-index. Elevation is depicted with shadow that reflects the distance between surfaces.</p>
+        </div>
+        <div class="ds-doc-specs">
+          <h3>Shadow Levels</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Level</th><th>Box Shadow</th></tr></thead>
+            <tbody>
+              <tr><td>1. Low</td><td>None</td></tr>
+              <tr><td>2. Medium</td><td>0 0 0 1px rgba(0,0,0,0.2), 0 4px 30px -8px rgba(0,0,0,0.2)</td></tr>
+              <tr><td>3. High</td><td>0 0 0 1px rgba(0,0,0,0.2), 0 8px 60px -16px rgba(0,0,0,0.2)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/137-104.png" alt="Elevation" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="shape">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Style</div>
+          <h2 class="ds-doc-section-title">Shape</h2>
+          <p class="ds-doc-section-desc">Surfaces can have different shapes. The main attribute that customizes shapes is the corner radius.</p>
+        </div>
+        <div class="ds-doc-specs">
+          <h3>Corner Radius Tokens</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Token</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Roundness 1</td><td>4px</td></tr>
+              <tr><td>Roundness 2</td><td>8px</td></tr>
+              <tr><td>Roundness 3</td><td>16px</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/536-0.png" alt="Shape" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="illustration">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Style</div>
+          <h2 class="ds-doc-section-title">Illustration</h2>
+          <p class="ds-doc-section-desc">Illustrations are structured using primary shapes. Subjects are created by adding and subtracting geometric shapes. They use the Kaltura brand colors: Royal Blue (#006EFA), Red (#FA374B), Yellow (#FFCD00), with black and white.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/2417-5432.png" alt="Illustration" loading="lazy" /></div>
+      </section>
+
+      <!-- ===================== LAYOUT ===================== -->
+
+      <section class="ds-doc-section" id="breakpoints">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Layout</div>
+          <h2 class="ds-doc-section-title">Breakpoints</h2>
+          <p class="ds-doc-section-desc">Responsive breakpoints define how the layout adapts to different viewport sizes.</p>
+        </div>
+        <div class="ds-doc-specs">
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Breakpoint</th><th>Range</th></tr></thead>
+            <tbody>
+              <tr><td>XS</td><td>Max 600px</td></tr>
+              <tr><td>SM</td><td>Min 600px</td></tr>
+              <tr><td>MD</td><td>Min 960px</td></tr>
+              <tr><td>LG</td><td>Min 1280px</td></tr>
+              <tr><td>XL</td><td>Min 1600px</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/87-0.png" alt="Breakpoints" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="grid">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Layout</div>
+          <h2 class="ds-doc-section-title">Grid System</h2>
+          <p class="ds-doc-section-desc">The grid is based on a 12-column grid layout with different settings for different breakpoints. Spacing between elements is based on an 8px grid system.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/103-480.png" alt="Grid System" loading="lazy" /></div>
+      </section>
+
+      <!-- ===================== COMPONENTS ===================== -->
+
+      <section class="ds-doc-section" id="action-buttons">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Action Buttons</h2>
+          <p class="ds-doc-section-desc">Buttons allow users to take actions with a click. They are displayed in different sizes, colors and styles. Available in Pill and Borderless variants, with Primary, Secondary, Danger, and Translucent colors.</p>
+        </div>
+        <div class="ds-doc-subsection">
+          <h3>Sizes</h3>
+          <p>Small, Medium, Large, XL</p>
+        </div>
+        <div class="ds-doc-subsection">
+          <h3>Variants</h3>
+          <p>Pill (has a background) and Borderless (background highlights on hover).</p>
+        </div>
+        <div class="ds-doc-subsection">
+          <h3>Content</h3>
+          <p>Text, Text + Left icon, Text + Right icon, Icon only.</p>
+        </div>
+        <div class="ds-doc-subsection">
+          <h3>States</h3>
+          <p>Default, Hover, Processing, Disable.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/7198-12333.png" alt="Action Buttons" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="circular-button">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Circular Button</h2>
+          <p class="ds-doc-section-desc">Circular button is typically used for special actions. Available in Small, Medium, and Large sizes with Default, Hover, Focus/Active, and Disable states.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/7198-12522.png" alt="Circular Button" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="links">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Links</h2>
+          <p class="ds-doc-section-desc">Links come in Small and Large sizes with states: Default, Hover, Active, Disable, and Visited. When found in body text, the link inherits the font size and should be underlined. Also available in Translucent mode.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/7198-12711.png" alt="Links" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="select-button">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Select Button</h2>
+          <p class="ds-doc-section-desc">Select buttons open menus. Available in Outline and Borderless variants with Text, Text + Icon, and Icon + Icon content options. States: Default, Hover, Focus, Disable.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/19682-8169.png" alt="Select Button" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="input-fields">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Input Text Fields</h2>
+          <p class="ds-doc-section-desc">Input text fields come in Single Line and Textarea types, in Medium and Large sizes. Available in Light and Translucent modes with full state coverage: Default, Hover, Focus, Error, Processing, Disable.</p>
+        </div>
+        <div class="ds-doc-specs">
+          <h3>Theme Tokens</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Text Placeholder</td><td>Tone 3</td><td>#888888</td></tr>
+              <tr><td>Text Input</td><td>Tone 1</td><td>#333333</td></tr>
+              <tr><td>Border Default</td><td>Tone 3</td><td>—</td></tr>
+              <tr><td>Border Hover</td><td>Tone 2</td><td>—</td></tr>
+              <tr><td>Border Focus</td><td>Primary</td><td>#006EFA</td></tr>
+              <tr><td>Border Error</td><td>Danger</td><td>#E12437</td></tr>
+              <tr><td>Background</td><td>Tone 8</td><td>#FFFFFF</td></tr>
+              <tr><td>Corner Radius</td><td>Roundness 1</td><td>4px</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/139-1184.png" alt="Input Text Fields" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="form-input">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Form Inputs</h2>
+          <p class="ds-doc-section-desc">The form input field can be composed of several optional elements: label, additional description, character counter, placeholder, input value, and error message.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/2821-3673.png" alt="Form Inputs" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="input-tags">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Input Tags</h2>
+          <p class="ds-doc-section-desc">Input tags allow users to enter and manage multiple values within a single input field.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/16709-7548.png" alt="Input Tags" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="checkbox">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Checkbox</h2>
+          <p class="ds-doc-section-desc">Checkboxes allow users to toggle between two states. Used to select/deselect multiple items or enable/disable an option. Supports Checked, Unchecked, and Partially Checked states. Available in group and nested layouts.</p>
+        </div>
+        <div class="ds-doc-specs">
+          <h3>Theme Tokens</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Border</td><td>Tone 3</td><td>#CCCCCC</td></tr>
+              <tr><td>Corner Radius</td><td>Roundness 1</td><td>4px</td></tr>
+              <tr><td>Background (unchecked)</td><td>Tone 8</td><td>#FFFFFF</td></tr>
+              <tr><td>Background (checked)</td><td>Primary</td><td>#006EFA</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/148-0.png" alt="Checkbox" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="radio">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Radio Button</h2>
+          <p class="ds-doc-section-desc">Radio buttons allow users to select one option amongst a set. Available in Neutrals and Translucent modes with Checked, Unchecked, Hover, and Disable states.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/150-1247.png" alt="Radio Button" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="switch">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Switch</h2>
+          <p class="ds-doc-section-desc">Switches toggle the state of a single setting between ON and OFF. Available in Small and Large sizes with Default and Disable states.</p>
+        </div>
+        <div class="ds-doc-specs">
+          <h3>Theme Tokens</h3>
+          <table class="ds-doc-specs-table">
+            <thead><tr><th>Property</th><th>Token</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Handle</td><td>Tone 8</td><td>#FFFFFF</td></tr>
+              <tr><td>Background (OFF)</td><td>Tone 4</td><td>#CCCCCC</td></tr>
+              <tr><td>Background (ON)</td><td>Primary</td><td>#006EFA</td></tr>
+              <tr><td>Background (Disable)</td><td>—</td><td>#888888</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/150-1418.png" alt="Switch" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="menu">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Menu</h2>
+          <p class="ds-doc-section-desc">A menu displays a floating surface containing a list of options or settings. It can be triggered from a select button or any action button. Supports Select Menu, Action Menu, and second-level menus.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/150-1538.png" alt="Menu" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="autocomplete">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Autocomplete</h2>
+          <p class="ds-doc-section-desc">The autocomplete is a text input enhanced by a menu of suggested options. Includes overflow/truncation behavior and a no-results state.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/4816-5410.png" alt="Autocomplete" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="date-time">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Date &amp; Time Picker</h2>
+          <p class="ds-doc-section-desc">Date and time pickers allow selecting a specific date/time or a time period. The date can be selected via the calendar or edited in the text input field. Only digits are accepted; invalid input resets to the initial value.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/5934-7501.png" alt="Date & Time Picker" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="tabs">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Tabs</h2>
+          <p class="ds-doc-section-desc">Tabs organize content into separate views. Users can switch between views by selecting a tab.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/2326-4195.png" alt="Tabs" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="segmented">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Segmented Control</h2>
+          <p class="ds-doc-section-desc">Segmented controls allow users to switch between a set of mutually exclusive options displayed as a button group.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/15502-7327.png" alt="Segmented Control" loading="lazy" /></div>
+        <div class="ds-doc-image" style="margin-top:16px"><img src="ds-docs-images/21417-9222.png" alt="Segmented Control variants" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="data-table">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Data Table</h2>
+          <p class="ds-doc-section-desc">Data tables display information in a structured grid format with rows and columns. Supports sorting, selection, pagination, and various cell types.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/3320-3855.png" alt="Data Table" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="cards">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Cards</h2>
+          <p class="ds-doc-section-desc">A card is a flexible-size container representing a single subject with information and actions. Each card follows a structure including an image area, details, and actions. Cards can be displayed in grid or stacked layouts.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/207-34.png" alt="Cards" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="modal">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Modal</h2>
+          <p class="ds-doc-section-desc">Modals sit on top of the main content with a backdrop layer. They focus user attention on a specific task or information that requires interaction before returning to the main interface.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/448-2428.png" alt="Modal" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="acknowledgment">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Acknowledgment</h2>
+          <p class="ds-doc-section-desc">Acknowledgment components communicate messages to users or provide feedback. Available in Success, Error, Warning, and Info variants.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/3853-4757.png" alt="Acknowledgment" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="hint">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Hint</h2>
+          <p class="ds-doc-section-desc">Hints provide contextual information or guidance through positioned tooltips. Available in top, bottom, left, and right positions.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/576-2292.png" alt="Hint" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="breadcrumb">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Breadcrumb</h2>
+          <p class="ds-doc-section-desc">Breadcrumbs show the user's current location within a navigation hierarchy, allowing easy navigation back to parent levels.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/4189-5136.png" alt="Breadcrumb" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="chips-tags">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Chips &amp; Tags</h2>
+          <p class="ds-doc-section-desc">Chips and tags are compact elements that represent an input, attribute, or action. They can be removable and support various states.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/4175-5000.png" alt="Chips & Tags" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="user-picture">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">User Picture</h2>
+          <p class="ds-doc-section-desc">User picture components display avatars in different sizes and shapes (square/round). They support images or initials as fallback.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/4961-6370.png" alt="User Picture" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="tree-view">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Tree View</h2>
+          <p class="ds-doc-section-desc">Tree view displays hierarchical data in an expandable/collapsible structure, allowing users to navigate nested content.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/22075-9230.png" alt="Tree View" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="color-picker">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Color Picker</h2>
+          <p class="ds-doc-section-desc">The color picker allows users to select a color value from a visual interface with support for custom hex input.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/8222-13063.png" alt="Color Picker" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="slider">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Slider</h2>
+          <p class="ds-doc-section-desc">Sliders allow users to select a value or range from a continuous or discrete set of values by moving a handle along a track.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/24245-14146.png" alt="Slider" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="loading">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Loading &amp; Processing</h2>
+          <p class="ds-doc-section-desc">Progress and processing indicators are visual indications while the app is loading content or performing actions. Includes skeleton loading states (alternating opacity 0.5 to 1 every second) and processing spinners for buttons/inputs.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/1558-0.png" alt="Loading & Processing" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="keyboard-focus">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Keyboard Focus Outline</h2>
+          <p class="ds-doc-section-desc">Keyboard focus outlines provide visible indicators for keyboard navigation, ensuring accessibility for all users.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/16497-7485.png" alt="Keyboard Focus Outline" loading="lazy" /></div>
+      </section>
+
+      <section class="ds-doc-section" id="title">
+        <div class="ds-doc-section-header">
+          <div class="ds-doc-section-category">Components</div>
+          <h2 class="ds-doc-section-title">Title</h2>
+          <p class="ds-doc-section-desc">Title components for section headings and page titles.</p>
+        </div>
+        <div class="ds-doc-image"><img src="ds-docs-images/10938-8099.png" alt="Title" loading="lazy" /></div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Highlight active sidebar link on scroll
+    const sections = document.querySelectorAll('.ds-doc-section[id], .ds-doc-hero[id]');
+    const navLinks = document.querySelectorAll('.ds-doc-nav-link');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(link => link.classList.remove('active'));
+          const activeLink = document.querySelector(`.ds-doc-nav-link[href="#${entry.target.id}"]`);
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(section => observer.observe(section));
+  </script>
+
+</body>
+</html>
